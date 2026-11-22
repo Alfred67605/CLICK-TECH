@@ -26,6 +26,7 @@ export interface ProductCardData {
 
 export function ProductCard({ product }: { product: ProductCardData }) {
   const { addToCart, compareItems, toggleCompare } = useStore();
+  const [justAdded, setJustAdded] = React.useState(false);
   const inCompare = compareItems.some((c) => c.id === product.id);
   const activePrice = product.promoPriceCents ?? product.priceCents;
   const inStock = product.stockAvailable > 0;
@@ -127,15 +128,28 @@ export function ProductCard({ product }: { product: ProductCardData }) {
             <button
               type="button"
               disabled={!inStock}
-              onClick={() => addToCart(product.id, 1)}
-              className="ct-btn flex-1 h-10 px-3 rounded-lg text-sm font-semibold flex items-center justify-center gap-1.5 disabled:opacity-45 disabled:cursor-not-allowed"
+              onClick={() => {
+                addToCart(product.id, 1);
+                setJustAdded(true);
+                setTimeout(() => setJustAdded(false), 1400);
+              }}
+              className="ct-btn flex-1 h-10 px-3 rounded-lg text-sm font-semibold flex items-center justify-center gap-1.5 disabled:opacity-45 disabled:cursor-not-allowed shadow-sm transition-all"
               style={{
-                backgroundColor: "var(--accent-cyan)",
-                color: "var(--accent-cyan-ink)",
+                backgroundColor: justAdded ? "var(--status-ok)" : "var(--accent-cyan)",
+                color: justAdded ? "#ffffff" : "var(--accent-cyan-ink)",
               }}
             >
-              <ShoppingCart className="w-4 h-4" />
-              {inStock ? "Añadir" : "Sin stock"}
+              {justAdded ? (
+                <>
+                  <Check className="w-4 h-4 animate-in zoom-in-75 duration-150" />
+                  <span>¡Añadido!</span>
+                </>
+              ) : (
+                <>
+                  <ShoppingCart className="w-4 h-4" />
+                  <span>{inStock ? "Añadir" : "Sin stock"}</span>
+                </>
+              )}
             </button>
             <button
               type="button"

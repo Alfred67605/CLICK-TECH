@@ -91,25 +91,35 @@ export default async function HomePage() {
     <div className="space-y-20 pb-12">
       {/* 1. HERO: Hardware real + Pieza HyperFrames + Acciones */}
       <section
-        className="relative border-b overflow-hidden"
+        className="relative border-b overflow-hidden ct-mesh-gradient"
         style={{
           borderColor: "var(--border-subtle)",
-          background:
-            "radial-gradient(circle at 18% 20%, rgba(0, 229, 255, 0.12), transparent 45%), radial-gradient(circle at 82% 75%, rgba(139, 92, 246, 0.14), transparent 48%)",
         }}
       >
         <div className="ct-container py-10 lg:py-16 grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-10 items-center">
           <div className="lg:col-span-6 space-y-5 ct-hero-enter">
-            <p className="text-xs font-semibold tracking-widest uppercase" style={{ color: "var(--accent-cyan)" }}>
+            <p className="text-xs font-semibold tracking-widest uppercase flex items-center gap-2" style={{ color: "var(--accent-cyan)" }}>
+              <span className="w-2 h-2 rounded-full bg-cyan-400 animate-pulse" />
               ClickTech · Potosí, Bolivia
             </p>
-            <h1 className="font-display text-3xl sm:text-5xl font-extrabold tracking-tight leading-tight">
+            <h1 className="font-display text-3xl sm:text-5xl lg:text-6xl font-black tracking-tight leading-tight ct-text-gradient-cyan">
               Tecnología a tu medida
             </h1>
-            <p className="text-base sm:text-lg max-w-xl" style={{ color: "var(--text-secondary)" }}>
-              Más que tecnología, es tu pasión. Venta de hardware, armado de PCs con compatibilidad verificada según presupuesto y servicio técnico con seguimiento transparente.
+            <p className="text-base sm:text-lg max-w-xl leading-relaxed" style={{ color: "var(--text-secondary)" }}>
+              Más que tecnología, es tu pasión. Venta de hardware garantizado, armado de PCs con compatibilidad verificada según presupuesto y servicio técnico con seguimiento transparente en Potosí y toda Bolivia.
             </p>
-            <div className="flex flex-wrap gap-3 pt-1">
+            <div className="flex flex-wrap gap-2 pt-1">
+              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold border backdrop-blur-sm" style={{ backgroundColor: "rgba(0, 229, 255, 0.08)", borderColor: "rgba(0, 229, 255, 0.3)", color: "var(--accent-cyan)" }}>
+                <ShieldCheck className="w-3.5 h-3.5" /> Garantía Real 24 Meses
+              </span>
+              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold border backdrop-blur-sm" style={{ backgroundColor: "rgba(16, 185, 129, 0.08)", borderColor: "rgba(16, 185, 129, 0.3)", color: "var(--status-ok)" }}>
+                <CheckCircle2 className="w-3.5 h-3.5" /> Stock Físico en Potosí
+              </span>
+              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold border backdrop-blur-sm" style={{ backgroundColor: "rgba(139, 92, 246, 0.08)", borderColor: "rgba(139, 92, 246, 0.3)", color: "var(--accent-purple)" }}>
+                <Sparkles className="w-3.5 h-3.5" /> Despacho a todo Bolivia
+              </span>
+            </div>
+            <div className="flex flex-wrap gap-3 pt-2">
               <Link
                 href="/catalogo"
                 className="ct-btn ct-chassis-cut h-12 px-6 flex items-center gap-2 font-semibold text-sm"

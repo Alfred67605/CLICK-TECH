@@ -136,6 +136,40 @@ body {
   }
 }
 
+/* Ambient glow and glassmorphism utilities (tasteskill + emil design eng) */
+.ct-mesh-gradient {
+  background-image: 
+    radial-gradient(ellipse 80% 50% at 50% -20%, rgba(0, 229, 255, 0.12), transparent 70%),
+    radial-gradient(ellipse 60% 40% at 90% 100%, rgba(139, 92, 246, 0.1), transparent 70%);
+}
+
+.ct-glass {
+  background: color-mix(in srgb, var(--bg-surface) 80%, transparent);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid var(--border-subtle);
+}
+
+.ct-glow-cyan {
+  box-shadow: 0 0 25px rgba(0, 229, 255, 0.25);
+}
+
+.ct-glow-purple {
+  box-shadow: 0 0 25px rgba(139, 92, 246, 0.25);
+}
+
+.ct-text-gradient-cyan {
+  background: linear-gradient(135deg, #ffffff 40%, var(--accent-cyan) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.ct-text-gradient-purple {
+  background: linear-gradient(135deg, #ffffff 30%, var(--accent-purple) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
 /* 45-degree chassis chamfer utility */
 .ct-chassis-cut {
   clip-path: polygon(0 0, calc(100% - 14px) 0, 100% 14px, 100% 100%, 14px 100%, 0 calc(100% - 14px));
@@ -147,31 +181,34 @@ body {
     transform 160ms var(--ease-out),
     background-color 150ms ease,
     border-color 150ms ease,
+    box-shadow 180ms ease,
     color 150ms ease;
 }
 
 .ct-btn:active:not(:disabled) {
-  transform: scale(0.97);
+  transform: scale(0.965);
 }
 
 .ct-card {
   transition:
-    transform 200ms var(--ease-out),
-    border-color 180ms ease;
+    transform 220ms var(--ease-out),
+    border-color 200ms ease,
+    box-shadow 220ms ease;
 }
 
 @media (hover: hover) and (pointer: fine) {
   .ct-card:hover {
-    transform: translateY(-2px);
-    border-color: var(--border-strong);
+    transform: translateY(-3px);
+    border-color: rgba(0, 229, 255, 0.45);
+    box-shadow: 0 12px 30px -10px rgba(0, 229, 255, 0.18), 0 0 15px rgba(0, 229, 255, 0.08);
   }
   .ct-card:hover .ct-zoom-media {
-    transform: scale(1.025);
+    transform: scale(1.035);
   }
 }
 
 .ct-zoom-media {
-  transition: transform 240ms var(--ease-out);
+  transition: transform 260ms var(--ease-out);
 }
 
 .ct-drawer {

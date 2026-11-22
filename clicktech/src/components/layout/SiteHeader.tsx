@@ -199,7 +199,7 @@ export function SiteHeader({ initialUser }: { initialUser: AuthUserSummary | nul
               target="_blank"
               rel="noopener noreferrer"
               aria-label="Contactar por WhatsApp al 67605477"
-              className="ct-btn hidden lg:flex items-center gap-1.5 h-10 px-3 rounded-lg border text-xs font-semibold"
+              className="ct-btn hidden lg:flex items-center gap-1.5 h-10 px-3.5 rounded-lg border text-xs font-semibold hover:shadow-[0_0_16px_rgba(37,211,102,0.35)] transition-all"
               style={{
                 borderColor: "#25D366",
                 color: "#25D366",

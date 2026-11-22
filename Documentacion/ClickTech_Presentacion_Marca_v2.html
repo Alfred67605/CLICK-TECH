@@ -1,0 +1,2791 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ClickTech · Presentación de Marca · v2 HyperFrames</title>
+  <meta name="description"
+    content="Presentación interactiva de ClickTech (INF892 Actividad 6) con íconos 3D reales, animaciones GSAP de HyperFrames, fragmentos paso a paso y consola de presentador.">
+  <link rel="icon" type="image/png" href="assets/clicktech-logo-clean.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700;800;900&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;600;700;800&display=swap"
+    rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+
+  <style>
+    :root {
+      /* Fondo cyber original premium de ClickTech */
+      --bg-dark: #03050d;
+      --bg-card: rgba(10, 17, 34, 0.88);
+      --bg-card-hover: rgba(15, 25, 52, 0.96);
+
+      /* Colores Oficiales ClickTech */
+      --cyan-neon: #00e5ff;
+      --cyan-core: #00b4d8;
+      --cyan-glow: rgba(0, 229, 255, 0.45);
+      --purple-neon: #a855f7;
+      --purple-electric: #8b5cf6;
+      --purple-glow: rgba(139, 92, 246, 0.45);
+
+      --gradient-brand: linear-gradient(135deg, #00e5ff 0%, #8b5cf6 100%);
+      --gradient-text: linear-gradient(135deg, #ffffff 0%, #00e5ff 60%, #a855f7 100%);
+
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+      --text-sub: #cbd5e1;
+      --border-cyan: rgba(0, 229, 255, 0.28);
+      --border-purple: rgba(139, 92, 246, 0.35);
+      --border-light: rgba(255, 255, 255, 0.12);
+      --radius-sm: 14px;
+      --radius-md: 20px;
+      --radius-lg: 28px;
+      --radius-pill: 9999px;
+      --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
+
+      /* Tipografía y estructura adaptables */
+      --fs-title: clamp(34px, min(4.2vw, 6.8vh), 64px);
+      --fs-sub: clamp(18px, min(1.8vw, 3vh), 26px);
+      --fs-card-title: clamp(22px, min(2.1vw, 3.4vh), 32px);
+      --fs-card-sub: clamp(16px, min(1.45vw, 2.4vh), 22px);
+      --fs-text: clamp(15px, min(1.25vw, 2.1vh), 20px);
+      --fs-badge: clamp(13px, 1.05vw, 17px);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      text-rendering: optimizeLegibility;
+    }
+
+    *::-webkit-scrollbar {
+      display: none !important;
+    }
+
+    body {
+      background: var(--bg-dark);
+      color: var(--text-main);
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      overflow: hidden !important;
+      height: 100vh;
+      width: 100vw;
+      user-select: none;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      text-rendering: optimizeLegibility;
+    }
+
+    h1,
+    h2,
+    h3,
+    h4,
+    p,
+    span,
+    li,
+    button,
+    .card-title,
+    .card-sub,
+    .card-text,
+    .slide-title,
+    .slide-subtitle {
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      text-rendering: optimizeLegibility;
+    }
+
+    .sr-only {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      overflow: hidden;
+      clip: rect(0 0 0 0);
+      white-space: nowrap;
+    }
+
+    button:focus-visible,
+    .hud-chip:focus-visible,
+    .bullet:focus-visible {
+      outline: 3px solid var(--cyan-neon);
+      outline-offset: 3px;
+    }
+
+    #ambient-canvas {
+      position: fixed;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 0;
+      pointer-events: none;
+      opacity: .85;
+    }
+
+    .ambient-glow {
+      position: fixed;
+      border-radius: 50%;
+      filter: blur(180px);
+      pointer-events: none;
+      z-index: 0;
+      opacity: .35;
+      transition: transform 1.2s ease;
+      will-change: transform;
+    }
+
+    .glow-cyan {
+      top: -140px;
+      left: 8%;
+      width: 750px;
+      height: 750px;
+      background: radial-gradient(circle, var(--cyan-neon) 0%, transparent 70%);
+    }
+
+    .glow-purple {
+      bottom: -150px;
+      right: 8%;
+      width: 800px;
+      height: 800px;
+      background: radial-gradient(circle, var(--purple-neon) 0%, transparent 70%);
+    }
+
+    .progress-bar-container {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 3px;
+      background: rgba(255, 255, 255, .08);
+      z-index: 1000;
+    }
+
+    .progress-bar-fill {
+      height: 100%;
+      width: 14.28%;
+      background: var(--gradient-brand);
+      box-shadow: 0 0 12px var(--cyan-glow);
+      transition: width 650ms var(--ease-out);
+    }
+
+    /* Header superior y dock de desplazamiento ocultos según solicitud */
+    .top-header {
+      display: none !important;
+    }
+
+    .nav-dock-container {
+      display: none !important;
+    }
+
+    /* Slides: pantalla completa limpia */
+    .slider-viewport {
+      position: relative;
+      width: 100vw;
+      height: 100vh;
+      overflow: hidden;
+      z-index: 10;
+    }
+
+    .slides-wrapper {
+      position: relative;
+      width: 100%;
+      height: 100%;
+    }
+
+    .slide {
+      position: absolute;
+      inset: 0;
+      padding: clamp(14px, 2.4vh, 28px) clamp(24px, 3.2vw, 54px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      pointer-events: none;
+      opacity: 0;
+      visibility: hidden;
+      overflow: hidden !important;
+    }
+
+    .slide.active {
+      opacity: 1;
+      visibility: visible;
+      pointer-events: auto;
+      z-index: 2;
+    }
+
+    /* Contenedor central equilibrado */
+    .slide-inner {
+      width: 100%;
+      max-width: 1540px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: clamp(8px, 1.6vh, 18px);
+      margin: auto;
+      transition: transform 0.2s ease;
+    }
+
+    .slide-header-box {
+      text-align: center;
+      width: 100%;
+      max-width: 1380px;
+      flex-shrink: 0;
+    }
+
+    .slide-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: var(--fs-badge);
+      font-weight: 800;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--cyan-neon);
+      margin-bottom: 5px;
+    }
+
+    .slide-badge::before {
+      content: '';
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--cyan-neon);
+      box-shadow: 0 0 8px var(--cyan-neon);
+    }
+
+    .slide-title {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: var(--fs-title);
+      font-weight: 800;
+      letter-spacing: -.5px;
+      line-height: 1.08;
+      margin-bottom: 8px;
+      color: var(--text-main);
+    }
+
+    .gradient-text {
+      background: var(--gradient-text);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      display: inline-block;
+    }
+
+    .cyan-text {
+      color: var(--cyan-neon);
+    }
+
+    /* Subtítulo de slide: claro, elegante y contrastado en fondo cyber */
+    .slide-subtitle {
+      display: inline-flex;
+      align-items: center;
+      gap: 12px;
+      font-size: var(--fs-sub);
+      font-weight: 700;
+      line-height: 1.25;
+      color: #f1f5f9;
+      background: linear-gradient(90deg, rgba(0, 229, 255, 0.14), rgba(139, 92, 246, 0.14));
+      border: 1px solid rgba(0, 229, 255, 0.35);
+      border-left: 5px solid var(--cyan-neon);
+      padding: 7px 20px 7px 16px;
+      border-radius: var(--radius-sm);
+      box-shadow: 0 4px 20px rgba(0, 229, 255, 0.12);
+      max-width: 1100px;
+      text-align: left;
+    }
+
+    .slide-subtitle i {
+      color: var(--cyan-neon);
+      font-size: 1.02em;
+    }
+
+    .slide-subtitle b {
+      color: var(--cyan-neon);
+    }
+
+    .slide-content-area {
+      width: 100%;
+      max-width: 1540px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: clamp(8px, 1.4vh, 18px);
+    }
+
+    .grid {
+      display: grid;
+      gap: clamp(14px, 1.6vw, 26px);
+      width: 100%;
+      align-items: stretch;
+    }
+
+    .grid-2 {
+      grid-template-columns: repeat(2, 1fr);
+    }
+
+    .grid-3 {
+      grid-template-columns: repeat(3, 1fr);
+    }
+
+    .grid-4 {
+      grid-template-columns: repeat(4, 1fr);
+    }
+
+    .grid-5 {
+      grid-template-columns: repeat(5, 1fr);
+    }
+
+    /* Tarjetas: fondo cyber glassmorphism premium, sombras profundas y bordes luminosos */
+    .glass-card {
+      background: var(--bg-card);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid var(--border-light);
+      border-radius: var(--radius-md);
+      padding: clamp(16px, 2.4vh, 30px) clamp(18px, 1.8vw, 28px);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      gap: clamp(8px, 1.2vh, 14px);
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+      box-shadow: 0 16px 42px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+      transform: translateY(var(--ty, 0px));
+      transition: transform 220ms var(--ease-out), border-color 250ms ease, box-shadow 250ms ease, opacity 250ms ease;
+    }
+
+    .glass-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.08), transparent);
+      transition: left 700ms ease;
+      pointer-events: none;
+    }
+
+    .glass-card::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(circle at var(--gx, 50%) var(--gy, 50%), rgba(0, 229, 255, 0.14), transparent 45%);
+      opacity: 0;
+      transition: opacity 250ms ease;
+      pointer-events: none;
+    }
+
+    .glass-card:hover {
+      --ty: -5px;
+      border-color: var(--cyan-neon);
+      box-shadow: 0 20px 50px rgba(0, 229, 255, 0.22), 0 0 25px rgba(0, 229, 255, 0.15);
+    }
+
+    .glass-card:hover::before {
+      left: 100%;
+    }
+
+    .glass-card:hover::after {
+      opacity: 1;
+    }
+
+    .glass-card.purple-glow:hover {
+      border-color: var(--purple-neon);
+      box-shadow: 0 20px 50px rgba(168, 85, 247, 0.22), 0 0 25px rgba(168, 85, 247, 0.15);
+    }
+
+    /* Tarjetas en fila (horizontal, ej. Slide 4 Anatomía): más grandes, destacadas y legibles */
+    .glass-card.row {
+      flex-direction: row;
+      text-align: left;
+      justify-content: flex-start;
+      align-items: center;
+      gap: clamp(16px, 1.6vw, 22px);
+      padding: clamp(12px, 1.45vh, 18px) clamp(18px, 1.8vw, 26px);
+      border-radius: var(--radius-sm);
+    }
+
+    .glass-card.row .icon-3d-wrapper {
+      width: clamp(56px, 4.2vw, 70px) !important;
+      height: clamp(56px, 4.2vw, 70px) !important;
+      min-width: clamp(56px, 4.2vw, 70px);
+      margin-bottom: 0 !important;
+      perspective: 700px;
+    }
+
+    .glass-card.row .token-face {
+      font-size: clamp(26px, 1.85vw, 32px) !important;
+    }
+
+    .glass-card.row .card-title {
+      font-size: clamp(21px, 1.65vw, 26px) !important;
+      line-height: 1.2;
+      margin-bottom: 4px !important;
+      color: var(--text-main);
+    }
+
+    .glass-card.row .card-text {
+      font-size: clamp(15px, 1.18vw, 18px) !important;
+      line-height: 1.36;
+      color: var(--text-muted);
+      margin: 0;
+    }
+
+    .anatomy-cards-stack {
+      display: flex;
+      flex-direction: column;
+      gap: clamp(9px, 1.2vh, 14px);
+      width: 100%;
+    }
+
+    /* Diapositiva de Cierre: Agradecimiento */
+    .thanks-layout {
+      display: grid;
+      grid-template-columns: 1.15fr 0.85fr;
+      gap: clamp(24px, 3.5vw, 48px);
+      align-items: center;
+      width: 100%;
+      max-width: 1480px;
+    }
+
+    .thanks-main-title {
+      font-family: 'Space Grotesk', 'Orbitron', sans-serif;
+      font-size: clamp(48px, min(6.8vw, 11.5vh), 102px);
+      font-weight: 900;
+      letter-spacing: -1px;
+      line-height: 1.05;
+      margin: 0;
+      color: var(--text-main);
+    }
+
+    /* Buyer Persona: Identificación con el Logo y Perfiles (Resumido y Letras Más Grandes) */
+    .glass-card.buyer-card {
+      padding: clamp(22px, 2.8vh, 36px) clamp(24px, 2.4vw, 38px);
+      gap: clamp(14px, 1.8vh, 20px);
+      align-items: stretch;
+      justify-content: flex-start;
+      border-radius: var(--radius-md);
+      box-shadow: 0 18px 45px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+    }
+
+    .buyer-card .icon-3d-wrapper {
+      width: clamp(66px, 5vw, 82px) !important;
+      height: clamp(66px, 5vw, 82px) !important;
+      min-width: clamp(66px, 5vw, 82px);
+      margin-bottom: 0 !important;
+    }
+
+    .buyer-card .token-face {
+      font-size: clamp(30px, 2.3vw, 38px) !important;
+    }
+
+    .buyer-header-row {
+      display: flex;
+      align-items: center;
+      gap: 18px;
+      width: 100%;
+      text-align: left;
+      margin-bottom: 2px;
+    }
+
+    .buyer-info {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .buyer-role-badge {
+      font-size: clamp(12.5px, 0.98vw, 14.5px);
+      font-weight: 800;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--cyan-neon);
+    }
+
+    .buyer-role-badge.purple {
+      color: var(--purple-neon);
+    }
+
+    .buyer-name {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: clamp(26px, 2.3vw, 34px);
+      font-weight: 900;
+      color: #ffffff;
+      line-height: 1.15;
+    }
+
+    .buyer-meta {
+      font-size: clamp(14.5px, 1.1vw, 17px);
+      color: var(--text-muted);
+      font-weight: 600;
+    }
+
+    .buyer-quote {
+      width: 100%;
+      background: rgba(0, 229, 255, 0.09);
+      border: 1px solid rgba(0, 229, 255, 0.35);
+      border-left: 6px solid var(--cyan-neon);
+      border-radius: var(--radius-sm);
+      padding: clamp(11px, 1.5vh, 16px) clamp(16px, 1.4vw, 22px);
+      font-size: clamp(17px, 1.35vw, 21px);
+      font-weight: 700;
+      color: #ffffff;
+      text-align: left;
+      line-height: 1.36;
+      box-shadow: 0 4px 16px rgba(0, 229, 255, 0.12);
+    }
+
+    .buyer-quote.purple {
+      background: rgba(168, 85, 247, 0.09);
+      border-color: rgba(168, 85, 247, 0.35);
+      border-left-color: var(--purple-neon);
+      box-shadow: 0 4px 16px rgba(168, 85, 247, 0.12);
+    }
+
+    .buyer-quote i {
+      margin-right: 8px;
+      opacity: 0.85;
+    }
+
+    .buyer-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: clamp(12px, 1.6vh, 18px);
+      width: 100%;
+      text-align: left;
+      margin-top: 4px;
+    }
+
+    .buyer-list li {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      font-size: clamp(16px, 1.25vw, 19.5px);
+      color: #e2e8f0;
+      line-height: 1.4;
+    }
+
+    .buyer-list li>span:last-child {
+      flex: 1;
+    }
+
+    .buyer-list b {
+      color: #ffffff;
+      font-weight: 800;
+    }
+
+    .buyer-logo-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      background: rgba(0, 229, 255, 0.16);
+      border: 1.5px solid var(--cyan-neon);
+      color: #ffffff;
+      padding: 4px 12px;
+      border-radius: var(--radius-pill);
+      font-size: clamp(13px, 1.02vw, 15px);
+      font-weight: 800;
+      white-space: nowrap;
+      flex-shrink: 0;
+      box-shadow: 0 2px 10px rgba(0, 229, 255, 0.22);
+    }
+
+    .buyer-logo-badge i {
+      color: var(--cyan-neon) !important;
+      font-size: 14px !important;
+    }
+
+    .buyer-logo-badge.purple {
+      background: rgba(168, 85, 247, 0.18);
+      border-color: var(--purple-neon);
+      color: #ffffff;
+      box-shadow: 0 2px 10px rgba(168, 85, 247, 0.22);
+    }
+
+    .buyer-logo-badge.purple i {
+      color: var(--purple-neon) !important;
+    }
+
+    @keyframes iconLaptopPulse {
+
+      0%,
+      100% {
+        transform: translateZ(12px) scale(1);
+      }
+
+      50% {
+        transform: translateZ(16px) scale(1.15);
+        filter: drop-shadow(0 0 16px var(--purple-glow));
+      }
+    }
+
+    .token-face i.fa-laptop-code {
+      animation: iconLaptopPulse 2.8s ease-in-out infinite;
+    }
+
+    .glass-card.fragment-focused {
+      --ty: -8px;
+      border-color: var(--cyan-neon);
+      box-shadow: 0 24px 55px rgba(0, 229, 255, 0.35);
+      z-index: 20;
+    }
+
+    .glass-card.purple-glow.fragment-focused {
+      border-color: var(--purple-neon);
+      box-shadow: 0 24px 55px rgba(168, 85, 247, 0.35);
+    }
+
+    .glass-card.fragment-dimmed {
+      opacity: .35;
+    }
+
+    .card-number-badge {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: var(--fs-badge);
+      font-weight: 800;
+      letter-spacing: 2px;
+      color: var(--cyan-neon);
+      text-transform: uppercase;
+    }
+
+    .card-title {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: var(--fs-card-title);
+      font-weight: 800;
+      line-height: 1.15;
+      color: var(--text-main);
+    }
+
+    /* Subtítulo de tarjeta: limpio y con color de acento */
+    .card-sub {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: var(--fs-card-sub);
+      font-weight: 800;
+      color: var(--cyan-neon);
+      line-height: 1.25;
+      position: relative;
+      padding-bottom: 10px;
+    }
+
+    .card-sub::after {
+      content: '';
+      position: absolute;
+      left: 50%;
+      bottom: 0;
+      width: 48px;
+      height: 3px;
+      border-radius: 3px;
+      transform: translateX(-50%);
+      background: var(--gradient-brand);
+      box-shadow: 0 0 8px var(--cyan-glow);
+    }
+
+    .row .card-sub::after,
+    .text-left .card-sub::after {
+      left: 0;
+      transform: none;
+    }
+
+    .card-sub.purple {
+      color: var(--purple-neon);
+    }
+
+    .card-sub.white {
+      color: var(--text-main);
+    }
+
+    .card-text {
+      font-size: var(--fs-text);
+      line-height: 1.45;
+      color: var(--text-muted);
+      font-weight: 500;
+    }
+
+    .card-pill-tag {
+      background: rgba(0, 229, 255, 0.12);
+      border: 1px solid var(--border-cyan);
+      color: var(--cyan-neon);
+      padding: 7px 18px;
+      border-radius: var(--radius-pill);
+      font-size: clamp(14px, 1.1vw, 18px);
+      font-weight: 800;
+    }
+
+    .card-pill-tag.purple {
+      background: rgba(139, 92, 246, 0.12);
+      border-color: var(--border-purple);
+      color: var(--purple-neon);
+    }
+
+    .key-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: clamp(10px, 1.5vh, 16px);
+      width: 100%;
+      text-align: left;
+    }
+
+    .key-list li {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      font-size: var(--fs-text);
+      font-weight: 600;
+      color: #e2e8f0;
+      line-height: 1.35;
+    }
+
+    .key-list li i {
+      width: 42px;
+      height: 42px;
+      border-radius: 12px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 19px;
+      flex-shrink: 0;
+      background: rgba(0, 229, 255, 0.12);
+      border: 1px solid var(--border-cyan);
+      color: var(--cyan-neon);
+      transition: transform 200ms ease;
+    }
+
+    .key-list li:hover i {
+      transform: scale(1.12);
+      filter: drop-shadow(0 0 8px var(--cyan-glow));
+    }
+
+    .key-list.purple li i {
+      background: rgba(139, 92, 246, 0.12);
+      border-color: var(--border-purple);
+      color: var(--purple-neon);
+    }
+
+    .key-list.purple li:hover i {
+      filter: drop-shadow(0 0 8px var(--purple-glow));
+    }
+
+    .key-list b {
+      color: var(--text-main);
+      font-weight: 800;
+    }
+
+    /* =========================================================
+       ÍCONOS 3D: chasis oscuro sobrio y sutil, sin saturación
+       ni rayado agresivo, para que el ícono sea el protagonista
+       ========================================================= */
+    .icon-3d-wrapper {
+      width: clamp(68px, min(5.6vw, 9.4vh), 96px);
+      height: clamp(68px, min(5.6vw, 9.4vh), 96px);
+      perspective: 750px;
+      flex-shrink: 0;
+      position: relative;
+      margin-bottom: 8px;
+      transition: transform 250ms var(--ease-out);
+    }
+
+    .glass-card:hover .icon-3d-wrapper {
+      transform: scale(1.06) translateY(-2px);
+    }
+
+    .icon-3d-wrapper::before {
+      content: '';
+      position: absolute;
+      left: 16%;
+      right: 16%;
+      bottom: -12px;
+      height: 8px;
+      border-radius: 50%;
+      background: radial-gradient(ellipse, rgba(0, 229, 255, .3), transparent 70%);
+      filter: blur(3px);
+    }
+
+    .icon-3d-wrapper.purple::before {
+      background: radial-gradient(ellipse, rgba(168, 85, 247, .3), transparent 70%);
+    }
+
+    .icon-3d-token {
+      --edge: rgba(0, 229, 255, 0.4);
+      --edge-glow: rgba(0, 229, 255, 0.16);
+      --body-a: #0c1526;
+      --body-b: #050912;
+      --face-a: #101c30;
+      --face-b: #070c16;
+      --icon: #00e5ff;
+      width: 100%;
+      height: 100%;
+      position: relative;
+      transform-style: preserve-3d;
+      will-change: transform;
+    }
+
+    .icon-3d-token[data-v="purple"] {
+      --edge: rgba(168, 85, 247, 0.4);
+      --edge-glow: rgba(168, 85, 247, 0.16);
+      --body-a: #160e28;
+      --body-b: #070412;
+      --face-a: #1c1233;
+      --face-b: #090616;
+      --icon: #c084fc;
+    }
+
+    .icon-3d-token[data-v="gradient"] {
+      --edge: rgba(139, 92, 246, 0.4);
+      --edge-glow: rgba(139, 92, 246, 0.16);
+      --body-a: #0e152e;
+      --body-b: #060714;
+      --face-a: #131b38;
+      --face-b: #070a18;
+      --icon: #ffffff;
+    }
+
+    .icon-3d-token[data-v="white"] {
+      --edge: rgba(255, 255, 255, 0.32);
+      --edge-glow: rgba(255, 255, 255, 0.12);
+      --body-a: #18202e;
+      --body-b: #0b0f17;
+      --face-a: #1c2638;
+      --face-b: #0d121c;
+      --icon: #ffffff;
+    }
+
+    .token-depth {
+      position: absolute;
+      inset: 0;
+      border-radius: 24%;
+      background: linear-gradient(135deg, var(--body-a), var(--body-b));
+      border: 1px solid var(--edge);
+      box-shadow: inset 0 0 3px rgba(0, 0, 0, 0.8);
+    }
+
+    .token-face {
+      position: absolute;
+      inset: 0;
+      border-radius: 24%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: clamp(32px, min(2.9vw, 4.8vh), 46px);
+      color: var(--icon);
+      /* Chasis oscuro, sobrio y elegante: sin rayado agresivo ni saturación chillona */
+      background: linear-gradient(145deg, var(--face-a) 0%, var(--face-b) 100%);
+      border: 1.5px solid var(--edge);
+      box-shadow: inset 1px 1px 3px rgba(255, 255, 255, .14), inset -2px -3px 6px rgba(0, 0, 0, .7), 0 8px 18px rgba(0, 0, 0, .6), 0 0 10px var(--edge-glow);
+      transform-style: preserve-3d;
+      backface-visibility: hidden;
+    }
+
+    /* Reflejo tenue y sutil de cristal */
+    .token-face::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      border-radius: inherit;
+      background: linear-gradient(115deg, transparent 35%, rgba(255, 255, 255, .18) 50%, transparent 65%);
+      background-size: 260% 100%;
+      background-position: 130% 0;
+      animation: sheen 4.5s ease-in-out infinite;
+      pointer-events: none;
+      mix-blend-mode: screen;
+    }
+
+    .token-face::after {
+      content: '';
+      position: absolute;
+      top: 6%;
+      left: 8%;
+      width: 50%;
+      height: 30%;
+      border-radius: 50% / 60%;
+      background: radial-gradient(ellipse at 30% 30%, rgba(255, 255, 255, .2), transparent 70%);
+      pointer-events: none;
+    }
+
+    @keyframes sheen {
+      0% {
+        background-position: 130% 0;
+      }
+
+      55%,
+      100% {
+        background-position: -40% 0;
+      }
+    }
+
+    /* =========================================================
+       MICRO-ANIMACIONES TEMÁTICAS PARA LOS ÍCONOS
+       (Palpitar de corazón, giro continuo de fan, pulso de escudo, etc.)
+       ========================================================= */
+    .token-face i {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      transform: translateZ(12px);
+      will-change: transform, filter;
+      filter: drop-shadow(0 4px 8px rgba(0, 0, 0, .85)) drop-shadow(0 0 12px var(--icon));
+    }
+
+    /* 1. CORAZÓN PALPITANTE (Slide 6 - Pasión Gamer): ritmo dual tump-tump con expansión y glow */
+    @keyframes iconPulseHeart {
+
+      0%,
+      100% {
+        transform: translateZ(12px) scale(1);
+        filter: drop-shadow(0 0 8px rgba(255, 42, 109, .7));
+      }
+
+      14% {
+        transform: translateZ(16px) scale(1.28);
+        filter: drop-shadow(0 0 22px #ff2a6d);
+      }
+
+      28% {
+        transform: translateZ(13px) scale(1.1);
+        filter: drop-shadow(0 0 12px rgba(255, 42, 109, .8));
+      }
+
+      42% {
+        transform: translateZ(19px) scale(1.36);
+        filter: drop-shadow(0 0 28px #ff2a6d) drop-shadow(0 0 40px #a855f7);
+      }
+
+      70% {
+        transform: translateZ(12px) scale(1);
+        filter: drop-shadow(0 0 8px rgba(255, 42, 109, .7));
+      }
+    }
+
+    .token-face i.fa-heart {
+      animation: iconPulseHeart 1.8s ease-in-out infinite;
+      color: #ff2a6d !important;
+    }
+
+    /* 2. VENTILADOR DE PC / COOLER (Slide 4 - Ventiladores y chip): giro suave y continuo */
+    @keyframes iconFanSpin {
+      from {
+        transform: translateZ(12px) rotate(0deg);
+      }
+
+      to {
+        transform: translateZ(12px) rotate(360deg);
+      }
+    }
+
+    .token-face i.fa-fan {
+      animation: iconFanSpin 2.4s linear infinite;
+      transform-origin: center center;
+    }
+
+    /* 3. ESCUDO PROTECTOR (Slide 2 & Slide 4): pulso de fuerza y resplandor defensivo */
+    @keyframes iconShieldPulse {
+
+      0%,
+      100% {
+        transform: translateZ(12px) scale(1);
+        filter: drop-shadow(0 0 8px var(--cyan-neon));
+      }
+
+      50% {
+        transform: translateZ(16px) scale(1.18);
+        filter: drop-shadow(0 0 24px var(--cyan-neon)) drop-shadow(0 0 35px rgba(0, 229, 255, .7));
+      }
+    }
+
+    .token-face i.fa-shield,
+    .token-face i.fa-shield-halved {
+      animation: iconShieldPulse 2.6s ease-in-out infinite;
+    }
+
+    /* 4. RAYO / ENERGÍA NEÓN (Slide 3 & Slide 4): destello eléctrico con micro-vibración */
+    @keyframes iconBoltSpark {
+
+      0%,
+      100% {
+        transform: translateZ(12px) scale(1) rotate(0deg);
+        opacity: 0.95;
+      }
+
+      46% {
+        transform: translateZ(16px) scale(1.2) rotate(-4deg);
+        opacity: 1;
+        filter: drop-shadow(0 0 22px var(--cyan-neon));
+      }
+
+      50% {
+        transform: translateZ(13px) scale(1.06) rotate(3deg);
+      }
+
+      54% {
+        transform: translateZ(17px) scale(1.24) rotate(-2deg);
+        filter: drop-shadow(0 0 30px #ffffff);
+      }
+
+      68% {
+        transform: translateZ(12px) scale(1) rotate(0deg);
+      }
+    }
+
+    .token-face i.fa-bolt {
+      animation: iconBoltSpark 2.3s ease-in-out infinite;
+    }
+
+    /* 5. GAMEPAD / CONTROLADOR GAMER (Slide 2 & Slide 3): balanceo rítmico simulando juego */
+    @keyframes iconGamepadWiggle {
+
+      0%,
+      100% {
+        transform: translateZ(12px) rotate(0deg) scale(1);
+      }
+
+      25% {
+        transform: translateZ(15px) rotate(-10deg) scale(1.12);
+        filter: drop-shadow(0 0 18px var(--purple-neon));
+      }
+
+      75% {
+        transform: translateZ(15px) rotate(10deg) scale(1.12);
+        filter: drop-shadow(0 0 18px var(--purple-neon));
+      }
+    }
+
+    .token-face i.fa-gamepad {
+      animation: iconGamepadWiggle 3.2s ease-in-out infinite;
+    }
+
+    /* 6. CURSOR EN LA "K" / COMPRA FÁCIL (Slide 4): micro-clic interactivo que pulsa hacia adentro */
+    @keyframes iconPointerClick {
+
+      0%,
+      100% {
+        transform: translateZ(12px) translate(0, 0) scale(1);
+      }
+
+      35% {
+        transform: translateZ(15px) translate(-3px, -3px) scale(1.12);
+        filter: drop-shadow(0 0 16px #ffffff);
+      }
+
+      45% {
+        transform: translateZ(8px) translate(2px, 2px) scale(0.9);
+        filter: drop-shadow(0 0 24px var(--cyan-neon));
+      }
+
+      55% {
+        transform: translateZ(15px) translate(0, 0) scale(1.16);
+      }
+
+      70% {
+        transform: translateZ(12px) translate(0, 0) scale(1);
+      }
+    }
+
+    .token-face i.fa-arrow-pointer {
+      animation: iconPointerClick 2.2s cubic-bezier(0.34, 1.56, 0.64, 1) infinite;
+    }
+
+    /* 7. MIRILLA TÁCTICA (Slide 7): rotación de calibración y escaneo */
+    @keyframes iconCrosshairsScan {
+
+      0%,
+      100% {
+        transform: translateZ(12px) rotate(0deg) scale(1);
+      }
+
+      50% {
+        transform: translateZ(16px) rotate(90deg) scale(1.16);
+        filter: drop-shadow(0 0 20px var(--cyan-neon));
+      }
+    }
+
+    .token-face i.fa-crosshairs {
+      animation: iconCrosshairsScan 3.6s ease-in-out infinite;
+    }
+
+    /* 8. PALETA DE COLORES (Slide 7): balanceo suave con brillo cromático */
+    @keyframes iconPaletteWave {
+
+      0%,
+      100% {
+        transform: translateZ(12px) rotate(0deg) scale(1);
+        filter: drop-shadow(0 0 10px var(--purple-neon));
+      }
+
+      50% {
+        transform: translateZ(16px) rotate(12deg) scale(1.14);
+        filter: drop-shadow(0 0 22px #00e5ff) hue-rotate(60deg);
+      }
+    }
+
+    .token-face i.fa-palette {
+      animation: iconPaletteWave 3.2s ease-in-out infinite;
+    }
+
+    /* 9. CUBOS 3D / HARDWARE MODULAR (Slide 2 & Slide 7): flotación vertical isométrica */
+    @keyframes iconCubesFloat {
+
+      0%,
+      100% {
+        transform: translateZ(12px) translateY(0) scale(1);
+      }
+
+      50% {
+        transform: translateZ(17px) translateY(-6px) scale(1.14);
+        filter: drop-shadow(0 0 20px var(--cyan-neon));
+      }
+    }
+
+    .token-face i.fa-cubes {
+      animation: iconCubesFloat 2.8s ease-in-out infinite;
+    }
+
+    /* 10. SLIDERS / AJUSTE A TU MEDIDA (Slide 6): vaivén horizontal de afinación */
+    @keyframes iconSlidersNudge {
+
+      0%,
+      100% {
+        transform: translateZ(12px) translateX(0);
+      }
+
+      30% {
+        transform: translateZ(15px) translateX(4px) scale(1.1);
+        filter: drop-shadow(0 0 18px var(--cyan-neon));
+      }
+
+      70% {
+        transform: translateZ(15px) translateX(-4px) scale(1.1);
+        filter: drop-shadow(0 0 18px var(--cyan-neon));
+      }
+    }
+
+    .token-face i.fa-sliders {
+      animation: iconSlidersNudge 2.6s ease-in-out infinite;
+    }
+
+    /* 11. CORTES A 45° (Slide 5): micro-inclinación angular precisa */
+    @keyframes iconRulerAngle {
+
+      0%,
+      100% {
+        transform: translateZ(12px) rotate(0deg) scale(1);
+      }
+
+      50% {
+        transform: translateZ(16px) rotate(-14deg) scale(1.14);
+        filter: drop-shadow(0 0 18px var(--cyan-neon));
+      }
+    }
+
+    .token-face i.fa-ruler-combined {
+      animation: iconRulerAngle 3s ease-in-out infinite;
+    }
+
+    /* 12. OJO SANS-SERIF (Slide 5): parpadeo y enfoque visual */
+    @keyframes iconEyeScan {
+
+      0%,
+      86%,
+      100% {
+        transform: translateZ(12px) scale(1);
+        opacity: 1;
+      }
+
+      93% {
+        transform: translateZ(10px) scaleY(0.12);
+        opacity: 0.6;
+      }
+
+      96% {
+        transform: translateZ(16px) scale(1.16);
+        opacity: 1;
+        filter: drop-shadow(0 0 20px var(--purple-neon));
+      }
+    }
+
+    .token-face i.fa-eye {
+      animation: iconEyeScan 3.6s ease-in-out infinite;
+    }
+
+    /* 13. TIPOGRAFÍA / FUENTE (Slide 2 & Slide 5): pulso de brillo blanco */
+    @keyframes iconFontPulse {
+
+      0%,
+      100% {
+        transform: translateZ(12px) scale(1);
+      }
+
+      50% {
+        transform: translateZ(16px) scale(1.16);
+        filter: drop-shadow(0 0 20px #ffffff);
+      }
+    }
+
+    .token-face i.fa-font {
+      animation: iconFontPulse 2.8s ease-in-out infinite;
+    }
+
+    /* 14. HANDSHAKE / PROPUESTA HONESTA (Slide 7): pulso de cercanía */
+    @keyframes iconHandshakeCare {
+
+      0%,
+      100% {
+        transform: translateZ(12px) scale(1);
+      }
+
+      50% {
+        transform: translateZ(16px) scale(1.15);
+        filter: drop-shadow(0 0 20px var(--purple-neon));
+      }
+    }
+
+    .token-face i.fa-handshake {
+      animation: iconHandshakeCare 2.8s ease-in-out infinite;
+    }
+
+    /* 15. TENDENCIA ASCENDENTE (Slide 2): impulso diagonal */
+    @keyframes iconTrendPulse {
+
+      0%,
+      100% {
+        transform: translateZ(12px) translate(0, 0) scale(1);
+      }
+
+      50% {
+        transform: translateZ(17px) translate(3px, -4px) scale(1.18);
+        filter: drop-shadow(0 0 22px #c084fc);
+      }
+    }
+
+    .token-face i.fa-arrow-trend-up {
+      animation: iconTrendPulse 2.4s ease-in-out infinite;
+    }
+
+    /* Hero */
+    .hero-layout {
+      display: grid;
+      grid-template-columns: 1.15fr .85fr;
+      gap: clamp(24px, 3.5vw, 48px);
+      align-items: center;
+      width: 100%;
+      max-width: 1480px;
+    }
+
+    .hero-main-title {
+      font-family: 'Orbitron', 'Space Grotesk', sans-serif;
+      font-size: clamp(48px, min(6.2vw, 10.5vh), 96px);
+      font-weight: 900;
+      letter-spacing: -1px;
+      line-height: 1.05;
+      margin-bottom: 10px;
+      text-transform: uppercase;
+      color: var(--text-main);
+    }
+
+    .hero-tagline {
+      font-size: clamp(24px, min(2.8vw, 4.8vh), 42px);
+      font-weight: 800;
+      color: var(--cyan-neon);
+      margin-bottom: 14px;
+    }
+
+    .hero-description {
+      font-size: clamp(17px, min(1.6vw, 2.8vh), 24px);
+      color: var(--text-muted);
+      line-height: 1.45;
+      margin-bottom: 18px;
+      max-width: 700px;
+      font-weight: 500;
+    }
+
+    .hero-description b {
+      color: var(--cyan-neon);
+    }
+
+    .hero-pillars-row {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-bottom: 18px;
+    }
+
+    .pillar-chip {
+      background: rgba(10, 17, 34, 0.85);
+      border: 1px solid var(--border-cyan);
+      padding: clamp(9px, 1.2vh, 13px) clamp(16px, 1.4vw, 22px);
+      border-radius: var(--radius-sm);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: clamp(15px, 1.2vw, 19px);
+      font-weight: 800;
+      color: #ffffff;
+      box-shadow: 0 4px 14px rgba(0, 0, 0, .3);
+      transition: all 250ms ease;
+    }
+
+    .pillar-chip:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 10px 24px var(--cyan-glow);
+      border-color: var(--cyan-neon);
+    }
+
+    .pillar-chip i {
+      color: var(--cyan-neon);
+      font-size: 20px;
+    }
+
+    .hero-meta {
+      font-size: clamp(15px, 1.15vw, 18px);
+      color: var(--text-muted);
+      display: flex;
+      gap: 24px;
+      flex-wrap: wrap;
+      font-weight: 700;
+    }
+
+    .hero-logo-stage {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      perspective: 1200px;
+      background: radial-gradient(circle at center, rgba(15, 23, 42, .94) 0%, rgba(15, 23, 42, .85) 60%, rgba(15, 23, 42, .4) 85%, transparent 100%);
+      padding: clamp(20px, 3vw, 40px);
+      border-radius: 36px;
+    }
+
+    .hero-clean-logo-img,
+    .anatomy-logo-img,
+    .thanks-logo-img {
+      width: 100%;
+      height: auto;
+      object-fit: contain;
+      transform-style: preserve-3d;
+      will-change: transform, filter;
+      cursor: pointer;
+    }
+
+    .hero-clean-logo-img {
+      max-width: 560px;
+      max-height: clamp(280px, 52vh, 520px);
+      filter: drop-shadow(0 0 50px rgba(0, 229, 255, .6)) drop-shadow(0 0 25px rgba(139, 92, 246, .45));
+      animation: logoFloat 8s ease-in-out infinite alternate;
+    }
+
+    .anatomy-logo-img {
+      max-width: 440px;
+      max-height: clamp(220px, 40vh, 370px);
+      filter: drop-shadow(0 0 45px rgba(0, 229, 255, .55)) drop-shadow(0 0 20px rgba(139, 92, 246, .4));
+      animation: logoFloat 7s ease-in-out infinite alternate;
+    }
+
+    .thanks-logo-img {
+      max-width: 540px;
+      max-height: clamp(270px, 50vh, 480px);
+      filter: drop-shadow(0 0 50px rgba(0, 229, 255, .6)) drop-shadow(0 0 25px rgba(139, 92, 246, .45));
+      animation: logoFloat 8s ease-in-out infinite alternate;
+    }
+
+    @keyframes logoFloat {
+      0% {
+        transform: perspective(1000px) rotateY(-11deg) rotateX(5deg) translateY(0) scale(1);
+      }
+
+      50% {
+        transform: perspective(1000px) rotateY(11deg) rotateX(-5deg) translateY(-18px) scale(1.04);
+      }
+
+      100% {
+        transform: perspective(1000px) rotateY(-11deg) rotateX(5deg) translateY(0) scale(1);
+      }
+    }
+
+    /* Franjas y paleta */
+    .strip {
+      width: 100%;
+      background: var(--bg-card);
+      border: 1px solid var(--border-light);
+      border-radius: var(--radius-md);
+      padding: clamp(14px, 2vh, 24px) clamp(20px, 3vw, 40px);
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      gap: 18px;
+      flex-wrap: wrap;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, .3);
+    }
+
+    .swatch {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      background: rgba(255, 255, 255, .05);
+      border: 1px solid var(--border-light);
+      border-radius: var(--radius-sm);
+      padding: 10px 18px 10px 12px;
+      color: var(--text-main);
+      cursor: pointer;
+      font-family: inherit;
+      text-align: left;
+      transition: transform 200ms var(--ease-out), border-color 200ms ease, background 200ms ease;
+    }
+
+    .swatch:hover {
+      transform: translateY(-4px);
+      border-color: var(--cyan-neon);
+      background: rgba(0, 229, 255, .1);
+    }
+
+    .swatch:active {
+      transform: scale(.97);
+    }
+
+    .swatch-dot {
+      width: clamp(34px, 3vw, 46px);
+      height: clamp(34px, 3vw, 46px);
+      border-radius: 12px;
+      border: 2px solid rgba(255, 255, 255, .2);
+      box-shadow: 0 0 16px var(--c);
+      flex-shrink: 0;
+    }
+
+    .swatch b {
+      display: block;
+      font-size: clamp(15px, 1.25vw, 20px);
+      font-weight: 800;
+      color: #ffffff;
+    }
+
+    .swatch small {
+      display: block;
+      font-size: clamp(12px, .95vw, 15px);
+      color: var(--text-muted);
+      font-weight: 700;
+    }
+
+    #toast {
+      position: fixed;
+      left: 50%;
+      bottom: 90px;
+      transform: translate(-50%, 20px);
+      background: rgba(10, 17, 34, .95);
+      color: #ffffff;
+      font-weight: 800;
+      padding: 10px 22px;
+      border: 1px solid var(--cyan-neon);
+      border-radius: var(--radius-pill);
+      opacity: 0;
+      pointer-events: none;
+      z-index: 20000;
+      box-shadow: 0 8px 25px rgba(0, 0, 0, .5);
+      transition: all 250ms var(--ease-out);
+    }
+
+    #toast.show {
+      opacity: 1;
+      transform: translate(-50%, 0);
+    }
+
+    /* Dock */
+    .nav-dock-container {
+      position: fixed;
+      bottom: 22px;
+      right: 40px;
+      background: rgba(10, 17, 34, .85);
+      backdrop-filter: blur(24px);
+      border: 1px solid var(--border-light);
+      padding: 9px 22px;
+      border-radius: var(--radius-pill);
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      z-index: 1000;
+      box-shadow: 0 16px 45px rgba(0, 0, 0, .6);
+    }
+
+    .nav-btn {
+      width: 42px;
+      height: 42px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, .06);
+      border: 1px solid var(--border-light);
+      color: var(--text-main);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+      cursor: pointer;
+      transition: all 200ms ease;
+    }
+
+    .nav-btn:hover:not(:disabled) {
+      background: var(--cyan-neon);
+      color: #03050d;
+      border-color: var(--cyan-neon);
+      box-shadow: 0 0 14px var(--cyan-glow);
+      transform: scale(1.08);
+    }
+
+    .nav-btn:disabled {
+      opacity: .3;
+      cursor: not-allowed;
+    }
+
+    .slide-counter {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 16px;
+      font-weight: 800;
+      letter-spacing: 2px;
+      min-width: 70px;
+      text-align: center;
+      color: var(--text-main);
+    }
+
+    .slide-counter span:first-child {
+      color: var(--cyan-neon);
+    }
+
+    .quick-bullets {
+      display: flex;
+      gap: 10px;
+    }
+
+    .bullet {
+      width: 11px;
+      height: 11px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, .2);
+      cursor: pointer;
+      transition: all 250ms ease;
+    }
+
+    .bullet:hover {
+      background: rgba(0, 229, 255, .6);
+      transform: scale(1.3);
+    }
+
+    .bullet.active {
+      background: var(--cyan-neon);
+      box-shadow: 0 0 10px var(--cyan-neon);
+      transform: scale(1.35);
+    }
+
+    #laser-dot {
+      position: fixed;
+      width: 14px;
+      height: 14px;
+      background: #ff0055;
+      border-radius: 50%;
+      pointer-events: none;
+      z-index: 99999;
+      transform: translate(-50%, -50%);
+      box-shadow: 0 0 25px 6px #ff0055;
+      display: none;
+    }
+
+    #laser-dot.active {
+      display: block;
+    }
+
+    #spotlight-overlay {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 9998;
+      display: none;
+      background: radial-gradient(circle 180px at var(--spot-x, 50vw) var(--spot-y, 50vh), transparent 0%, rgba(3, 5, 13, .82) 100%);
+    }
+
+    #spotlight-overlay.active {
+      display: block;
+    }
+
+    .presenter-console-modal,
+    .hud-help-modal {
+      position: fixed;
+      inset: 0;
+      background: rgba(3, 5, 13, .85);
+      backdrop-filter: blur(26px);
+      z-index: 10000;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 40px;
+    }
+
+    .presenter-console-modal.open,
+    .hud-help-modal.open {
+      display: flex;
+    }
+
+    .presenter-panel {
+      width: 100%;
+      max-width: 1180px;
+      background: var(--bg-card);
+      border: 1px solid var(--border-light);
+      border-radius: var(--radius-lg);
+      padding: 30px 38px;
+      box-shadow: 0 25px 60px rgba(0, 0, 0, .6);
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 30px;
+    }
+
+    .presenter-panel-header {
+      grid-column: 1 / -1;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid var(--border-light);
+      padding-bottom: 18px;
+    }
+
+    .presenter-timer-box {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      background: rgba(0, 229, 255, .08);
+      border: 1px solid var(--border-cyan);
+      padding: 8px 20px;
+      border-radius: var(--radius-pill);
+    }
+
+    .presenter-timer-digits {
+      font-family: 'Orbitron', monospace;
+      font-size: 26px;
+      font-weight: 800;
+      color: var(--cyan-neon);
+      letter-spacing: 2px;
+    }
+
+    .presenter-timer-btn {
+      background: transparent;
+      border: none;
+      color: #ffffff;
+      font-size: 18px;
+      cursor: pointer;
+    }
+
+    .presenter-timer-btn:hover {
+      color: var(--cyan-neon);
+    }
+
+    .presenter-card-box {
+      background: rgba(255, 255, 255, .03);
+      border: 1px solid var(--border-light);
+      border-radius: var(--radius-md);
+      padding: 22px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .presenter-card-title {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 16px;
+      font-weight: 800;
+      letter-spacing: 1.5px;
+      color: var(--cyan-neon);
+      text-transform: uppercase;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .presenter-notes-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .presenter-notes-list li {
+      font-size: 17px;
+      color: #cbd5e1;
+      line-height: 1.5;
+      padding-left: 20px;
+      position: relative;
+    }
+
+    .presenter-notes-list li::before {
+      content: '▸';
+      position: absolute;
+      left: 0;
+      color: var(--cyan-neon);
+    }
+
+    .hud-help-box {
+      background: var(--bg-card);
+      border: 1px solid var(--border-light);
+      border-radius: var(--radius-lg);
+      padding: 32px 38px;
+      width: 100%;
+      max-width: 680px;
+      box-shadow: 0 25px 60px rgba(0, 0, 0, .6);
+    }
+
+    .key-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px 0;
+      border-bottom: 1px solid rgba(255, 255, 255, .08);
+      font-size: 16px;
+      color: #cbd5e1;
+    }
+
+    .key-badge {
+      background: rgba(255, 255, 255, .1);
+      border: 1px solid var(--border-light);
+      color: var(--cyan-neon);
+      font-family: 'Space Grotesk', monospace;
+      font-weight: 800;
+      padding: 4px 12px;
+      border-radius: 6px;
+      font-size: 14px;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+
+      .hero-clean-logo-img,
+      .anatomy-logo-img,
+      .icon-3d-wrapper::before,
+      .token-face::before {
+        animation: none;
+      }
+
+      .glass-card {
+        transition: none;
+      }
+    }
+
+    @media (max-width: 1100px) {
+      .grid-5 {
+        grid-template-columns: repeat(3, 1fr);
+      }
+
+      .grid-4 {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      .hero-layout {
+        grid-template-columns: 1fr;
+      }
+
+      .hero-logo-stage {
+        display: none;
+      }
+
+      .header-controls .hud-chip span {
+        display: none;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <canvas id="ambient-canvas"></canvas>
+  <div class="ambient-glow glow-cyan" id="glow-cyan-el"></div>
+  <div class="ambient-glow glow-purple" id="glow-purple-el"></div>
+
+  <div class="progress-bar-container">
+    <div class="progress-bar-fill" id="progress-fill"></div>
+  </div>
+  <div id="laser-dot"></div>
+  <div id="spotlight-overlay"></div>
+  <div id="toast" role="status"></div>
+  <div class="sr-only" aria-live="polite" id="live-region"></div>
+
+  <header class="top-header">
+    <div class="header-brand">
+      <img src="assets/clicktech-logo-clean.png" alt="ClickTech" class="header-logo-mini">
+      <span class="header-tag">CLICKTECH</span>
+      <span style="color: var(--text-muted);">/</span>
+      <span style="font-size: 14px; color: var(--text-muted); font-weight: 600;">Actividad 6 · INF892</span>
+    </div>
+    <div class="header-controls">
+      <div class="hud-chip" title="Tiempo de exposición"><i class="fa-solid fa-stopwatch"
+          style="color: var(--cyan-neon);"></i><span id="header-timer-display">00:00</span></div>
+      <button class="hud-chip" onclick="togglePresenterMode()" title="Modo Presentador (P)"><i
+          class="fa-solid fa-chalkboard-user"></i><span>Presentador [P]</span></button>
+      <button class="hud-chip" id="chip-laser" onclick="toggleLaser()" title="Láser (L)"><i
+          class="fa-solid fa-crosshairs"></i><span>Láser [L]</span></button>
+      <button class="hud-chip" id="chip-spotlight" onclick="toggleSpotlight()" title="Foco (S)"><i
+          class="fa-solid fa-lightbulb"></i><span>Foco [S]</span></button>
+      <button class="hud-chip active" id="chip-sound" onclick="toggleSound()" title="Audio (M)" aria-label="Sonido"><i
+          class="fa-solid fa-volume-high" id="sound-icon"></i></button>
+      <button class="hud-chip" onclick="toggleHelp()" title="Atajos (?)" aria-label="Atajos de teclado"><i
+          class="fa-solid fa-circle-question"></i></button>
+    </div>
+  </header>
+
+  <main class="slider-viewport" id="viewport">
+    <div class="slides-wrapper" id="slides-wrapper">
+
+      <!-- 01 PORTADA -->
+      <section class="slide active" data-slide="0" data-title="Portada">
+        <div class="slide-inner">
+          <div class="hero-layout">
+            <div>
+              <div class="slide-badge anim-target"><i class="fa-solid fa-bolt"></i> ACTIVIDAD 6 · INF892 EMPRENDIMIENTOS
+                DIGITALES</div>
+              <h1 class="hero-main-title anim-target"><span style="color:var(--text-main);">CLICK</span><span
+                  style="color:var(--cyan-neon);">TECH</span></h1>
+              <div class="hero-tagline anim-target">Tecnología a tu medida.</div>
+              <p class="hero-description anim-target">Identidad de marca para <b>hardware y ensamble gamer</b>: color,
+                logo y mensaje pensados para generar confianza y pasión.</p>
+              <div class="hero-pillars-row anim-target">
+                <div class="pillar-chip"><i class="fa-solid fa-cart-shopping"></i> Venta en línea</div>
+                <div class="pillar-chip"><i class="fa-solid fa-microchip"></i> Ensamblaje</div>
+                <div class="pillar-chip"><i class="fa-solid fa-screwdriver-wrench"></i> Soporte técnico</div>
+              </div>
+              <div class="hero-meta anim-target">
+                <span><i class="fa-solid fa-location-dot" style="color:var(--cyan-neon);margin-right:8px;"></i>Potosí,
+                  Bolivia</span>
+                <span><i class="fa-solid fa-gamepad" style="color:var(--purple-neon);margin-right:8px;"></i>Comunidad
+                  gamer y creadores</span>
+              </div>
+            </div>
+            <div class="hero-logo-stage" id="hero-logo-stage">
+              <img src="assets/clicktech-logo-clean.png" alt="Logotipo ClickTech"
+                class="hero-clean-logo-img anim-target" id="hero-clean-logo">
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 02 CINCO PILARES -->
+      <section class="slide" data-slide="1" data-title="Los 5 Pilares">
+        <div class="slide-inner">
+          <div class="slide-header-box">
+            <div class="slide-badge anim-target">01 · Fundamentos gráficos</div>
+            <h2 class="slide-title anim-target">Los 5 pilares de <span class="gradient-text">la marca</span></h2>
+            <div class="slide-subtitle anim-target"><i class="fa-solid fa-layer-group"></i><span>Cinco decisiones de
+                diseño que sostienen <b>toda la identidad</b> de ClickTech.</span></div>
+          </div>
+          <div class="slide-content-area">
+            <div class="grid grid-5">
+              <div class="glass-card fragment-card anim-target" style="border-top:5px solid var(--cyan-neon);">
+                <div class="icon-3d-wrapper">
+                  <div class="icon-3d-token">
+                    <div class="token-face"><i class="fa-solid fa-shield"></i></div>
+                  </div>
+                </div>
+                <span class="card-number-badge">Pilar 01</span>
+                <h3 class="card-title" style="color:var(--cyan-neon);">AZUL</h3>
+                <div class="card-sub">Confianza y técnica</div>
+                <p class="card-text">Da seguridad al comprar y precisión en cada ensamble.</p>
+              </div>
+              <div class="glass-card purple-glow fragment-card anim-target"
+                style="border-top:5px solid var(--purple-neon);">
+                <div class="icon-3d-wrapper purple">
+                  <div class="icon-3d-token">
+                    <div class="token-face purple"><i class="fa-solid fa-gamepad"></i></div>
+                  </div>
+                </div>
+                <span class="card-number-badge" style="color:var(--purple-neon);">Pilar 02</span>
+                <h3 class="card-title" style="color:var(--purple-neon);">MORADO</h3>
+                <div class="card-sub purple">Cultura gamer</div>
+                <p class="card-text">Conecta con el streaming, el RGB y la creatividad.</p>
+              </div>
+              <div class="glass-card fragment-card anim-target" style="border-top:5px solid var(--purple-neon);">
+                <div class="icon-3d-wrapper purple">
+                  <div class="icon-3d-token">
+                    <div class="token-face gradient"><i class="fa-solid fa-arrow-trend-up"></i></div>
+                  </div>
+                </div>
+                <span class="card-number-badge" style="color:var(--purple-neon);">Pilar 03</span>
+                <h3 class="card-title" style="color:var(--purple-neon);">DEGRADADO</h3>
+                <div class="card-sub purple">Innovación y futuro</div>
+                <p class="card-text">Une lo técnico y lo emocional en una sola identidad.</p>
+              </div>
+              <div class="glass-card fragment-card anim-target" style="border-top:5px solid var(--text-main);">
+                <div class="icon-3d-wrapper">
+                  <div class="icon-3d-token">
+                    <div class="token-face white"><i class="fa-solid fa-font"></i></div>
+                  </div>
+                </div>
+                <span class="card-number-badge" style="color:var(--text-main);">Pilar 04</span>
+                <h3 class="card-title">TIPOGRAFÍA</h3>
+                <div class="card-sub white">Moderna y legible</div>
+                <p class="card-text">Cortes a 45° que se leen rápido en cualquier pantalla.</p>
+              </div>
+              <div class="glass-card fragment-card anim-target" style="border-top:5px solid var(--cyan-neon);">
+                <div class="icon-3d-wrapper">
+                  <div class="icon-3d-token">
+                    <div class="token-face"><i class="fa-solid fa-cubes"></i></div>
+                  </div>
+                </div>
+                <span class="card-number-badge">Pilar 05</span>
+                <h3 class="card-title" style="color:var(--cyan-neon);">ÍCONO</h3>
+                <div class="card-sub">Escudo protector</div>
+                <p class="card-text">La "C" resguarda el hardware y respalda la garantía.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 03 PSICOLOGÍA DEL COLOR -->
+      <section class="slide" data-slide="2" data-title="Psicología del Color">
+        <div class="slide-inner">
+          <div class="slide-header-box">
+            <div class="slide-badge anim-target">02 · Impacto psicológico</div>
+            <h2 class="slide-title anim-target">Psicología del <span class="cyan-text">color</span></h2>
+            <div class="slide-subtitle anim-target"><i class="fa-solid fa-palette"></i><span><b>Azul</b> para confiar,
+                <b>morado</b> para apasionar.</span></div>
+          </div>
+          <div class="slide-content-area">
+            <div class="grid grid-2">
+              <div class="glass-card text-left fragment-card anim-target"
+                style="border-left:6px solid var(--cyan-neon);">
+                <div class="icon-3d-wrapper">
+                  <div class="icon-3d-token">
+                    <div class="token-face"><i class="fa-solid fa-bolt"></i></div>
+                  </div>
+                </div>
+                <h3 class="card-title">Azul cian neón</h3>
+                <div class="card-sub">Confianza racional y precisión</div>
+                <ul class="key-list">
+                  <li><i class="fa-solid fa-shield-halved"></i><span>Confianza al comprar hardware costoso</span></li>
+                  <li><i class="fa-solid fa-microchip"></i><span>Precisión técnica en cada ensamble</span></li>
+                  <li><i class="fa-solid fa-certificate"></i><span>Garantía y soporte local en Potosí</span></li>
+                </ul>
+              </div>
+              <div class="glass-card purple-glow text-left fragment-card anim-target"
+                style="border-left:6px solid var(--purple-neon);">
+                <div class="icon-3d-wrapper purple">
+                  <div class="icon-3d-token">
+                    <div class="token-face purple"><i class="fa-solid fa-gamepad"></i></div>
+                  </div>
+                </div>
+                <h3 class="card-title">Morado gamer</h3>
+                <div class="card-sub purple">Creatividad y pasión</div>
+                <ul class="key-list purple">
+                  <li><i class="fa-solid fa-gamepad"></i><span>Pasión por el gaming y el streaming</span></li>
+                  <li><i class="fa-solid fa-wand-magic-sparkles"></i><span>Nos diferencia de las tiendas
+                      genéricas</span></li>
+                  <li><i class="fa-solid fa-desktop"></i><span>Orgullo de armar un setup propio</span></li>
+                </ul>
+              </div>
+            </div>
+            <div class="strip anim-target">
+              <button class="swatch" data-hex="#00E5FF" style="--c:#00E5FF"><span class="swatch-dot"
+                  style="background:#00E5FF"></span><span><b>Cian neón</b><small>#00E5FF · clic para
+                    copiar</small></span></button>
+              <button class="swatch" data-hex="#8B5CF6" style="--c:#8B5CF6"><span class="swatch-dot"
+                  style="background:#8B5CF6"></span><span><b>Morado gamer</b><small>#8B5CF6 · clic para
+                    copiar</small></span></button>
+              <button class="swatch" data-hex="#02040A" style="--c:#02040A"><span class="swatch-dot"
+                  style="background:#02040A"></span><span><b>Negro chasis</b><small>#02040A · clic para
+                    copiar</small></span></button>
+              <button class="swatch" data-hex="#FFFFFF" style="--c:#FFFFFF"><span class="swatch-dot"
+                  style="background:#FFFFFF"></span><span><b>Blanco puro</b><small>#FFFFFF · clic para
+                    copiar</small></span></button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 04 ANATOMÍA -->
+      <section class="slide" data-slide="3" data-title="Anatomía">
+        <div class="slide-inner">
+          <div class="slide-header-box">
+            <div class="slide-badge anim-target">03 · Arquitectura gráfica</div>
+            <h2 class="slide-title anim-target">Anatomía del <span class="cyan-text">imagotipo</span></h2>
+            <div class="slide-subtitle anim-target"><i class="fa-solid fa-puzzle-piece"></i><span>Cuatro piezas, <b>un
+                  mismo mensaje</b>: tecnología y compra fácil.</span></div>
+          </div>
+          <div class="slide-content-area">
+            <div class="grid grid-2" style="align-items:center;">
+              <div class="hero-logo-stage" style="padding:clamp(18px,2vw,32px);border-radius:28px;">
+                <img src="assets/clicktech-logo-clean.png" alt="Anatomía del logo" class="anatomy-logo-img anim-target"
+                  id="anatomy-logo-img">
+              </div>
+              <div class="anatomy-cards-stack">
+                <div class="glass-card row fragment-card anim-target">
+                  <div class="icon-3d-wrapper">
+                    <div class="icon-3d-token">
+                      <div class="token-face"><i class="fa-solid fa-shield"></i></div>
+                    </div>
+                  </div>
+                  <div>
+                    <h3 class="card-title" style="color:var(--cyan-neon);">1 · La "C" protectora</h3>
+                    <p class="card-text">Chasis biselado a 45° que simboliza protección y garantía.</p>
+                  </div>
+                </div>
+                <div class="glass-card purple-glow row fragment-card anim-target">
+                  <div class="icon-3d-wrapper purple">
+                    <div class="icon-3d-token">
+                      <div class="token-face purple"><i class="fa-solid fa-fan"></i></div>
+                    </div>
+                  </div>
+                  <div>
+                    <h3 class="card-title" style="color:var(--purple-neon);">2 · Ventiladores y chip</h3>
+                    <p class="card-text">Hardware real de alto rendimiento, visible desde el logo.</p>
+                  </div>
+                </div>
+                <div class="glass-card row fragment-card anim-target">
+                  <div class="icon-3d-wrapper">
+                    <div class="icon-3d-token">
+                      <div class="token-face white"><i class="fa-solid fa-arrow-pointer"></i></div>
+                    </div>
+                  </div>
+                  <div>
+                    <h3 class="card-title">3 · Cursor en la "K"</h3>
+                    <p class="card-text">Compra ágil: cotiza y compra en línea con un solo clic.</p>
+                  </div>
+                </div>
+                <div class="glass-card purple-glow row fragment-card anim-target">
+                  <div class="icon-3d-wrapper purple">
+                    <div class="icon-3d-token">
+                      <div class="token-face gradient"><i class="fa-solid fa-bolt"></i></div>
+                    </div>
+                  </div>
+                  <div>
+                    <h3 class="card-title" style="color:var(--cyan-neon);">4 · "TECH" neón</h3>
+                    <p class="card-text">Ancla la marca en tecnología con el lema "a tu medida".</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 05 TIPOGRAFÍA -->
+      <section class="slide" data-slide="4" data-title="Tipografía">
+        <div class="slide-inner">
+          <div class="slide-header-box">
+            <div class="slide-badge anim-target">04 · Lenguaje visual</div>
+            <h2 class="slide-title anim-target">Tipografía: <span class="cyan-text">velocidad y claridad</span></h2>
+            <div class="slide-subtitle anim-target"><i class="fa-solid fa-text-height"></i><span>Letras que <b>se leen
+                  en segundos</b> y se sienten tecnológicas.</span></div>
+          </div>
+          <div class="slide-content-area">
+            <div class="grid grid-3">
+              <div class="glass-card fragment-card anim-target">
+                <div class="icon-3d-wrapper">
+                  <div class="icon-3d-token">
+                    <div class="token-face"><i class="fa-solid fa-ruler-combined"></i></div>
+                  </div>
+                </div>
+                <h3 class="card-title">Cortes a 45°</h3>
+                <div class="card-sub">Inspirados en el chasis gamer</div>
+                <p class="card-text">Imitan las rejillas de ventilación y transmiten velocidad.</p>
+                <span class="card-pill-tag">Velocidad</span>
+              </div>
+              <div class="glass-card purple-glow fragment-card anim-target">
+                <div class="icon-3d-wrapper purple">
+                  <div class="icon-3d-token">
+                    <div class="token-face purple"><i class="fa-solid fa-eye"></i></div>
+                  </div>
+                </div>
+                <h3 class="card-title">Sans-serif</h3>
+                <div class="card-sub purple">Cero adornos</div>
+                <p class="card-text">Se lee fácil en celulares, letreros y redes sociales.</p>
+                <span class="card-pill-tag purple">Legibilidad</span>
+              </div>
+              <div class="glass-card fragment-card anim-target">
+                <div class="icon-3d-wrapper purple">
+                  <div class="icon-3d-token">
+                    <div class="token-face gradient"><i class="fa-solid fa-font"></i></div>
+                  </div>
+                </div>
+                <h3 class="card-title">Dos colores</h3>
+                <div class="card-sub">CLICK blanco · TECH cian</div>
+                <p class="card-text">La mitad formal y la mitad tecnológica: se recuerda al instante.</p>
+                <span class="card-pill-tag">Recordación</span>
+              </div>
+            </div>
+            <div class="strip anim-target" style="justify-content:space-between;">
+              <div
+                style="font-family:'Orbitron','Space Grotesk',sans-serif;font-size:clamp(28px,min(3vw,5vh),48px);font-weight:900;color:var(--text-main);">
+                CLICK<span style="color:var(--cyan-neon);">TECH</span></div>
+              <div
+                style="font-family:'Space Grotesk',sans-serif;font-size:clamp(15px,1.4vw,22px);font-weight:800;letter-spacing:5px;color:var(--text-muted);">
+                TECNOLOGÍA A TU MEDIDA</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 06 BUYER PERSONA -->
+      <section class="slide" data-slide="5" data-title="Buyer Persona">
+        <div class="slide-inner">
+          <div class="slide-header-box">
+            <div class="slide-badge anim-target">05 · Clientes y Marca · Actividad 5</div>
+            <h2 class="slide-title anim-target">Buyer persona: <span class="cyan-text">Identificación con el logo</span>
+            </h2>
+            <div class="slide-subtitle anim-target"><i class="fa-solid fa-users-viewfinder"></i><span>Cómo Diego y
+                Andrea se reconocen en cada <b>símbolo, color y lema</b> de ClickTech.</span></div>
+          </div>
+          <div class="slide-content-area">
+            <div class="grid grid-2">
+              <!-- DIEGO: CLIENTE PRINCIPAL GAMER -->
+              <div class="glass-card buyer-card text-left fragment-card anim-target"
+                style="border-left:6px solid var(--cyan-neon);">
+                <div class="buyer-header-row">
+                  <div class="icon-3d-wrapper">
+                    <div class="icon-3d-token">
+                      <div class="token-face"><i class="fa-solid fa-gamepad"></i></div>
+                    </div>
+                  </div>
+                  <div class="buyer-info">
+                    <span class="buyer-role-badge">Cliente principal · Gamer</span>
+                    <h3 class="buyer-name">Diego, 22 años</h3>
+                    <span class="buyer-meta"><i class="fa-solid fa-location-dot"
+                        style="color:var(--cyan-neon);margin-right:5px;"></i>Potosí · Estudiante universitario</span>
+                  </div>
+                </div>
+                <div class="buyer-quote cyan">
+                  <i class="fa-solid fa-quote-left"></i> "Busco jugar mejor con hardware potente sin gastar de más."
+                </div>
+                <ul class="buyer-list">
+                  <li>
+                    <span class="buyer-logo-badge purple"><i class="fa-solid fa-fan"></i> Fans y Chip</span>
+                    <span><b>Hardware visible:</b> Ventilación y GPU potente sin caídas de FPS.</span>
+                  </li>
+                  <li>
+                    <span class="buyer-logo-badge purple"><i class="fa-solid fa-palette"></i> Morado Neón</span>
+                    <span><b>Cultura gamer:</b> Conecta con setups RGB, streaming y torneos.</span>
+                  </li>
+                  <li>
+                    <span class="buyer-logo-badge purple"><i class="fa-solid fa-quote-left"></i> Lema afín</span>
+                    <span><b>"Es tu pasión":</b> Reconoce su afición y cuida su dinero.</span>
+                  </li>
+                  <li>
+                    <span class="buyer-logo-badge purple"><i class="fa-solid fa-bolt"></i> ClickTech</span>
+                    <span><b>Ensamble gamer:</b> Piezas compatibles 100% testeadas.</span>
+                  </li>
+                </ul>
+              </div>
+
+              <!-- ANDREA: CLIENTE SECUNDARIO TRABAJO Y ESTUDIO -->
+              <div class="glass-card buyer-card purple-glow text-left fragment-card anim-target"
+                style="border-left:6px solid var(--purple-neon);">
+                <div class="buyer-header-row">
+                  <div class="icon-3d-wrapper purple">
+                    <div class="icon-3d-token">
+                      <div class="token-face purple"><i class="fa-solid fa-laptop-code"></i></div>
+                    </div>
+                  </div>
+                  <div class="buyer-info">
+                    <span class="buyer-role-badge purple">Cliente secundario · Estudio y trabajo</span>
+                    <h3 class="buyer-name">Andrea, 24 años</h3>
+                    <span class="buyer-meta"><i class="fa-solid fa-location-dot"
+                        style="color:var(--purple-neon);margin-right:5px;"></i>Potosí · Egresada / Trabajo y
+                      Tesis</span>
+                  </div>
+                </div>
+                <div class="buyer-quote purple">
+                  <i class="fa-solid fa-quote-left"></i> "Necesito un equipo seguro y soporte a un solo clic."
+                </div>
+                <ul class="buyer-list purple">
+                  <li>
+                    <span class="buyer-logo-badge"><i class="fa-solid fa-shield-halved"></i> Escudo "C"</span>
+                    <span><b>Seguridad y chasis:</b> Cero fallas en trabajo con respaldo local.</span>
+                  </li>
+                  <li>
+                    <span class="buyer-logo-badge"><i class="fa-solid fa-arrow-pointer"></i> Cursor "K"</span>
+                    <span><b>Inmediatez digital:</b> Cotización y compra rápida en línea en un clic.</span>
+                  </li>
+                  <li>
+                    <span class="buyer-logo-badge"><i class="fa-solid fa-sliders"></i> Cian + Lema</span>
+                    <span><b>"A tu medida":</b> Diagnóstico honesto sin sobrecostos.</span>
+                  </li>
+                  <li>
+                    <span class="buyer-logo-badge"><i class="fa-solid fa-certificate"></i> ClickTech</span>
+                    <span><b>Garantía directa:</b> Mantenimiento y soporte post-venta en Potosí.</span>
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 07 MENSAJES -->
+      <section class="slide" data-slide="6" data-title="Mensajes">
+        <div class="slide-inner">
+          <div class="slide-header-box">
+            <div class="slide-badge anim-target">06 · Mensajes estratégicos</div>
+            <h2 class="slide-title anim-target">Dos mensajes: <span class="cyan-text">razón y emoción</span></h2>
+            <div class="slide-subtitle anim-target"><i class="fa-solid fa-comments"></i><span>Uno <b>convence la
+                  mente</b>, el otro <b>conquista la pasión</b>.</span></div>
+          </div>
+          <div class="slide-content-area">
+            <div class="grid grid-2">
+              <div class="glass-card text-left fragment-card anim-target"
+                style="border-left:6px solid var(--cyan-neon);">
+                <div class="icon-3d-wrapper">
+                  <div class="icon-3d-token">
+                    <div class="token-face"><i class="fa-solid fa-sliders"></i></div>
+                  </div>
+                </div>
+                <div class="card-sub">Enfoque racional (Andrea)</div>
+                <h3 class="card-title" style="font-size:clamp(26px,min(2.5vw,4.6vh),40px);">"Tecnología a tu medida."
+                </h3>
+                <ul class="key-list">
+                  <li><i class="fa-solid fa-wallet"></i><span><b>Presupuesto exacto:</b> sin pagar de más</span></li>
+                  <li><i class="fa-solid fa-file-invoice-dollar"></i><span><b>Precios claros</b> pieza por pieza</span>
+                  </li>
+                  <li><i class="fa-solid fa-layer-group"></i><span><b>Por fases:</b> arma tu PC poco a poco</span></li>
+                </ul>
+              </div>
+              <div class="glass-card purple-glow text-left fragment-card anim-target"
+                style="border-left:6px solid var(--purple-neon);">
+                <div class="icon-3d-wrapper purple">
+                  <div class="icon-3d-token">
+                    <div class="token-face purple"><i class="fa-solid fa-heart"></i></div>
+                  </div>
+                </div>
+                <div class="card-sub purple">Enfoque emocional (Diego)</div>
+                <h3 class="card-title" style="font-size:clamp(26px,min(2.5vw,4.6vh),40px);">"Más que tecnología, es
+                  <span style="color:var(--cyan-neon);">tu pasión.</span>"
+                </h3>
+                <ul class="key-list purple">
+                  <li><i class="fa-solid fa-trophy"></i><span><b>Sentido de logro:</b> tu esfuerzo, tu setup</span></li>
+                  <li><i class="fa-solid fa-users"></i><span><b>Comunidad:</b> torneos y streamers locales</span></li>
+                  <li><i class="fa-solid fa-lightbulb"></i><span><b>Orgullo RGB:</b> personalización total</span></li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 08 CONCLUSIÓN -->
+      <section class="slide" data-slide="7" data-title="Conclusión">
+        <div class="slide-inner">
+          <div class="slide-header-box">
+            <div class="slide-badge anim-target">07 · Conclusión</div>
+            <h2 class="slide-title anim-target">Posicionamiento <span class="cyan-text">estratégico</span></h2>
+            <div class="slide-subtitle anim-target"><i class="fa-solid fa-flag-checkered"></i><span>Cuatro pilares que
+                consolidan la <b>propuesta de valor</b> de ClickTech en Potosí.</span></div>
+          </div>
+          <div class="slide-content-area">
+            <div class="grid grid-4">
+              <div class="glass-card fragment-card anim-target">
+                <div class="icon-3d-wrapper">
+                  <div class="icon-3d-token">
+                    <div class="token-face"><i class="fa-solid fa-crosshairs"></i></div>
+                  </div>
+                </div>
+                <h3 class="card-title">1. Nicho claro</h3>
+                <div class="card-sub">Ensamble gamer a medida</div>
+                <p class="card-text">Primera marca local enfocada 100% en PCs gamer.</p>
+              </div>
+              <div class="glass-card purple-glow fragment-card anim-target">
+                <div class="icon-3d-wrapper purple">
+                  <div class="icon-3d-token">
+                    <div class="token-face purple"><i class="fa-solid fa-palette"></i></div>
+                  </div>
+                </div>
+                <h3 class="card-title">2. Color con sentido</h3>
+                <div class="card-sub purple">Confianza + pasión</div>
+                <p class="card-text">Cian para la certeza y morado para la emoción gamer.</p>
+              </div>
+              <div class="glass-card fragment-card anim-target">
+                <div class="icon-3d-wrapper purple">
+                  <div class="icon-3d-token">
+                    <div class="token-face gradient"><i class="fa-solid fa-cubes"></i></div>
+                  </div>
+                </div>
+                <h3 class="card-title">3. Logo funcional</h3>
+                <div class="card-sub">Se explica solo</div>
+                <p class="card-text">Chasis, hardware y cursor cuentan el negocio de un vistazo.</p>
+              </div>
+              <div class="glass-card purple-glow fragment-card anim-target">
+                <div class="icon-3d-wrapper purple">
+                  <div class="icon-3d-token">
+                    <div class="token-face purple"><i class="fa-solid fa-handshake"></i></div>
+                  </div>
+                </div>
+                <h3 class="card-title">4. Propuesta real</h3>
+                <div class="card-sub purple">Honesta y cercana</div>
+                <p class="card-text">Presupuestos sin sobrecostos, garantía local y soporte continuo.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 09 AGRADECIMIENTO Y CIERRE -->
+      <section class="slide" data-slide="8" data-title="Agradecimiento">
+        <div class="slide-inner">
+          <div class="thanks-layout">
+            <div
+              style="display:flex; flex-direction:column; justify-content:center; align-items:flex-start; gap:clamp(12px, 2vh, 22px);">
+              <div class="slide-badge anim-target"><i class="fa-solid fa-award"></i> INF892 · EMPRENDIMIENTOS DIGITALES
+              </div>
+              <h1 class="thanks-main-title anim-target">¡Muchas gracias por su <span class="cyan-text">atención!</span>
+              </h1>
+            </div>
+            <div class="hero-logo-stage" id="thanks-logo-stage">
+              <img src="assets/clicktech-logo-clean.png" alt="Logotipo ClickTech" class="thanks-logo-img anim-target"
+                id="thanks-clean-logo">
+            </div>
+          </div>
+        </div>
+      </section>
+
+    </div>
+  </main>
+
+  <nav class="nav-dock-container" aria-label="Navegación de diapositivas">
+    <button class="nav-btn" id="btn-prev" title="Anterior (←)" aria-label="Anterior"><i
+        class="fa-solid fa-chevron-left"></i></button>
+    <div class="slide-counter"><span id="current-slide-num">01</span> / <span id="total-slides-num">09</span></div>
+    <button class="nav-btn" id="btn-next" title="Siguiente (→ / Espacio)" aria-label="Siguiente"><i
+        class="fa-solid fa-chevron-right"></i></button>
+    <div style="width:1px;height:22px;background:rgba(255,255,255,.15);"></div>
+    <div class="quick-bullets" id="quick-bullets"></div>
+  </nav>
+
+  <div class="presenter-console-modal" id="presenter-modal">
+    <div class="presenter-panel">
+      <div class="presenter-panel-header">
+        <div style="display:flex;align-items:center;gap:14px;">
+          <img src="assets/clicktech-logo-clean.png" alt="ClickTech" style="height:32px;">
+          <div>
+            <h3 style="font-size:22px;font-weight:800;font-family:'Space Grotesk';">CONSOLA DE PRESENTADOR</h3>
+            <p style="font-size:14px;color:var(--text-muted);margin:0;">Guía de exposición · ClickTech</p>
+          </div>
+        </div>
+        <div style="display:flex;align-items:center;gap:18px;">
+          <div class="presenter-timer-box">
+            <i class="fa-solid fa-stopwatch" style="color:var(--cyan-neon);font-size:20px;"></i>
+            <span class="presenter-timer-digits" id="modal-timer-digits">00:00</span>
+            <button class="presenter-timer-btn" onclick="toggleTimer()" id="timer-toggle-btn"
+              title="Pausar / Iniciar"><i class="fa-solid fa-pause"></i></button>
+            <button class="presenter-timer-btn" onclick="resetTimer()" title="Reiniciar"><i
+                class="fa-solid fa-rotate-right"></i></button>
+          </div>
+          <button class="nav-btn" onclick="togglePresenterMode()" style="width:36px;height:36px;" aria-label="Cerrar"><i
+              class="fa-solid fa-xmark"></i></button>
+        </div>
+      </div>
+      <div class="presenter-card-box">
+        <div class="presenter-card-title"><i class="fa-solid fa-microphone-lines"></i><span>Ahora: <span
+              id="modal-current-title"></span></span></div>
+        <ul class="presenter-notes-list" id="modal-speaker-notes"></ul>
+      </div>
+      <div class="presenter-card-box">
+        <div class="presenter-card-title" style="color:var(--purple-neon);"><i
+            class="fa-solid fa-forward-step"></i><span>Sigue: <span id="modal-next-title"></span></span></div>
+        <div>
+          <h5 style="color:#fff;font-size:15px;margin-bottom:8px;font-weight:800;"><i class="fa-solid fa-graduation-cap"
+              style="color:var(--cyan-neon);margin-right:6px;"></i>Si el docente pregunta:</h5>
+          <div id="modal-defense-tips"
+            style="font-size:16px;color:#cbd5e1;line-height:1.55;background:rgba(0,0,0,.4);padding:14px;border-radius:var(--radius-sm);border:1px solid rgba(255,255,255,.08);">
+          </div>
+        </div>
+        <div style="display:flex;gap:12px;">
+          <button class="hud-chip" onclick="prevSlide()" style="flex:1;justify-content:center;"><i
+              class="fa-solid fa-arrow-left"></i> Anterior</button>
+          <button class="hud-chip active" onclick="advanceOrFragment()" style="flex:1;justify-content:center;">Siguiente
+            <i class="fa-solid fa-arrow-right"></i></button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="hud-help-modal" id="help-modal">
+    <div class="hud-help-box">
+      <div
+        style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;border-bottom:1px solid var(--border-light);padding-bottom:14px;">
+        <h3 style="font-family:'Space Grotesk';font-size:22px;color:var(--cyan-neon);"><i class="fa-solid fa-keyboard"
+            style="margin-right:10px;"></i>Atajos de teclado</h3>
+        <button class="nav-btn" onclick="toggleHelp()" style="width:34px;height:34px;" aria-label="Cerrar"><i
+            class="fa-solid fa-xmark"></i></button>
+      </div>
+      <div class="key-row"><span>Siguiente / resaltar tarjeta</span><span class="key-badge">Espacio / →</span></div>
+      <div class="key-row"><span>Saltar a la siguiente slide</span><span class="key-badge">Shift + →</span></div>
+      <div class="key-row"><span>Slide anterior</span><span class="key-badge">← / Backspace</span></div>
+      <div class="key-row"><span>Consola de presentador</span><span class="key-badge">P</span></div>
+      <div class="key-row"><span>Láser</span><span class="key-badge">L</span></div>
+      <div class="key-row"><span>Foco</span><span class="key-badge">S</span></div>
+      <div class="key-row"><span>Pantalla completa</span><span class="key-badge">F</span></div>
+      <div class="key-row"><span>Sonido</span><span class="key-badge">M</span></div>
+      <div class="key-row"><span>Inicio / Fin</span><span class="key-badge">Home / End</span></div>
+      <div class="key-row"><span>Cerrar</span><span class="key-badge">Esc</span></div>
+    </div>
+  </div>
+
+  <script>
+    const hashMatch = window.location.hash.match(/slide-(\d+)/);
+    const initialSlideNum = hashMatch ? parseInt(hashMatch[1], 10) - 1 : 0;
+    const slides = document.querySelectorAll('.slide');
+    const totalSlides = slides.length;
+    let currentSlide = (initialSlideNum >= 0 && initialSlideNum < totalSlides) ? initialSlideNum : 0, dir = 1;
+    let currentFragmentIdx = -1;
+    let isSoundEnabled = true, isLaserActive = false, isSpotlightActive = false, isPresenterOpen = false, isHelpOpen = false;
+    let timerSeconds = 0, isTimerRunning = true;
+    const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    const $ = id => document.getElementById(id);
+    const currentNumEl = $('current-slide-num'), progressFill = $('progress-fill'), quickBullets = $('quick-bullets');
+    const btnPrev = $('btn-prev'), btnNext = $('btn-next'), laserDot = $('laser-dot'), spotlightOverlay = $('spotlight-overlay');
+    const presenterModal = $('presenter-modal'), helpModal = $('help-modal');
+    const glowCyan = $('glow-cyan-el'), glowPurple = $('glow-purple-el');
+    const chipLaser = $('chip-laser'), chipSpotlight = $('chip-spotlight'), chipSound = $('chip-sound'), soundIcon = $('sound-icon');
+    $('total-slides-num').textContent = String(totalSlides).padStart(2, '0');
+
+    const notes = [
+      { title: "Portada", points: ["Presenta ClickTech y el lema 'Tecnología a tu medida'.", "Menciona los 3 servicios: venta en línea, ensamble y soporte.", "Ubica el proyecto: Potosí, comunidad gamer."], defense: "'Click' = inmediatez de compra digital. 'Tech' = categoría de hardware y soluciones informáticas." },
+      { title: "Los 5 pilares", points: ["Azul: confianza y técnica.", "Morado: cultura gamer.", "Degradado: innovación.", "Tipografía: moderna y legible.", "Ícono: escudo 'C' protector."], defense: "Ningún elemento es decorativo: cada color y trazo cumple una función comercial." },
+      { title: "Psicología del color", points: ["Azul #00E5FF: confianza al comprar hardware caro.", "Morado #8B5CF6: pertenencia a la comunidad gamer.", "Puedes hacer clic en una muestra de color para copiar su código."], defense: "El azul transmite solidez; cian y violeta son el estándar visual del gaming." },
+      { title: "Anatomía del imagotipo", points: ["La 'C' biselada: chasis protector.", "Ventiladores y chip: hardware real.", "Cursor en la 'K': compra en un clic.", "'TECH' neón: recordación inmediata."], defense: "La 'C' funciona sola como ícono de app y favicon." },
+      { title: "Tipografía", points: ["Cortes a 45° = rejillas de chasis.", "Sans-serif = lectura rápida en celular.", "CLICK blanco + TECH cian = contraste."], defense: "Evitamos serifas: en tecnología la simplicidad angular comunica precisión." },
+      { title: "Buyer Persona: Identificación con el Logo", points: ["Diego (gamer): conecta con los ventiladores, el chip interno, el morado RGB y el lema 'Es tu pasión'.", "Andrea (trabajo/estudio): conecta con el escudo 'C' protector, el cursor a un clic y el lema 'A tu medida'.", "Cada rasgo del imagotipo responde a las dudas y motivaciones reales de los clientes de Potosí."], defense: "En la Actividad 5 vinculamos cada rasgo del logo con un perfil: Diego valida el ensamble gamer y Andrea la garantía técnica y compra rápida." },
+      { title: "Mensajes", points: ["Racional: 'Tecnología a tu medida' (presupuesto exacto).", "Emocional: 'Más que tecnología, es tu pasión'."], defense: "El racional va en cotizador y presupuestos; el emocional en redes y torneos." },
+      { title: "Conclusión", points: ["Nicho claro, color con sentido, logo funcional, propuesta real.", "Presenta el posicionamiento estratégico."], defense: "ClickTech no es solo una tienda: es una marca lista para competir localmente." },
+      { title: "Agradecimiento", points: ["Agradece cordialmente al docente y al auditorio.", "Abre el espacio para preguntas y respuestas (Q&A).", "Reitera la propuesta de valor: 'Tecnología a tu medida'."], defense: "ClickTech sintetiza identidad visual, viabilidad técnica y foco en la comunidad gamer de Potosí." }
+    ];
+
+    // ---------- Audio ----------
+    let audioCtx = null;
+    function playSound(type) {
+      if (!isSoundEnabled) return;
+      try {
+        if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        if (audioCtx.state === 'suspended') audioCtx.resume();
+        const now = audioCtx.currentTime, osc = audioCtx.createOscillator(), gain = audioCtx.createGain();
+        const cfg = { slide: ['sine', 320, 80, .08, .24], frag: ['triangle', 540, 980, .06, .08], click: ['sine', 900, 900, .04, .03], laser: ['sawtooth', 1400, 400, .05, .12] }[type];
+        if (!cfg) return;
+        osc.type = cfg[0];
+        osc.frequency.setValueAtTime(cfg[1], now);
+        osc.frequency.exponentialRampToValueAtTime(cfg[2], now + cfg[4]);
+        gain.gain.setValueAtTime(cfg[3], now);
+        gain.gain.exponentialRampToValueAtTime(.001, now + cfg[4]);
+        osc.connect(gain); gain.connect(audioCtx.destination);
+        osc.start(now); osc.stop(now + cfg[4]);
+      } catch (e) { }
+    }
+
+    // ---------- Construcción de íconos 3D con grosor real ----------
+    function buildTokens() {
+      document.querySelectorAll('.icon-3d-token').forEach(token => {
+        const face = token.querySelector('.token-face');
+        const variant = face.classList.contains('purple') ? 'purple' : face.classList.contains('gradient') ? 'gradient' : face.classList.contains('white') ? 'white' : 'cyan';
+        token.dataset.v = variant;
+        const size = token.parentElement.offsetWidth || 70;
+        const depth = Math.round(size * 0.32);
+        const layers = 12, step = depth / layers;
+        face.style.transform = `translateZ(${depth / 2}px)`;
+        for (let i = 0; i < layers; i++) {
+          const d = document.createElement('div');
+          d.className = 'token-depth';
+          d.style.transform = `translateZ(${(depth / 2 - step * (i + 1)).toFixed(1)}px)`;
+          token.insertBefore(d, face);
+        }
+      });
+    }
+
+    // ---------- Movimiento 3D sutil y distinguible (HyperFrames) ----------
+    // Presencia elegante: ángulo isométrico estable donde se aprecian bisel, fibra y brillo
+    function startIconMotion() {
+      if (!window.gsap || reduceMotion) return;
+      document.querySelectorAll('.icon-3d-token').forEach((token, i) => {
+        const k = i % 5;
+        // Pose 3D isométrica visible y fija (evita giros de 360° que marean o pierden textura)
+        gsap.set(token, {
+          rotationX: 8,
+          rotationY: -12,
+          transformPerspective: 800
+        });
+        // Flotación física muy sutil (respiración suave de 4px)
+        gsap.to(token, {
+          y: -4,
+          duration: 2.8 + k * 0.2,
+          ease: 'sine.inOut',
+          yoyo: true,
+          repeat: -1,
+          delay: k * 0.15
+        });
+        // Oscilación de inclinación elegante (apenas 5-6 grados de balanceo sutil)
+        gsap.to(token, {
+          rotationY: -6,
+          rotationX: 12,
+          duration: 3.4 + k * 0.2,
+          ease: 'sine.inOut',
+          yoyo: true,
+          repeat: -1,
+          delay: k * 0.2
+        });
+      });
+    }
+
+    // ---------- Ajuste de pantalla: tipografía 100% nítida sin scale() ----------
+    function fitSlide(slide) {
+      const inner = slide.querySelector('.slide-inner');
+      if (!inner) return;
+      inner.style.transform = 'none';
+      const availH = slide.clientHeight || window.innerHeight;
+      const availW = slide.clientWidth || window.innerWidth;
+      const safeH = Math.max(280, availH - 24);
+      const safeW = Math.max(380, availW - 32);
+      const naturalH = inner.scrollHeight || inner.offsetHeight;
+      const naturalW = inner.scrollWidth || inner.offsetWidth;
+      if (naturalH <= safeH && naturalW <= safeW) {
+        inner.style.transform = 'none';
+      } else {
+        const s = Math.min(safeH / naturalH, safeW / naturalW, 1);
+        inner.style.transform = `scale(${s.toFixed(3)})`;
+        inner.style.transformOrigin = 'center center';
+      }
+    }
+    function fitAll() { slides.forEach(fitSlide); }
+
+    // ---------- Transiciones de slide (nítidas, sin filtros borrosos) ----------
+    function animateSlideEnter(slideEl) {
+      currentFragmentIdx = -1;
+      slideEl.querySelectorAll('.fragment-card').forEach(c => c.classList.remove('fragment-focused', 'fragment-dimmed'));
+      const targets = slideEl.querySelectorAll('.anim-target');
+      if (window.gsap && !reduceMotion && targets.length) {
+        gsap.killTweensOf(targets);
+        gsap.fromTo(targets,
+          { opacity: 0, y: 16 },
+          { opacity: 1, y: 0, duration: .5, stagger: .04, ease: 'power2.out', clearProps: 'all' });
+        gsap.fromTo(slideEl.querySelectorAll('.icon-3d-wrapper'),
+          { scale: .88, opacity: 0 },
+          { scale: 1, opacity: 1, duration: .55, stagger: .04, delay: .1, ease: 'back.out(1.4)', clearProps: 'all' });
+      }
+      const warm = [1, 2, 5, 6, 8].includes(currentSlide);
+      glowCyan.style.transform = warm ? 'scale(1.15) translate(-15px, 15px)' : 'scale(1)';
+      glowPurple.style.transform = warm ? 'scale(1.2) translate(15px, -15px)' : 'scale(1)';
+    }
+
+    function updateSlide() {
+      slides.forEach((s, i) => {
+        if (i === currentSlide) {
+          s.classList.add('active');
+          fitSlide(s);
+          animateSlideEnter(s);
+          requestAnimationFrame(() => fitSlide(s));
+        }
+        else s.classList.remove('active');
+      });
+      currentNumEl.textContent = String(currentSlide + 1).padStart(2, '0');
+      progressFill.style.width = ((currentSlide + 1) / totalSlides * 100) + '%';
+      document.querySelectorAll('.bullet').forEach((b, i) => b.classList.toggle('active', i === currentSlide));
+      btnPrev.disabled = currentSlide === 0 && currentFragmentIdx < 0;
+      btnNext.disabled = currentSlide === totalSlides - 1 && !hasPendingFragment();
+      $('live-region').textContent = 'Diapositiva ' + (currentSlide + 1) + ' de ' + totalSlides + ': ' + notes[currentSlide].title;
+      updatePresenter();
+      try { history.replaceState(null, '', '#slide-' + (currentSlide + 1)); } catch (e) { }
+      playSound('slide');
+    }
+
+    function hasPendingFragment() {
+      const frags = slides[currentSlide].querySelectorAll('.fragment-card');
+      return frags.length > 0 && currentFragmentIdx < frags.length - 1;
+    }
+    function goToSlide(i) { if (i >= 0 && i < totalSlides) { dir = i >= currentSlide ? 1 : -1; currentSlide = i; updateSlide(); } }
+    function nextSlide() { if (currentSlide < totalSlides - 1) { dir = 1; currentSlide++; updateSlide(); } }
+    function prevSlide() {
+      const frags = slides[currentSlide].querySelectorAll('.fragment-card');
+      if (currentFragmentIdx >= 0 && frags.length) {
+        currentFragmentIdx--;
+        if (currentFragmentIdx < 0) frags.forEach(c => c.classList.remove('fragment-focused', 'fragment-dimmed'));
+        else highlightFragment(frags, currentFragmentIdx);
+        btnNext.disabled = false;
+        playSound('frag');
+        return;
+      }
+      if (currentSlide > 0) { dir = -1; currentSlide--; updateSlide(); }
+    }
+
+    function advanceOrFragment() {
+      const frags = slides[currentSlide].querySelectorAll('.fragment-card');
+      if (frags.length && currentFragmentIdx < frags.length - 1) {
+        currentFragmentIdx++;
+        highlightFragment(frags, currentFragmentIdx);
+        btnPrev.disabled = false;
+        playSound('frag');
+        return;
+      }
+      nextSlide();
+    }
+    function highlightFragment(frags, idx) {
+      frags.forEach((c, i) => {
+        c.classList.toggle('fragment-focused', i === idx);
+        c.classList.toggle('fragment-dimmed', i !== idx);
+      });
+    }
+
+    btnNext.addEventListener('click', advanceOrFragment);
+    btnPrev.addEventListener('click', prevSlide);
+
+    slides.forEach((s, i) => {
+      const b = document.createElement('div');
+      b.className = 'bullet' + (i === 0 ? ' active' : '');
+      b.title = s.dataset.title || ('Slide ' + (i + 1));
+      b.setAttribute('role', 'button'); b.setAttribute('tabindex', '0'); b.setAttribute('aria-label', 'Ir a ' + b.title);
+      b.addEventListener('click', () => goToSlide(i));
+      b.addEventListener('keydown', e => { if (e.key === 'Enter') goToSlide(i); });
+      quickBullets.appendChild(b);
+    });
+
+    // Clic en la diapositiva para avanzar (sin tocar controles interactivos)
+    document.addEventListener('click', e => {
+      if (isPresenterOpen || isHelpOpen) return;
+      if (e.target.closest && e.target.closest('button, .swatch, input, textarea, a, .presenter-panel, .hud-help-box')) return;
+      advanceOrFragment();
+    });
+
+    document.addEventListener('keydown', e => {
+      if (e.target.closest && e.target.closest('button') && (e.key === ' ' || e.key === 'Enter')) return;
+      switch (e.key) {
+        case ' ': case 'PageDown': e.preventDefault(); advanceOrFragment(); break;
+        case 'ArrowRight': e.preventDefault(); e.shiftKey ? nextSlide() : advanceOrFragment(); break;
+        case 'ArrowLeft': case 'Backspace': case 'PageUp': e.preventDefault(); prevSlide(); break;
+        case 'Home': e.preventDefault(); goToSlide(0); break;
+        case 'End': e.preventDefault(); goToSlide(totalSlides - 1); break;
+        case 'p': case 'P': togglePresenterMode(); break;
+        case 'l': case 'L': toggleLaser(); break;
+        case 's': case 'S': toggleSpotlight(); break;
+        case 'm': case 'M': toggleSound(); break;
+        case 'f': case 'F': toggleFullscreen(); break;
+        case '?': case 'h': case 'H': toggleHelp(); break;
+        case 'Escape':
+          if (isPresenterOpen) togglePresenterMode();
+          if (isHelpOpen) toggleHelp();
+          if (isLaserActive) toggleLaser();
+          if (isSpotlightActive) toggleSpotlight();
+          break;
+      }
+    });
+
+    function updatePresenter() {
+      const d = notes[currentSlide], n = notes[currentSlide + 1];
+      $('modal-current-title').textContent = d.title;
+      $('modal-next-title').textContent = n ? n.title : 'Fin · Preguntas';
+      $('modal-speaker-notes').innerHTML = d.points.map(p => '<li>' + p + '</li>').join('');
+      $('modal-defense-tips').textContent = d.defense;
+    }
+    function togglePresenterMode() { isPresenterOpen = !isPresenterOpen; presenterModal.classList.toggle('open', isPresenterOpen); playSound('click'); }
+    function toggleHelp() { isHelpOpen = !isHelpOpen; helpModal.classList.toggle('open', isHelpOpen); playSound('click'); }
+
+    const fmt = s => String(Math.floor(s / 60)).padStart(2, '0') + ':' + String(s % 60).padStart(2, '0');
+    setInterval(() => {
+      if (!isTimerRunning) return;
+      timerSeconds++;
+      $('header-timer-display').textContent = fmt(timerSeconds);
+      $('modal-timer-digits').textContent = fmt(timerSeconds);
+    }, 1000);
+    function toggleTimer() { isTimerRunning = !isTimerRunning; $('timer-toggle-btn').innerHTML = isTimerRunning ? '<i class="fa-solid fa-pause"></i>' : '<i class="fa-solid fa-play"></i>'; playSound('click'); }
+    function resetTimer() { timerSeconds = 0; $('header-timer-display').textContent = '00:00'; $('modal-timer-digits').textContent = '00:00'; playSound('click'); }
+
+    function toggleLaser() {
+      isLaserActive = !isLaserActive;
+      laserDot.classList.toggle('active', isLaserActive);
+      chipLaser.classList.toggle('active', isLaserActive);
+      if (isLaserActive && isSpotlightActive) toggleSpotlight();
+      document.body.style.cursor = isLaserActive ? 'none' : 'default';
+      playSound('laser');
+    }
+    function toggleSpotlight() {
+      isSpotlightActive = !isSpotlightActive;
+      spotlightOverlay.classList.toggle('active', isSpotlightActive);
+      chipSpotlight.classList.toggle('active', isSpotlightActive);
+      if (isSpotlightActive && isLaserActive) toggleLaser();
+      playSound('click');
+    }
+    document.addEventListener('mousemove', e => {
+      if (isLaserActive) { laserDot.style.left = e.clientX + 'px'; laserDot.style.top = e.clientY + 'px'; }
+      if (isSpotlightActive) { spotlightOverlay.style.setProperty('--spot-x', e.clientX + 'px'); spotlightOverlay.style.setProperty('--spot-y', e.clientY + 'px'); }
+    });
+    function toggleSound() {
+      isSoundEnabled = !isSoundEnabled;
+      chipSound.classList.toggle('active', isSoundEnabled);
+      soundIcon.className = isSoundEnabled ? 'fa-solid fa-volume-high' : 'fa-solid fa-volume-xmark';
+      playSound('click');
+    }
+    function toggleFullscreen() {
+      if (!document.fullscreenElement) document.documentElement.requestFullscreen().catch(() => { });
+      else if (document.exitFullscreen) document.exitFullscreen();
+      playSound('click');
+    }
+
+    // ---------- Brillo interactivo que sigue al cursor en tarjetas ----------
+    if (!reduceMotion && window.matchMedia('(hover: hover)').matches) {
+      document.querySelectorAll('.glass-card').forEach(card => {
+        card.addEventListener('pointermove', e => {
+          if (card.classList.contains('fragment-dimmed')) return;
+          const r = card.getBoundingClientRect();
+          const px = (e.clientX - r.left) / r.width, py = (e.clientY - r.top) / r.height;
+          card.style.setProperty('--gx', (px * 100).toFixed(1) + '%');
+          card.style.setProperty('--gy', (py * 100).toFixed(1) + '%');
+        });
+      });
+    }
+
+    // ---------- Paleta: clic para copiar ----------
+    const toast = $('toast');
+    let toastTimer;
+    document.querySelectorAll('.swatch').forEach(sw => {
+      sw.addEventListener('click', () => {
+        const hex = sw.dataset.hex;
+        const done = () => { toast.textContent = 'Copiado ' + hex; toast.classList.add('show'); clearTimeout(toastTimer); toastTimer = setTimeout(() => toast.classList.remove('show'), 1400); };
+        if (navigator.clipboard) navigator.clipboard.writeText(hex).then(done, done); else done();
+        playSound('click');
+      });
+    });
+
+    // ---------- Parallax del logo ----------
+    function bindParallax(img, host, amt) {
+      if (!img || !host) return;
+      host.addEventListener('mousemove', e => {
+        const r = host.getBoundingClientRect();
+        const x = (e.clientX - r.left) / r.width - .5, y = (e.clientY - r.top) / r.height - .5;
+        img.style.animation = 'none';
+        img.style.transform = `perspective(1000px) rotateY(${x * amt}deg) rotateX(${-y * amt}deg) translateY(-8px) scale(1.06)`;
+      });
+      host.addEventListener('mouseleave', () => { img.style.transform = ''; img.style.animation = ''; });
+    }
+    bindParallax($('hero-clean-logo'), $('hero-logo-stage'), 32);
+    const anat = $('anatomy-logo-img');
+    if (anat) bindParallax(anat, anat.parentElement, 26);
+    const thanksLogo = $('thanks-clean-logo');
+    if (thanksLogo) bindParallax(thanksLogo, $('thanks-logo-stage'), 32);
+
+    // ---------- Partículas ----------
+    const cv = $('ambient-canvas'), ctx = cv.getContext('2d');
+    let W, H;
+    const parts = [];
+    function resize() { W = cv.width = innerWidth; H = cv.height = innerHeight; fitAll(); }
+    for (let i = 0; i < 48; i++) parts.push({ x: Math.random() * innerWidth, y: Math.random() * innerHeight, vx: (Math.random() - .5) * .45, vy: (Math.random() - .5) * .45, r: Math.random() * 2.2 + .5, c: Math.random() > .45 ? 'rgba(0,229,255,' : 'rgba(168,85,247,' });
+    (function loop() {
+      ctx.clearRect(0, 0, W, H);
+      for (let i = 0; i < parts.length; i++) {
+        const p = parts[i];
+        p.x += p.vx; p.y += p.vy;
+        if (p.x < 0 || p.x > W) p.vx *= -1;
+        if (p.y < 0 || p.y > H) p.vy *= -1;
+        ctx.beginPath(); ctx.arc(p.x, p.y, p.r, 0, 7); ctx.fillStyle = p.c + '0.45)'; ctx.fill();
+        for (let j = i + 1; j < parts.length; j++) {
+          const q = parts[j], d = Math.hypot(p.x - q.x, p.y - q.y);
+          if (d < 110) { ctx.beginPath(); ctx.moveTo(p.x, p.y); ctx.lineTo(q.x, q.y); ctx.strokeStyle = `rgba(0,229,255,${.12 * (1 - d / 110)})`; ctx.lineWidth = .6; ctx.stroke(); }
+        }
+      }
+      requestAnimationFrame(loop);
+    })();
+
+    addEventListener('resize', resize);
+    buildTokens();
+    resize();
+    startIconMotion();
+    updateSlide();
+    if (document.fonts && document.fonts.ready) document.fonts.ready.then(fitAll);
+    addEventListener('load', fitAll);
+  </script>
+</body>
+
+</html>

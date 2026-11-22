@@ -1,0 +1,664 @@
+{
+    "categories":  {
+                       "placas-madre":  {
+                                            "file":  "/images/categories/placas-madre.webp",
+                                            "alt":  "Categoría Placas madre",
+                                            "exact":  false,
+                                            "title":  "File:2023 Płyta główna Asus ROG STRIX Z690-A GAMING WIFI.jpg",
+                                            "author":  "Jacek Halicki",
+                                            "license":  "CC BY-SA 4.0",
+                                            "licenseUrl":  "https://creativecommons.org/licenses/by-sa/4.0",
+                                            "sourceUrl":  "https://commons.wikimedia.org/wiki/File%3A2023_P%C5%82yta_g%C5%82%C3%B3wna_Asus_ROG_STRIX_Z690-A_GAMING_WIFI.jpg"
+                                        },
+                       "procesadores":  {
+                                            "file":  "/images/categories/procesadores.webp",
+                                            "alt":  "Categoría Procesadores",
+                                            "exact":  false,
+                                            "title":  "File:AMD AM3+ CPU Socket-top closed PNr°0376.jpg",
+                                            "author":  "D-Kuru",
+                                            "license":  "CC BY-SA 3.0 at",
+                                            "licenseUrl":  "https://creativecommons.org/licenses/by-sa/3.0/at/deed.en",
+                                            "sourceUrl":  "https://commons.wikimedia.org/wiki/File%3AAMD_AM3%2B_CPU_Socket-top_closed_PNr%C2%B00376.jpg"
+                                        },
+                       "fuentes":  {
+                                       "file":  "/images/categories/fuentes.webp",
+                                       "alt":  "Categoría Fuentes de poder",
+                                       "exact":  false,
+                                       "title":  "File:FSP PC Power Supply IMG 8106.JPG",
+                                       "author":  "Hans Haase",
+                                       "license":  "CC BY-SA 3.0",
+                                       "licenseUrl":  "https://creativecommons.org/licenses/by-sa/3.0",
+                                       "sourceUrl":  "https://commons.wikimedia.org/wiki/File%3AFSP_PC_Power_Supply_IMG_8106.JPG"
+                                   },
+                       "refrigeracion":  {
+                                             "file":  "/images/categories/refrigeracion.webp",
+                                             "alt":  "Categoría Refrigeración",
+                                             "exact":  false,
+                                             "title":  "File:Asus P5PL2 - CPU heatsink with cooling fan-5293.jpg",
+                                             "author":  "Raimond Spekking",
+                                             "license":  "CC BY-SA 4.0",
+                                             "licenseUrl":  "https://creativecommons.org/licenses/by-sa/4.0",
+                                             "sourceUrl":  "https://commons.wikimedia.org/wiki/File%3AAsus_P5PL2_-_CPU_heatsink_with_cooling_fan-5293.jpg"
+                                         },
+                       "tarjetas-graficas":  {
+                                                 "file":  "/images/categories/tarjetas-graficas.webp",
+                                                 "alt":  "Categoría Tarjetas gráficas",
+                                                 "exact":  false,
+                                                 "title":  "File:Graphics Card Diamond Viper 330 with Nvidia (RIVA 128) GPU.jpg",
+                                                 "author":  "Timothy Borkowski",
+                                                 "license":  "CC BY-SA 3.0",
+                                                 "licenseUrl":  "https://creativecommons.org/licenses/by-sa/3.0",
+                                                 "sourceUrl":  "https://commons.wikimedia.org/wiki/File%3AGraphics_Card_Diamond_Viper_330_with_Nvidia_(RIVA_128)_GPU.jpg"
+                                             },
+                       "pcs-armadas":  {
+                                           "file":  "/images/categories/pcs-armadas.webp",
+                                           "alt":  "Categoría PCs armadas",
+                                           "exact":  false,
+                                           "title":  "File:MSI-Gaming-PC 2024-09-30.png",
+                                           "author":  "MoreThanTech",
+                                           "license":  "CC BY 3.0",
+                                           "licenseUrl":  "https://creativecommons.org/licenses/by/3.0",
+                                           "sourceUrl":  "https://commons.wikimedia.org/wiki/File%3AMSI-Gaming-PC_2024-09-30.png"
+                                       },
+                       "perifericos":  {
+                                           "file":  "/images/categories/perifericos.webp",
+                                           "alt":  "Categoría Periféricos",
+                                           "exact":  false,
+                                           "title":  "File:Xbox One gamepads, gaming keyboard and mouse.jpg",
+                                           "author":  "Jean-Marc Trappler",
+                                           "license":  "CC BY-SA 4.0",
+                                           "licenseUrl":  "https://creativecommons.org/licenses/by-sa/4.0",
+                                           "sourceUrl":  "https://commons.wikimedia.org/wiki/File%3AXbox_One_gamepads%2C_gaming_keyboard_and_mouse.jpg"
+                                       },
+                       "almacenamiento":  {
+                                              "file":  "/images/categories/almacenamiento.webp",
+                                              "alt":  "Categoría Almacenamiento",
+                                              "exact":  false,
+                                              "title":  "File:256GB 2230 NVME SSD + 256GB NGFF SSD.jpg",
+                                              "author":  "User5515",
+                                              "license":  "CC0",
+                                              "licenseUrl":  "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
+                                              "sourceUrl":  "https://commons.wikimedia.org/wiki/File%3A256GB_2230_NVME_SSD_%2B_256GB_NGFF_SSD.jpg"
+                                          },
+                       "monitores":  {
+                                         "file":  "/images/categories/monitores.webp",
+                                         "alt":  "Categoría Monitores",
+                                         "exact":  false,
+                                         "title":  "File:EIZO Foris FG2421 VGA computer monitor displaying test pattern.png",
+                                         "author":  "Lucasbosch",
+                                         "license":  "CC BY-SA 4.0",
+                                         "licenseUrl":  "https://creativecommons.org/licenses/by-sa/4.0",
+                                         "sourceUrl":  "https://commons.wikimedia.org/wiki/File%3AEIZO_Foris_FG2421_VGA_computer_monitor_displaying_test_pattern.png"
+                                     },
+                       "memorias-ram":  {
+                                            "file":  "/images/categories/memorias-ram.webp",
+                                            "alt":  "Categoría Memorias RAM",
+                                            "exact":  false,
+                                            "title":  "File:Tridentz red RAM.JPG",
+                                            "author":  "Geni",
+                                            "license":  "CC BY-SA 4.0",
+                                            "licenseUrl":  "https://creativecommons.org/licenses/by-sa/4.0",
+                                            "sourceUrl":  "https://commons.wikimedia.org/wiki/File%3ATridentz_red_RAM.JPG"
+                                        },
+                       "laptops":  {
+                                       "file":  "/images/categories/laptops.webp",
+                                       "alt":  "Categoría Laptops",
+                                       "exact":  false,
+                                       "title":  "File:Woman in a dark room looking to a mac computer.jpg",
+                                       "author":  "Beercha",
+                                       "license":  "CC BY 2.0",
+                                       "licenseUrl":  "https://creativecommons.org/licenses/by/2.0",
+                                       "sourceUrl":  "https://commons.wikimedia.org/wiki/File%3AWoman_in_a_dark_room_looking_to_a_mac_computer.jpg"
+                                   },
+                       "gabinetes":  {
+                                         "file":  "/images/categories/gabinetes.webp",
+                                         "alt":  "Categoría Gabinetes",
+                                         "exact":  false,
+                                         "title":  "File:Computer case - Full Tower.jpg",
+                                         "author":  "Dmitry Makeev",
+                                         "license":  "CC BY-SA 4.0",
+                                         "licenseUrl":  "https://creativecommons.org/licenses/by-sa/4.0",
+                                         "sourceUrl":  "https://commons.wikimedia.org/wiki/File%3AComputer_case_-_Full_Tower.jpg"
+                                     },
+                       "accesorios":  {
+                                          "file":  "/images/categories/accesorios.webp",
+                                          "alt":  "Categoría Accesorios",
+                                          "exact":  false,
+                                          "title":  "File:Inateck USB Ethernet hub 3 2019-05-15.jpg",
+                                          "author":  "FASTILY",
+                                          "license":  "CC BY-SA 4.0",
+                                          "licenseUrl":  "https://creativecommons.org/licenses/by-sa/4.0",
+                                          "sourceUrl":  "https://commons.wikimedia.org/wiki/File%3AInateck_USB_Ethernet_hub_3_2019-05-15.jpg"
+                                      }
+                   },
+    "hero":  [
+                 {
+                     "file":  "/images/hero/hero-1.webp",
+                     "alt":  "PC gamer armada con iluminación interior cian y morada",
+                     "exact":  false,
+                     "title":  "File:MSI-Gaming-PC 2024-09-30.png",
+                     "author":  "MoreThanTech",
+                     "license":  "CC BY 3.0",
+                     "licenseUrl":  "https://creativecommons.org/licenses/by/3.0",
+                     "sourceUrl":  "https://commons.wikimedia.org/wiki/File%3AMSI-Gaming-PC_2024-09-30.png"
+                 },
+                 {
+                     "file":  "/images/hero/hero-2.webp",
+                     "alt":  "Tarjeta gráfica GeForce RTX para ensamble de alto rendimiento",
+                     "exact":  false,
+                     "title":  "File:2023 Gigabyte GeForce RTX 4070 Aero OC 12GB (5).jpg",
+                     "author":  "Jacek Halicki",
+                     "license":  "CC BY-SA 4.0",
+                     "licenseUrl":  "https://creativecommons.org/licenses/by/4.0",
+                     "sourceUrl":  "https://commons.wikimedia.org/wiki/File%3A2023_Gigabyte_GeForce_RTX_4070_Aero_OC_12GB_(5).jpg"
+                 },
+                 {
+                     "file":  "/images/hero/hero-3.webp",
+                     "alt":  "Setup gamer de escritorio con periféricos y monitor",
+                     "exact":  false,
+                     "title":  "File:Logitech g710+ Gaming Keybord.JPG",
+                     "author":  "Ryanx7",
+                     "license":  "CC BY-SA 3.0",
+                     "licenseUrl":  "https://creativecommons.org/licenses/by-sa/3.0",
+                     "sourceUrl":  "https://commons.wikimedia.org/wiki/File%3ALogitech_g710%2B_Gaming_Keybord.JPG"
+                 }
+             ],
+    "products":  {
+                     "CT-CPU-R5-5600":  [
+                                            {
+                                                "file":  "/images/products/ct-cpu-r5-5600.webp",
+                                                "alt":  "Imagen ilustrativa de procesador AMD Ryzen",
+                                                "exact":  false,
+                                                "title":  "File:AMD Ryzen 7 1800X.jpg",
+                                                "author":  "Brian Wong",
+                                                "license":  "CC BY-SA 2.0",
+                                                "licenseUrl":  "https://creativecommons.org/licenses/by-sa/2.0",
+                                                "sourceUrl":  "https://commons.wikimedia.org/wiki/File%3AAMD_Ryzen_7_1800X.jpg"
+                                            }
+                                        ],
+                     "CT-GPU-RTX4070S-DUAL":  [
+                                                  {
+                                                      "file":  "/images/products/ct-gpu-rtx4070s-dual.webp",
+                                                      "alt":  "Imagen ilustrativa de tarjeta gráfica de alto rendimiento",
+                                                      "exact":  false,
+                                                      "title":  "File:ASUS GeForce RTX 2070 ROG STRIX Advanced - 8GB GDDR6 1634.jpg",
+                                                      "author":  "Michael Wolf (Webseite)",
+                                                      "license":  "CC BY-SA 3.0",
+                                                      "licenseUrl":  "https://creativecommons.org/licenses/by-sa/3.0",
+                                                      "sourceUrl":  "https://commons.wikimedia.org/wiki/File%3AASUS_GeForce_RTX_2070_ROG_STRIX_Advanced_-_8GB_GDDR6_1634.jpg"
+                                                  }
+                                              ],
+                     "CT-GPU-RX7600-PULSE":  [
+                                                 {
+                                                     "file":  "/images/products/ct-gpu-rx7600-pulse.webp",
+                                                     "alt":  "Imagen ilustrativa de tarjeta gráfica AMD Radeon",
+                                                     "exact":  false,
+                                                     "title":  "File:Sapphire AMD Radeon RX 7900 XTX.jpg",
+                                                     "author":  "Geni",
+                                                     "license":  "CC BY-SA 4.0",
+                                                     "licenseUrl":  "https://creativecommons.org/licenses/by-sa/4.0",
+                                                     "sourceUrl":  "https://commons.wikimedia.org/wiki/File%3ASapphire_AMD_Radeon_RX_7900_XTX.jpg"
+                                                 }
+                                             ],
+                     "CT-CPU-R5-7600":  [
+                                            {
+                                                "file":  "/images/products/ct-cpu-r5-7600.webp",
+                                                "alt":  "Imagen ilustrativa — Procesador AMD Ryzen AM5",
+                                                "exact":  false,
+                                                "title":  "File:AMD AM5 Socket.png",
+                                                "author":  "CristoCalis",
+                                                "license":  "CC BY-SA 4.0",
+                                                "licenseUrl":  "https://creativecommons.org/licenses/by-sa/4.0",
+                                                "sourceUrl":  "https://commons.wikimedia.org/wiki/File%3AAMD_AM5_Socket.png"
+                                            }
+                                        ],
+                     "CT-SSD-MX500-1TB":  [
+                                              {
+                                                  "file":  "/images/products/ct-ssd-mx500-1tb.webp",
+                                                  "alt":  "Unidad SSD Crucial SATA",
+                                                  "exact":  true,
+                                                  "title":  "File:CT1000MX500SSD1 rear 20210220.jpg",
+                                                  "author":  "Solomon203",
+                                                  "license":  "CC BY-SA 4.0",
+                                                  "licenseUrl":  "https://creativecommons.org/licenses/by-sa/4.0",
+                                                  "sourceUrl":  "https://commons.wikimedia.org/wiki/File%3ACT1000MX500SSD1_rear_20210220.jpg"
+                                              }
+                                          ],
+                     "CT-SSD-NV2-1TB":  [
+                                            {
+                                                "file":  "/images/products/ct-ssd-nv2-1tb.webp",
+                                                "alt":  "Imagen ilustrativa — Unidad SSD M.2 NVMe Kingston",
+                                                "exact":  false,
+                                                "title":  "File:2023 Dysk SSD Kingston NV2 2TB.jpg",
+                                                "author":  "Jacek Halicki",
+                                                "license":  "CC BY-SA 4.0",
+                                                "licenseUrl":  "https://creativecommons.org/licenses/by-sa/4.0",
+                                                "sourceUrl":  "https://commons.wikimedia.org/wiki/File%3A2023_Dysk_SSD_Kingston_NV2_2TB.jpg"
+                                            }
+                                        ],
+                     "CT-LAP-IDEAPAD-SLIM3":  [
+                                                  {
+                                                      "file":  "/images/products/ct-lap-ideapad-slim3.webp",
+                                                      "alt":  "Imagen ilustrativa — Laptop Lenovo IdeaPad",
+                                                      "exact":  false,
+                                                      "title":  "File:Lenovo Ideapad 100-15IBY - cristaux liquides (5 dioptries).jpg",
+                                                      "author":  "Gzen92",
+                                                      "license":  "CC BY-SA 4.0",
+                                                      "licenseUrl":  "https://creativecommons.org/licenses/by-sa/4.0",
+                                                      "sourceUrl":  "https://commons.wikimedia.org/wiki/File%3ALenovo_Ideapad_100-15IBY_-_cristaux_liquides_(5_dioptries).jpg"
+                                                  }
+                                              ],
+                     "CT-MON-ODYSSEY-G5":  [
+                                               {
+                                                   "file":  "/images/products/ct-mon-odyssey-g5.webp",
+                                                   "alt":  "Imagen ilustrativa de monitor gamer curvo",
+                                                   "exact":  false,
+                                                   "title":  "File:Benq Gaming Curve Monitor Gamescom 2019 (48605730601).jpg",
+                                                   "author":  "dronepicr",
+                                                   "license":  "CC BY 2.0",
+                                                   "licenseUrl":  "https://creativecommons.org/licenses/by/2.0",
+                                                   "sourceUrl":  "https://commons.wikimedia.org/wiki/File%3ABenq_Gaming_Curve_Monitor_Gamescom_2019_(48605730601).jpg"
+                                               }
+                                           ],
+                     "CT-COOL-AK400":  [
+                                           {
+                                               "file":  "/images/products/ct-cool-ak400.webp",
+                                               "alt":  "Imagen ilustrativa de disipador torre para procesador",
+                                               "exact":  false,
+                                               "title":  "File:Alpenföhn Nordwand – CPU tower cooler-front oblique PNr°0303.jpg",
+                                               "author":  "D-Kuru",
+                                               "license":  "CC BY-SA 3.0 at",
+                                               "licenseUrl":  "https://creativecommons.org/licenses/by-sa/3.0/at/deed.en",
+                                               "sourceUrl":  "https://commons.wikimedia.org/wiki/File%3AAlpenf%C3%B6hn_Nordwand_%E2%80%93_CPU_tower_cooler-front_oblique_PNr%C2%B00303.jpg"
+                                           }
+                                       ],
+                     "CT-COOL-PA120SE":  [
+                                             {
+                                                 "file":  "/images/products/ct-cool-pa120se.webp",
+                                                 "alt":  "Imagen ilustrativa de disipador de doble ventilador",
+                                                 "exact":  false,
+                                                 "title":  "File:Cooler Master ML240P series 20190601.jpg",
+                                                 "author":  "Solomon203",
+                                                 "license":  "CC BY-SA 4.0",
+                                                 "licenseUrl":  "https://creativecommons.org/licenses/by-sa/4.0",
+                                                 "sourceUrl":  "https://commons.wikimedia.org/wiki/File%3ACooler_Master_ML240P_series_20190601.jpg"
+                                             }
+                                         ],
+                     "CT-PC-INICIAL":  [
+                                           {
+                                               "file":  "/images/products/ct-pc-inicial.webp",
+                                               "alt":  "Imagen ilustrativa de PC gamer armada con iluminación RGB",
+                                               "exact":  false,
+                                               "title":  "File:Informatique gaming pc.jpg",
+                                               "author":  "Prolete",
+                                               "license":  "CC0",
+                                               "licenseUrl":  "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
+                                               "sourceUrl":  "https://commons.wikimedia.org/wiki/File%3AInformatique_gaming_pc.jpg"
+                                           }
+                                       ],
+                     "CT-MB-B550M-PRO-VDH":  [
+                                                 {
+                                                     "file":  "/images/products/ct-mb-b550m-pro-vdh.webp",
+                                                     "alt":  "Imagen ilustrativa — Placa madre MSI B550M",
+                                                     "exact":  false,
+                                                     "title":  "File:Gigabyte B550 UD AC-Y1 - Front.png",
+                                                     "author":  "Nicolasfoster",
+                                                     "license":  "CC0",
+                                                     "licenseUrl":  "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
+                                                     "sourceUrl":  "https://commons.wikimedia.org/wiki/File%3AGigabyte_B550_UD_AC-Y1_-_Front.png"
+                                                 }
+                                             ],
+                     "CT-RAM-FURY-16-D4":  [
+                                               {
+                                                   "file":  "/images/products/ct-ram-fury-16-d4.webp",
+                                                   "alt":  "Imagen ilustrativa de memoria RAM DDR4",
+                                                   "exact":  false,
+                                                   "title":  "File:HyperX Fury 4gb DDR3.jpg",
+                                                   "author":  "Mr Yukio",
+                                                   "license":  "CC BY-SA 4.0",
+                                                   "licenseUrl":  "https://creativecommons.org/licenses/by-sa/4.0",
+                                                   "sourceUrl":  "https://commons.wikimedia.org/wiki/File%3AHyperX_Fury_4gb_DDR3.jpg"
+                                               }
+                                           ],
+                     "CT-ACC-MX4":  [
+                                        {
+                                            "file":  "/images/products/ct-acc-mx4.webp",
+                                            "alt":  "Imagen ilustrativa de pasta térmica para CPU",
+                                            "exact":  false,
+                                            "title":  "File:2023 Thermal Grizzly Kryonaut.jpg",
+                                            "author":  "Jacek Halicki",
+                                            "license":  "CC BY-SA 4.0",
+                                            "licenseUrl":  "https://creativecommons.org/licenses/by-sa/4.0",
+                                            "sourceUrl":  "https://commons.wikimedia.org/wiki/File%3A2023_Thermal_Grizzly_Kryonaut.jpg"
+                                        }
+                                    ],
+                     "CT-CASE-H5-FLOW":  [
+                                             {
+                                                 "file":  "/images/products/ct-case-h5-flow.webp",
+                                                 "alt":  "Imagen ilustrativa de gabinete ATX airflow",
+                                                 "exact":  false,
+                                                 "title":  "File:Schalter und Anschlüsse PC 20201120 DSC6139.jpg",
+                                                 "author":  "PantheraLeo1359531",
+                                                 "license":  "CC BY 4.0",
+                                                 "licenseUrl":  "https://creativecommons.org/licenses/by/4.0",
+                                                 "sourceUrl":  "https://commons.wikimedia.org/wiki/File%3ASchalter_und_Anschl%C3%BCsse_PC_20201120_DSC6139.jpg"
+                                             }
+                                         ],
+                     "CT-MON-24GS60F":  [
+                                            {
+                                                "file":  "/images/products/ct-mon-24gs60f.webp",
+                                                "alt":  "Imagen ilustrativa de monitor gamer IPS",
+                                                "exact":  false,
+                                                "title":  "File:American Truck Simulator Gamescom 2019 (48605662641).jpg",
+                                                "author":  "dronepicr",
+                                                "license":  "CC BY 2.0",
+                                                "licenseUrl":  "https://creativecommons.org/licenses/by/2.0",
+                                                "sourceUrl":  "https://commons.wikimedia.org/wiki/File%3AAmerican_Truck_Simulator_Gamescom_2019_(48605662641).jpg"
+                                            }
+                                        ],
+                     "CT-MB-B760M-DS3H":  [
+                                              {
+                                                  "file":  "/images/products/ct-mb-b760m-ds3h.webp",
+                                                  "alt":  "Imagen ilustrativa — Placa madre Gigabyte",
+                                                  "exact":  false,
+                                                  "title":  "File:GIGABYTE P55-UD6 Motherboard Unboxed.jpg",
+                                                  "author":  "Axel Bührmann",
+                                                  "license":  "CC BY 2.0",
+                                                  "licenseUrl":  "https://creativecommons.org/licenses/by/2.0",
+                                                  "sourceUrl":  "https://commons.wikimedia.org/wiki/File%3AGIGABYTE_P55-UD6_Motherboard_Unboxed.jpg"
+                                              }
+                                          ],
+                     "CT-PC-ESTUDIO":  [
+                                           {
+                                               "file":  "/images/products/ct-pc-estudio.webp",
+                                               "alt":  "Imagen ilustrativa de computadora de escritorio profesional",
+                                               "exact":  false,
+                                               "title":  "File:Scientist working with personal computer, 2013 (Dell Precision T3500 Workstation).jpeg",
+                                               "author":  "Flickr user ipasadelaide (artist: Jennie Groom)",
+                                               "license":  "CC BY 2.0",
+                                               "licenseUrl":  "https://creativecommons.org/licenses/by/2.0",
+                                               "sourceUrl":  "https://commons.wikimedia.org/wiki/File%3AScientist_working_with_personal_computer%2C_2013_(Dell_Precision_T3500_Workstation).jpeg"
+                                           }
+                                       ],
+                     "CT-RAM-LPX-32-D4":  [
+                                              {
+                                                  "file":  "/images/products/ct-ram-lpx-32-d4.webp",
+                                                  "alt":  "Imagen ilustrativa — Memoria RAM Corsair Vengeance",
+                                                  "exact":  false,
+                                                  "title":  "File:2023 Pamięci Corsair Vengeance RGB.jpg",
+                                                  "author":  "Jacek Halicki",
+                                                  "license":  "CC BY-SA 4.0",
+                                                  "licenseUrl":  "https://creativecommons.org/licenses/by-sa/4.0",
+                                                  "sourceUrl":  "https://commons.wikimedia.org/wiki/File%3A2023_Pami%C4%99ci_Corsair_Vengeance_RGB.jpg"
+                                              }
+                                          ],
+                     "CT-SSD-980-1TB":  [
+                                            {
+                                                "file":  "/images/products/ct-ssd-980-1tb.webp",
+                                                "alt":  "Imagen ilustrativa — Unidad SSD Samsung NVMe",
+                                                "exact":  false,
+                                                "title":  "File:Samsung 980 PRO PCIe 4.0 NVMe SSD 1TB-top PNr°0915.jpg",
+                                                "author":  "D-Kuru",
+                                                "license":  "CC BY-SA 4.0",
+                                                "licenseUrl":  "https://creativecommons.org/licenses/by-sa/4.0",
+                                                "sourceUrl":  "https://commons.wikimedia.org/wiki/File%3ASamsung_980_PRO_PCIe_4.0_NVMe_SSD_1TB-top_PNr%C2%B00915.jpg"
+                                            }
+                                        ],
+                     "CT-LAP-NITRO-V15":  [
+                                              {
+                                                  "file":  "/images/products/ct-lap-nitro-v15.webp",
+                                                  "alt":  "Imagen ilustrativa — Laptop gamer Acer Nitro",
+                                                  "exact":  false,
+                                                  "title":  "File:Acer Nitro 2026-08-15 gaming laptop.jpg",
+                                                  "author":  "P1898",
+                                                  "license":  "CC BY 4.0",
+                                                  "licenseUrl":  "https://creativecommons.org/licenses/by/4.0",
+                                                  "sourceUrl":  "https://commons.wikimedia.org/wiki/File%3AAcer_Nitro_2026-08-15_gaming_laptop.jpg"
+                                              }
+                                          ],
+                     "CT-CPU-R5-5600G":  [
+                                             {
+                                                 "file":  "/images/products/ct-cpu-r5-5600g.webp",
+                                                 "alt":  "Imagen ilustrativa de procesador AMD Ryzen con gráficos integrados",
+                                                 "exact":  false,
+                                                 "title":  "File:I Paired AMD Ryzen 7 5700x With Asus Prime A 320M-K Motherboard.jpg",
+                                                 "author":  "DarkEagle786",
+                                                 "license":  "CC0",
+                                                 "licenseUrl":  "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
+                                                 "sourceUrl":  "https://commons.wikimedia.org/wiki/File%3AI_Paired_AMD_Ryzen_7_5700x_With_Asus_Prime_A_320M-K_Motherboard.jpg"
+                                             }
+                                         ],
+                     "CT-PER-CLOUD-II":  [
+                                             {
+                                                 "file":  "/images/products/ct-per-cloud-ii.webp",
+                                                 "alt":  "Imagen ilustrativa de audífonos gamer con micrófono",
+                                                 "exact":  false,
+                                                 "title":  "File:Headset computer.webp",
+                                                 "author":  "Wikideas1",
+                                                 "license":  "CC0",
+                                                 "licenseUrl":  "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
+                                                 "sourceUrl":  "https://commons.wikimedia.org/wiki/File%3AHeadset_computer.webp"
+                                             }
+                                         ],
+                     "CT-PC-EQUILIBRADA":  [
+                                               {
+                                                   "file":  "/images/products/ct-pc-equilibrada.webp",
+                                                   "alt":  "Imagen ilustrativa de ensamble gamer con GPU dedicada",
+                                                   "exact":  false,
+                                                   "title":  "File:Gaming-PC 20240426 HOF2520-HDR RAW-Export.png",
+                                                   "author":  "PantheraLeo1359531",
+                                                   "license":  "CC BY 4.0",
+                                                   "licenseUrl":  "https://creativecommons.org/licenses/by/4.0",
+                                                   "sourceUrl":  "https://commons.wikimedia.org/wiki/File%3AGaming-PC_20240426_HOF2520-HDR_RAW-Export.png"
+                                               }
+                                           ],
+                     "CT-RAM-FURY-32-D5":  [
+                                               {
+                                                   "file":  "/images/products/ct-ram-fury-32-d5.webp",
+                                                   "alt":  "Imagen ilustrativa — Memoria RAM DDR5",
+                                                   "exact":  false,
+                                                   "title":  "File:TWSC 8GB DDR5-4800 SO-DIMM memory module - front view.jpg",
+                                                   "author":  "ITEagle Europe - Sebastiaan Broekhoven",
+                                                   "license":  "CC BY-SA 4.0",
+                                                   "licenseUrl":  "https://creativecommons.org/licenses/by-sa/4.0",
+                                                   "sourceUrl":  "https://commons.wikimedia.org/wiki/File%3ATWSC_8GB_DDR5-4800_SO-DIMM_memory_module_-_front_view.jpg"
+                                               }
+                                           ],
+                     "CT-PER-K552":  [
+                                         {
+                                             "file":  "/images/products/ct-per-k552.webp",
+                                             "alt":  "Imagen ilustrativa de teclado mecánico gamer",
+                                             "exact":  false,
+                                             "title":  "File:Logitech-g910 (16475940137).jpg",
+                                             "author":  "Sinchen.Lin",
+                                             "license":  "CC BY 2.0",
+                                             "licenseUrl":  "https://creativecommons.org/licenses/by/2.0",
+                                             "sourceUrl":  "https://commons.wikimedia.org/wiki/File%3ALogitech-g910_(16475940137).jpg"
+                                         }
+                                     ],
+                     "CT-CPU-R7-5700X":  [
+                                             {
+                                                 "file":  "/images/products/ct-cpu-r7-5700x.webp",
+                                                 "alt":  "Imagen ilustrativa de procesador AMD Ryzen 7",
+                                                 "exact":  false,
+                                                 "title":  "File:Unterseite des AMD Ryzen Threadripper 7970X 20240407 074.jpg",
+                                                 "author":  "PantheraLeo1359531",
+                                                 "license":  "CC BY 4.0",
+                                                 "licenseUrl":  "https://creativecommons.org/licenses/by/4.0",
+                                                 "sourceUrl":  "https://commons.wikimedia.org/wiki/File%3AUnterseite_des_AMD_Ryzen_Threadripper_7970X_20240407_074.jpg"
+                                             }
+                                         ],
+                     "CT-PSU-CV550":  [
+                                          {
+                                              "file":  "/images/products/ct-psu-cv550.webp",
+                                              "alt":  "Imagen ilustrativa — Fuente de poder Corsair",
+                                              "exact":  false,
+                                              "title":  "File:Corsair CX430.JPG",
+                                              "author":  "Santeri Viinamäki",
+                                              "license":  "CC BY 3.0",
+                                              "licenseUrl":  "https://creativecommons.org/licenses/by/3.0",
+                                              "sourceUrl":  "https://commons.wikimedia.org/wiki/File%3ACorsair_CX430.JPG"
+                                          }
+                                      ],
+                     "CT-MB-B450M-STEEL":  [
+                                               {
+                                                   "file":  "/images/products/ct-mb-b450m-steel.webp",
+                                                   "alt":  "Imagen ilustrativa de placa madre ASRock / AMD",
+                                                   "exact":  false,
+                                                   "title":  "File:2023 Płyta główna ASRock A320M-DVS.jpg",
+                                                   "author":  "Jacek Halicki",
+                                                   "license":  "CC BY-SA 4.0",
+                                                   "licenseUrl":  "https://creativecommons.org/licenses/by-sa/4.0",
+                                                   "sourceUrl":  "https://commons.wikimedia.org/wiki/File%3A2023_P%C5%82yta_g%C5%82%C3%B3wna_ASRock_A320M-DVS.jpg"
+                                               }
+                                           ],
+                     "CT-PER-G502-HERO":  [
+                                              {
+                                                  "file":  "/images/products/ct-per-g502-hero.webp",
+                                                  "alt":  "Mouse gamer Logitech G502",
+                                                  "exact":  true,
+                                                  "title":  "File:Logitech-g502 (13971829039).jpg",
+                                                  "author":  "Sinchen.Lin",
+                                                  "license":  "CC BY 2.0",
+                                                  "licenseUrl":  "https://creativecommons.org/licenses/by/2.0",
+                                                  "sourceUrl":  "https://commons.wikimedia.org/wiki/File%3ALogitech-g502_(13971829039).jpg"
+                                              }
+                                          ],
+                     "CT-MB-B650M-A-WIFI":  [
+                                                {
+                                                    "file":  "/images/products/ct-mb-b650m-a-wifi.webp",
+                                                    "alt":  "Imagen ilustrativa de placa madre AM5 DDR5",
+                                                    "exact":  false,
+                                                    "title":  "File:Asus-ROG-Strix-Z390-F-Gaming-Motherboard 20201120 DSC6025.jpg",
+                                                    "author":  "PantheraLeo1359531",
+                                                    "license":  "CC BY 4.0",
+                                                    "licenseUrl":  "https://creativecommons.org/licenses/by/4.0",
+                                                    "sourceUrl":  "https://commons.wikimedia.org/wiki/File%3AAsus-ROG-Strix-Z390-F-Gaming-Motherboard_20201120_DSC6025.jpg"
+                                                }
+                                            ],
+                     "CT-CPU-I5-12400F":  [
+                                              {
+                                                  "file":  "/images/products/ct-cpu-i5-12400f.webp",
+                                                  "alt":  "Imagen ilustrativa — Procesador Intel Core i5",
+                                                  "exact":  false,
+                                                  "title":  "File:14-ый провал Intel Зачем появились 14900K, 14700K и 14600K-00.22.30.816 (Мой Компьютер).png",
+                                                  "author":  "Мой Компьютер",
+                                                  "license":  "CC BY 3.0",
+                                                  "licenseUrl":  "https://creativecommons.org/licenses/by/3.0",
+                                                  "sourceUrl":  "https://commons.wikimedia.org/wiki/File%3A14-%D1%8B%D0%B9_%D0%BF%D1%80%D0%BE%D0%B2%D0%B0%D0%BB_Intel_%D0%97%D0%B0%D1%87%D0%B5%D0%BC_%D0%BF%D0%BE%D1%8F%D0%B2%D0%B8%D0%BB%D0%B8%D1%81%D1%8C_14900K%2C_14700K_%D0%B8_14600K-00.22.30.816_(%D0%9C%D0%BE%D0%B9_%D0%9A%D0%BE%D0%BC%D0%BF%D1%8C%D1%8E%D1%82%D0%B5%D1%80).png"
+                                              }
+                                          ],
+                     "CT-PSU-RM750E":  [
+                                           {
+                                               "file":  "/images/products/ct-psu-rm750e.webp",
+                                               "alt":  "Imagen ilustrativa — Fuente de poder modular",
+                                               "exact":  false,
+                                               "title":  "File:Full modular ATX power supply unit.jpg",
+                                               "author":  "Project Kei",
+                                               "license":  "CC BY-SA 4.0",
+                                               "licenseUrl":  "https://creativecommons.org/licenses/by-sa/4.0",
+                                               "sourceUrl":  "https://commons.wikimedia.org/wiki/File%3AFull_modular_ATX_power_supply_unit.jpg"
+                                           }
+                                       ],
+                     "CT-PSU-A650BN":  [
+                                           {
+                                               "file":  "/images/products/ct-psu-a650bn.webp",
+                                               "alt":  "Imagen ilustrativa — Fuente de poder ATX",
+                                               "exact":  false,
+                                               "title":  "File:Cooler Master MPE-6501-AFAAG 650W power supply - front view.jpg",
+                                               "author":  "ITEagle Europe - Sebastiaan Broekhoven",
+                                               "license":  "CC BY-SA 4.0",
+                                               "licenseUrl":  "https://creativecommons.org/licenses/by-sa/4.0",
+                                               "sourceUrl":  "https://commons.wikimedia.org/wiki/File%3ACooler_Master_MPE-6501-AFAAG_650W_power_supply_-_front_view.jpg"
+                                           }
+                                       ],
+                     "CT-CASE-VERSA-H18":  [
+                                               {
+                                                   "file":  "/images/products/ct-case-versa-h18.webp",
+                                                   "alt":  "Imagen ilustrativa de gabinete torre con panel mallado",
+                                                   "exact":  false,
+                                                   "title":  "File:Interior de Mi PC.jpg",
+                                                   "author":  "Albo x Siempre",
+                                                   "license":  "CC BY-SA 3.0",
+                                                   "licenseUrl":  "https://creativecommons.org/licenses/by-sa/3.0",
+                                                   "sourceUrl":  "https://commons.wikimedia.org/wiki/File%3AInterior_de_Mi_PC.jpg"
+                                               }
+                                           ],
+                     "CT-CPU-I5-13400F":  [
+                                              {
+                                                  "file":  "/images/products/ct-cpu-i5-13400f.webp",
+                                                  "alt":  "Imagen ilustrativa de procesador Intel Core i5",
+                                                  "exact":  false,
+                                                  "title":  "File:2023 Intel Core i7 12700KF (5).jpg",
+                                                  "author":  "Jacek Halicki",
+                                                  "license":  "CC BY-SA 4.0",
+                                                  "licenseUrl":  "https://creativecommons.org/licenses/by-sa/4.0",
+                                                  "sourceUrl":  "https://commons.wikimedia.org/wiki/File%3A2023_Intel_Core_i7_12700KF_(5).jpg"
+                                              }
+                                          ],
+                     "CT-GPU-RTX4060-VENTUS":  [
+                                                   {
+                                                       "file":  "/images/products/ct-gpu-rtx4060-ventus.webp",
+                                                       "alt":  "Imagen ilustrativa de tarjeta gráfica NVIDIA GeForce RTX",
+                                                       "exact":  false,
+                                                       "title":  "File:2023 Gigabyte GeForce RTX 4070 Aero OC 12GB (6).jpg",
+                                                       "author":  "Jacek Halicki",
+                                                       "license":  "CC BY-SA 4.0",
+                                                       "licenseUrl":  "https://creativecommons.org/licenses/by-sa/4.0",
+                                                       "sourceUrl":  "https://commons.wikimedia.org/wiki/File%3A2023_Gigabyte_GeForce_RTX_4070_Aero_OC_12GB_(6).jpg"
+                                                   }
+                                               ]
+                 },
+    "services":  [
+                     {
+                         "file":  "/images/services/srv-diagnostico.webp",
+                         "alt":  "Revisión y diagnóstico técnico de hardware",
+                         "exact":  false,
+                         "title":  "File:Computer repair in progress.jpg",
+                         "author":  "Vintechcomputerservices",
+                         "license":  "CC BY-SA 4.0",
+                         "licenseUrl":  "https://creativecommons.org/licenses/by-sa/4.0",
+                         "sourceUrl":  "https://commons.wikimedia.org/wiki/File%3AComputer_repair_in_progress.jpg"
+                     },
+                     {
+                         "file":  "/images/services/srv-mantenimiento.webp",
+                         "alt":  "Mantenimiento preventivo y limpieza de componentes",
+                         "exact":  false,
+                         "title":  "File:US Navy 040719-N-7748K-015 Information Systems Technician 2nd Class Mark Cephus of Atlanta, Ga. cleans dust off of a computer aboard USS Enterprise (CVN 65).jpg",
+                         "author":  "U.S. Navy photo by Photographer\u0027s Mate Airman Joshua C. Kinter",
+                         "license":  "Public domain",
+                         "licenseUrl":  "https://commons.wikimedia.org/wiki/File%3AUS_Navy_040719-N-7748K-015_Information_Systems_Technician_2nd_Class_Mark_Cephus_of_Atlanta%2C_Ga._cleans_dust_off_of_a_computer_aboard_USS_Enterprise_(CVN_65).jpg",
+                         "sourceUrl":  "https://commons.wikimedia.org/wiki/File%3AUS_Navy_040719-N-7748K-015_Information_Systems_Technician_2nd_Class_Mark_Cephus_of_Atlanta%2C_Ga._cleans_dust_off_of_a_computer_aboard_USS_Enterprise_(CVN_65).jpg"
+                     },
+                     {
+                         "file":  "/images/services/srv-ensamblaje.webp",
+                         "alt":  "Ensamblaje interno y organización de componentes de PC",
+                         "exact":  false,
+                         "title":  "File:Desktop Computer Insides (16028564870).jpg",
+                         "author":  "I G",
+                         "license":  "CC BY 2.0",
+                         "licenseUrl":  "https://creativecommons.org/licenses/by/2.0",
+                         "sourceUrl":  "https://commons.wikimedia.org/wiki/File%3ADesktop_Computer_Insides_(16028564870).jpg"
+                     },
+                     {
+                         "file":  "/images/services/srv-laptop.webp",
+                         "alt":  "Interior de laptop abierta con placa madre y disipación térmica",
+                         "exact":  false,
+                         "title":  "File:Framework Laptop 13 - 2023 AMD Ryzen - Internal motherboard and component view.jpg",
+                         "author":  "Ogidya",
+                         "license":  "CC BY 4.0",
+                         "licenseUrl":  "https://creativecommons.org/licenses/by/4.0",
+                         "sourceUrl":  "https://commons.wikimedia.org/wiki/File%3AFramework_Laptop_13_-_2023_AMD_Ryzen_-_Internal_motherboard_and_component_view.jpg"
+                     },
+                     {
+                         "file":  "/images/services/srv-b2b.webp",
+                         "alt":  "Soporte técnico para equipos empresariales",
+                         "exact":  false,
+                         "title":  "File:Velocity Micro \"ProMagix HD60\" Workstation Computer.jpg",
+                         "author":  "Mnicolois",
+                         "license":  "CC BY 4.0",
+                         "licenseUrl":  "https://creativecommons.org/licenses/by/4.0",
+                         "sourceUrl":  "https://commons.wikimedia.org/wiki/File%3AVelocity_Micro_%22ProMagix_HD60%22_Workstation_Computer.jpg"
+                     }
+                 ]
+}

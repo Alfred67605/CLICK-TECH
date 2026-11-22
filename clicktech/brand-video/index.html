@@ -1,0 +1,371 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1920, height=1080" />
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.15.0/dist/gsap.min.js"></script>
+    <style>
+      @font-face {
+        font-family: "Orbitron";
+        src: url("assets/fonts/Orbitron.ttf") format("truetype");
+        font-weight: 400 900;
+        font-display: swap;
+      }
+      @font-face {
+        font-family: "Space Grotesk";
+        src: url("assets/fonts/SpaceGrotesk.ttf") format("truetype");
+        font-weight: 400 700;
+        font-display: swap;
+      }
+
+      :root {
+        --brand-bg: #02040a;
+        --brand-surface: #0a0f1d;
+        --brand-cyan: #00e5ff;
+        --brand-purple: #8b5cf6;
+        --brand-ink: #ffffff;
+        --brand-muted: #cbd5e1;
+        --font-display: "Orbitron", sans-serif;
+        --font-body: "Space Grotesk", sans-serif;
+      }
+
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      html,
+      body {
+        width: 1920px;
+        height: 1080px;
+        overflow: hidden;
+        background: var(--brand-bg);
+      }
+
+      #root {
+        position: relative;
+        width: 1920px;
+        height: 1080px;
+        overflow: hidden;
+        background: var(--brand-bg);
+        color: var(--brand-ink);
+        font-family: var(--font-body);
+      }
+
+      /* Background hardware plates */
+      .plate-layer {
+        position: absolute;
+        inset: 0;
+        overflow: hidden;
+      }
+
+      .plate-inner {
+        position: absolute;
+        inset: -4%;
+        width: 108%;
+        height: 108%;
+      }
+
+      .plate-inner img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        display: block;
+      }
+
+      .scrim-layer {
+        position: absolute;
+        inset: 0;
+        background:
+          radial-gradient(circle at 24% 38%, rgba(0, 229, 255, 0.22), transparent 52%),
+          radial-gradient(circle at 78% 64%, rgba(139, 92, 246, 0.28), transparent 54%),
+          linear-gradient(125deg, rgba(2, 4, 10, 0.92) 0%, rgba(2, 4, 10, 0.72) 50%, rgba(2, 4, 10, 0.94) 100%);
+      }
+
+      /* 45-degree chassis corner cut accents */
+      .chassis-frame {
+        position: absolute;
+        inset: 54px;
+        border: 1px solid rgba(0, 229, 255, 0.28);
+        pointer-events: none;
+      }
+
+      .chassis-corner-tl {
+        position: absolute;
+        top: 54px;
+        left: 54px;
+        width: 140px;
+        height: 4px;
+        background: var(--brand-cyan);
+      }
+
+      .chassis-corner-br {
+        position: absolute;
+        bottom: 54px;
+        right: 54px;
+        width: 140px;
+        height: 4px;
+        background: var(--brand-purple);
+      }
+
+      /* Sweeping light beam */
+      .light-sweep {
+        position: absolute;
+        top: -20%;
+        left: -30%;
+        width: 480px;
+        height: 140%;
+        background: linear-gradient(90deg, transparent, rgba(0, 229, 255, 0.16), rgba(139, 92, 246, 0.14), transparent);
+        pointer-events: none;
+      }
+
+      /* Brand lockup stage */
+      .stage-center {
+        position: absolute;
+        inset: 108px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+      }
+
+      .logo-box {
+        width: 560px;
+        height: 420px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .logo-box img {
+        max-width: 100%;
+        max-height: 100%;
+        object-fit: contain;
+        display: block;
+      }
+
+      .slogan-wrap {
+        margin-top: 24px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 18px;
+      }
+
+      .slogan-title {
+        font-family: var(--font-display);
+        font-size: 74px;
+        font-weight: 800;
+        letter-spacing: -0.02em;
+        line-height: 1.08;
+        color: var(--brand-ink);
+      }
+
+      .slogan-sub {
+        font-family: var(--font-body);
+        font-size: 30px;
+        font-weight: 500;
+        letter-spacing: 0.04em;
+        color: var(--brand-cyan);
+      }
+
+      .location-pill {
+        position: absolute;
+        bottom: 84px;
+        left: 96px;
+        padding: 12px 22px;
+        border: 1px solid rgba(0, 229, 255, 0.35);
+        background: rgba(10, 15, 29, 0.85);
+        font-family: var(--font-body);
+        font-size: 22px;
+        font-weight: 600;
+        color: var(--brand-muted);
+        letter-spacing: 0.05em;
+      }
+    </style>
+  </head>
+  <body>
+    <div
+      id="root"
+      data-composition-id="main"
+      data-start="0"
+      data-duration="8"
+      data-fps="30"
+      data-width="1920"
+      data-height="1080"
+      data-composition-variables='[
+        {"id":"heroPlatePrimary","type":"image","label":"Imagen hardware principal","default":"assets/hero-1.webp"},
+        {"id":"heroPlateSecondary","type":"image","label":"Imagen hardware secundaria","default":"assets/hero-2.webp"},
+        {"id":"brandLogo","type":"image","label":"Logotipo ClickTech","default":"assets/logo_user_overlay.png"},
+        {"id":"sloganPrimary","type":"string","label":"Lema principal","default":"Tecnología a tu medida"},
+        {"id":"sloganSecondary","type":"string","label":"Mensaje complementario","default":"Más que tecnología, es tu pasión"},
+        {"id":"locationLabel","type":"string","label":"Ubicación","default":"POTOSÍ, BOLIVIA · HARDWARE & SERVICIO TÉCNICO"}
+      ]'
+    >
+      <!-- Scene 1: Hardware showcase plate (0s - 8s) -->
+      <div
+        id="clip-hardware-a"
+        class="clip plate-layer"
+        data-start="0"
+        data-duration="5"
+        data-track-index="0"
+        data-track-kind="graphics"
+      >
+        <div id="plate-a-inner" class="plate-inner">
+          <img src="assets/hero-1.webp" data-var-src="heroPlatePrimary" alt="Hardware gamer real" />
+        </div>
+      </div>
+
+      <div
+        id="clip-hardware-b"
+        class="clip plate-layer"
+        data-start="3.4"
+        data-duration="4.6"
+        data-track-index="1"
+        data-track-kind="graphics"
+      >
+        <div id="plate-b-inner" class="plate-inner">
+          <img src="assets/hero-2.webp" data-var-src="heroPlateSecondary" alt="Componentes y tarjeta gráfica" />
+        </div>
+      </div>
+
+      <!-- Contrast scrim + brand light geometry -->
+      <div
+        id="clip-atmosphere"
+        class="clip plate-layer"
+        data-start="0"
+        data-duration="8"
+        data-track-index="2"
+        data-track-kind="graphics"
+      >
+        <div class="scrim-layer"></div>
+        <div id="sweep-beam" class="light-sweep"></div>
+        <div class="chassis-frame"></div>
+        <div id="accent-tl" class="chassis-corner-tl"></div>
+        <div id="accent-br" class="chassis-corner-br"></div>
+      </div>
+
+      <!-- Scene 2 & 3: Original logo + Slogan inside 80% title-safe zone -->
+      <div
+        id="clip-brand-lockup"
+        class="clip stage-center"
+        data-start="1.0"
+        data-duration="7.0"
+        data-track-index="3"
+        data-track-kind="graphics"
+      >
+        <div id="logo-inner" class="logo-box">
+          <img
+            src="assets/logo_user_overlay.png"
+            data-var-src="brandLogo"
+            alt="ClickTech logotipo oficial"
+          />
+        </div>
+        <div class="slogan-wrap">
+          <h1 id="slogan-main" class="slogan-title" data-var-text="sloganPrimary">
+            Tecnología a tu medida
+          </h1>
+          <p id="slogan-sub" class="slogan-sub" data-var-text="sloganSecondary">
+            Más que tecnología, es tu pasión
+          </p>
+        </div>
+      </div>
+
+      <!-- Corner service badge -->
+      <div
+        id="clip-location-tag"
+        class="clip location-pill"
+        data-start="4.2"
+        data-duration="3.8"
+        data-track-index="4"
+        data-track-kind="graphics"
+        data-var-text="locationLabel"
+      >
+        POTOSÍ, BOLIVIA · HARDWARE &amp; SERVICIO TÉCNICO
+      </div>
+    </div>
+
+    <script>
+      const tl = gsap.timeline({ paused: true });
+
+      // 0s -> 4.8s: slow hardware push-in on plate A
+      tl.fromTo(
+        "#plate-a-inner",
+        { scale: 1.0, opacity: 0.85, x: 0 },
+        { scale: 1.09, opacity: 0.72, x: -24, duration: 4.6, ease: "power2.inOut" },
+        0
+      );
+
+      // 3.4s -> 8.0s: smooth hardware crossfade to plate B and settle toward loop
+      tl.fromTo(
+        "#plate-b-inner",
+        { scale: 1.08, opacity: 0 },
+        { scale: 1.0, opacity: 0.78, duration: 1.4, ease: "power3.out" },
+        3.4
+      );
+      tl.to(
+        "#plate-b-inner",
+        { scale: 1.03, opacity: 0.85, duration: 3.1, ease: "power2.inOut" },
+        4.8
+      );
+
+      // Sweeping cyan/purple light across chassis
+      tl.fromTo(
+        "#sweep-beam",
+        { x: -300, rotation: 18, opacity: 0 },
+        { x: 2400, rotation: 18, opacity: 0.9, duration: 2.6, ease: "power2.inOut" },
+        0.8
+      );
+      tl.fromTo(
+        "#sweep-beam",
+        { x: -300, rotation: 18, opacity: 0 },
+        { x: 2400, rotation: 18, opacity: 0.75, duration: 2.4, ease: "power2.inOut", immediateRender: false },
+        4.6
+      );
+
+      // 1.1s -> 2.4s: Logo arrival (expo.out long tail, never from scale(0))
+      tl.fromTo(
+        "#logo-inner",
+        { opacity: 0, scale: 0.9, y: 26 },
+        { opacity: 1, scale: 1, y: 0, duration: 1.2, ease: "expo.out" },
+        1.1
+      );
+
+      // 2.5s -> 3.6s: Primary slogan arrival
+      tl.fromTo(
+        "#slogan-main",
+        { opacity: 0, y: 20 },
+        { opacity: 1, y: 0, duration: 0.95, ease: "power4.out" },
+        2.5
+      );
+
+      // 3.3s -> 4.2s: Complementary emotional line
+      tl.fromTo(
+        "#slogan-sub",
+        { opacity: 0, y: 14 },
+        { opacity: 1, y: 0, duration: 0.85, ease: "power3.out" },
+        3.3
+      );
+
+      // 4.2s -> 5.0s: Potosi badge enters
+      tl.fromTo(
+        "#clip-location-tag",
+        { opacity: 0, x: -18 },
+        { opacity: 1, x: 0, duration: 0.7, ease: "power3.out" },
+        4.2
+      );
+
+      // Subtle loop-friendly landing fade near end of 8s
+      tl.to(
+        ["#logo-inner", "#slogan-main", "#slogan-sub", "#clip-location-tag"],
+        { opacity: 0.92, duration: 0.5, ease: "power2.in" },
+        7.4
+      );
+
+      window.__timelines["main"] = tl;
+      tl.seek(0);
+    </script>
+  </body>
+</html>

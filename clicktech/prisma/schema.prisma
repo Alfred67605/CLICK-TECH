@@ -1,0 +1,1020 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  ADMIN
+  SALES
+  TECH
+  CUSTOMER
+}
+
+enum ComponentType {
+  CPU
+  MOTHERBOARD
+  RAM
+  GPU
+  STORAGE
+  PSU
+  CASE
+  COOLER
+  MONITOR
+  PERIPHERAL
+  ACCESSORY
+  PREBUILT
+  LAPTOP
+}
+
+enum PurchaseOrderStatus {
+  DRAFT
+  ORDERED
+  PARTIALLY_RECEIVED
+  RECEIVED
+  CANCELLED
+}
+
+enum InventoryMovementType {
+  PURCHASE_RECEIPT
+  SALE_RESERVATION
+  SALE_RELEASE
+  SALE_DISPATCH
+  SERVICE_PART_USED
+  MANUAL_ADJUSTMENT
+  CUSTOMER_RETURN_VALIDATED
+}
+
+enum MovementReferenceType {
+  ORDER
+  PURCHASE
+  SERVICE_ORDER
+  ADJUSTMENT
+  RETURN
+}
+
+enum ReservationStatus {
+  ACTIVE
+  COMMITTED
+  RELEASED
+  EXPIRED
+}
+
+enum OrderStatus {
+  PENDING_PAYMENT
+  PAYMENT_UNDER_REVIEW
+  PAID_CONFIRMED
+  PREPARING
+  READY_FOR_PICKUP
+  OUT_FOR_DELIVERY
+  DELIVERED
+  CANCELLED
+  EXPIRED_RESERVATION
+}
+
+enum PaymentStatus {
+  UNPAID
+  PROOF_SUBMITTED
+  APPROVED
+  REJECTED
+  REFUNDED
+  PAY_ON_PICKUP_PENDING
+}
+
+enum DeliveryMethod {
+  PICKUP_POTOSI
+  LOCAL_DELIVERY
+  DELIVERY_QUOTE_REQUESTED
+}
+
+enum DeliveryStatus {
+  PENDING
+  COORDINATING
+  READY
+  IN_TRANSIT
+  DELIVERED
+  CANCELLED
+}
+
+enum PaymentMethod {
+  TRANSFER_QR_MANUAL
+  PAY_ON_PICKUP
+}
+
+enum ReturnValidationStatus {
+  PENDING_RECEIPT
+  RECEIVED_VALIDATED_RESTOCK
+  RECEIVED_DEFECTIVE_NO_RESTOCK
+  REJECTED
+}
+
+enum BuildMode {
+  NEW_PC
+  UPGRADE
+}
+
+enum BuildPrimaryUse {
+  GAMING
+  STUDY_WORK
+  CONTENT_CREATION
+  OFFICE_PYME
+}
+
+enum CompatibilityStatus {
+  COMPATIBLE
+  INCOMPATIBLE
+  REQUIRES_REVIEW
+}
+
+enum QuoteType {
+  PC_BUILD
+  BUDGET_ADVISORY
+  B2B_CORPORATE
+  SERVICE_ORDER
+}
+
+enum QuoteStatus {
+  DRAFT
+  SENT_PENDING_APPROVAL
+  ACCEPTED
+  REJECTED
+  EXPIRED
+  CONVERTED_TO_ORDER
+  SUPERSEDED
+}
+
+enum QuoteVersionStatus {
+  PENDING
+  ACCEPTED
+  REJECTED
+  SUPERSEDED
+}
+
+enum ServiceCategory {
+  DIAGNOSTIC
+  PREVENTIVE_MAINTENANCE
+  CORRECTIVE_MAINTENANCE
+  REPAIR
+  UPGRADE
+  CUSTOM_ASSEMBLY
+  SOFTWARE_INSTALL
+  B2B_SUPPORT
+}
+
+enum ServicePricingType {
+  FIXED
+  SUBJECT_TO_DIAGNOSIS
+}
+
+enum DeviceType {
+  DESKTOP
+  LAPTOP
+  COMPONENT
+  PERIPHERAL
+  OTHER
+}
+
+enum ServiceDeliveryModality {
+  DROP_OFF_POINT
+  COORDINATED_PICKUP
+}
+
+enum ServiceOrderStatus {
+  REQUEST_RECEIVED
+  COORDINATION
+  EQUIPMENT_RECEIVED
+  DIAGNOSIS
+  QUOTE_PENDING_APPROVAL
+  WORK_AUTHORIZED
+  IN_PROGRESS
+  TESTING
+  READY_FOR_DELIVERY
+  DELIVERED
+  WAITING_PARTS
+  QUOTE_REJECTED
+  CANCELLED
+}
+
+enum WarrantyStatus {
+  ACTIVE
+  EXPIRED
+  CLAIMED
+  VOID
+}
+
+enum WarrantyClaimStatus {
+  SUBMITTED
+  UNDER_REVIEW
+  APPROVED_SERVICE
+  RESOLVED
+  REJECTED
+}
+
+enum ConsultationStatus {
+  OPEN
+  ANSWERED
+  CLOSED
+}
+
+model User {
+  id                 String    @id @default(cuid())
+  email              String    @unique
+  passwordHash       String
+  name               String
+  phone              String?
+  role               Role      @default(CUSTOMER)
+  isActive           Boolean   @default(true)
+  mustChangePassword Boolean   @default(false)
+  createdAt          DateTime  @default(now())
+  updatedAt          DateTime  @updatedAt
+
+  sessions              Session[]
+  passwordResetTokens   PasswordResetToken[]
+  customerProfile       CustomerProfile?
+  addresses             Address[]
+  carts                 Cart[]
+  orders                Order[]
+  submittedPayments     Payment[]             @relation("SubmittedPayments")
+  reviewedPayments      Payment[]             @relation("ReviewedPayments")
+  createdPurchaseOrders PurchaseOrder[]
+  purchaseReceipts      PurchaseReceipt[]
+  inventoryMovements    InventoryMovement[]
+  validatedReturns      ProductReturn[]
+  pcConfigurations      PcConfiguration[]
+  quotes                Quote[]
+  createdQuoteVersions  QuoteVersion[]        @relation("QuoteVersionCreator")
+  decidedQuoteVersions  QuoteVersion[]        @relation("QuoteVersionDecider")
+  customerServices      ServiceOrder[]        @relation("CustomerServiceOrders")
+  assignedServices      ServiceOrder[]        @relation("AssignedTechServices")
+  serviceTimelineEvents ServiceOrderTimeline[]
+  serviceAttachments    ServiceAttachment[]
+  warranties            Warranty[]
+  warrantyClaims        WarrantyClaim[]
+  consultations         Consultation[]
+  updatedConfigs        BusinessConfig[]
+  auditLogs             AuditLog[]
+
+  @@index([role])
+  @@index([isActive])
+}
+
+model Session {
+  id        String   @id @default(cuid())
+  tokenHash String   @unique
+  userId    String
+  expiresAt DateTime
+  ipAddress String?
+  userAgent String?
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([expiresAt])
+}
+
+model PasswordResetToken {
+  id             String    @id @default(cuid())
+  userId         String
+  tokenHash      String    @unique
+  expiresAt      DateTime
+  usedAt         DateTime?
+  devPreviewCode String?
+  createdAt      DateTime  @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([expiresAt])
+}
+
+model CustomerProfile {
+  id             String   @id @default(cuid())
+  userId         String   @unique
+  documentType   String?
+  documentNumber String?
+  companyName    String?
+  isB2B          Boolean  @default(false)
+  notes          String?
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model DeliveryZone {
+  id                String   @id @default(cuid())
+  slug              String   @unique
+  name              String
+  city              String   @default("Potosí")
+  feeCents          Int?
+  isAvailable       Boolean  @default(true)
+  isPendingRealData Boolean  @default(true)
+  estimatedSchedule String?
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  addresses Address[]
+  orders    Order[]
+}
+
+model Address {
+  id            String   @id @default(cuid())
+  userId        String
+  zoneId        String?
+  recipientName String
+  phone         String
+  street        String
+  reference     String?
+  city          String   @default("Potosí")
+  isDefault     Boolean  @default(false)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  user User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  zone DeliveryZone? @relation(fields: [zoneId], references: [id], onDelete: SetNull)
+
+  @@index([userId])
+}
+
+model Category {
+  id          String    @id @default(cuid())
+  slug        String    @unique
+  name        String
+  description String
+  imageUrl    String?
+  sortOrder   Int       @default(0)
+  isActive    Boolean   @default(true)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  products Product[]
+
+  @@index([sortOrder])
+}
+
+model Brand {
+  id        String    @id @default(cuid())
+  slug      String    @unique
+  name      String
+  createdAt DateTime  @default(now())
+
+  products Product[]
+}
+
+model Product {
+  id              String   @id @default(cuid())
+  sku             String   @unique
+  slug            String   @unique
+  name            String
+  model           String
+  categoryId      String
+  brandId         String
+  description     String
+  shortSpecsJson  Json
+  costCents       Int
+  priceCents      Int
+  promoPriceCents Int?
+  promoLabel      String?
+  stockOnHand     Int      @default(0)
+  stockReserved   Int      @default(0)
+  minStockAlert   Int      @default(2)
+  warrantyMonths  Int?
+  warrantyTerms   String?
+  isPublished     Boolean  @default(true)
+  isFeatured      Boolean  @default(false)
+  isPrebuiltPc    Boolean  @default(false)
+  prebuiltTier    String?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  category           Category            @relation(fields: [categoryId], references: [id])
+  brand              Brand               @relation(fields: [brandId], references: [id])
+  images             ProductImage[]
+  compatibilitySpec  CompatibilitySpec?
+  cartItems          CartItem[]
+  orderItems         OrderItem[]
+  reservations       StockReservation[]
+  inventoryMovements InventoryMovement[]
+  purchaseItems      PurchaseOrderItem[]
+  serviceParts       ServiceOrderPart[]
+  returns            ProductReturn[]
+  consultations      Consultation[]
+
+  @@index([categoryId, isPublished])
+  @@index([brandId])
+  @@index([isFeatured, isPublished])
+  @@index([isPrebuiltPc, isPublished])
+}
+
+model ProductImage {
+  id             String  @id @default(cuid())
+  productId      String
+  url            String
+  altText        String
+  isPrimary      Boolean @default(false)
+  isIllustrative Boolean @default(true)
+  author         String?
+  license        String?
+  licenseUrl     String?
+  sourceUrl      String?
+  sortOrder      Int     @default(0)
+
+  product Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  @@index([productId])
+}
+
+model CompatibilitySpec {
+  id                    String        @id @default(cuid())
+  productId             String        @unique
+  componentType         ComponentType
+  socket                String?
+  chipset               String?
+  biosVersionRequired   String?
+  supportedCpuSeries    Json?
+  ramGeneration         String?
+  ramSlots              Int?
+  ramModulesCount       Int?
+  ramCapacityGb         Int?
+  maxRamGb              Int?
+  formFactor            String?
+  supportedFormFactors  Json?
+  tdpWatts              Int?
+  recommendedPsuWatts   Int?
+  psuWatts              Int?
+  pcie8PinConnectors    Int?
+  pcie12Vhpwr           Boolean?
+  gpuLengthMm           Int?
+  caseMaxGpuLengthMm    Int?
+  coolerHeightMm        Int?
+  caseMaxCoolerHeightMm Int?
+  supportedSockets      Json?
+  m2Slots               Int?
+  sataPorts             Int?
+  storageInterface      String?
+  hasIntegratedGraphics Boolean?
+
+  product Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  @@index([componentType])
+  @@index([socket])
+}
+
+model Supplier {
+  id          String          @id @default(cuid())
+  name        String
+  contactName String?
+  phone       String?
+  email       String?
+  city        String?
+  notes       String?
+  isActive    Boolean         @default(true)
+  createdAt   DateTime        @default(now())
+
+  purchaseOrders PurchaseOrder[]
+}
+
+model PurchaseOrder {
+  id             String              @id @default(cuid())
+  code           String              @unique
+  supplierId     String
+  status         PurchaseOrderStatus @default(DRAFT)
+  totalCostCents Int                 @default(0)
+  notes          String?
+  createdById    String
+  createdAt      DateTime            @default(now())
+  updatedAt      DateTime            @updatedAt
+
+  supplier  Supplier            @relation(fields: [supplierId], references: [id])
+  createdBy User                @relation(fields: [createdById], references: [id])
+  items     PurchaseOrderItem[]
+  receipts  PurchaseReceipt[]
+
+  @@index([supplierId])
+  @@index([status])
+}
+
+model PurchaseOrderItem {
+  id                  String @id @default(cuid())
+  purchaseOrderId     String
+  productId           String
+  productNameSnapshot String
+  skuSnapshot         String
+  orderedQty          Int
+  receivedQty         Int    @default(0)
+  unitCostCents       Int
+
+  purchaseOrder PurchaseOrder @relation(fields: [purchaseOrderId], references: [id], onDelete: Cascade)
+  product       Product       @relation(fields: [productId], references: [id])
+
+  @@index([purchaseOrderId])
+  @@index([productId])
+}
+
+model PurchaseReceipt {
+  id              String   @id @default(cuid())
+  purchaseOrderId String
+  idempotencyKey  String   @unique
+  receivedById    String
+  notes           String?
+  itemsJson       Json
+  createdAt       DateTime @default(now())
+
+  purchaseOrder PurchaseOrder @relation(fields: [purchaseOrderId], references: [id], onDelete: Cascade)
+  receivedBy    User          @relation(fields: [receivedById], references: [id])
+
+  @@index([purchaseOrderId])
+}
+
+model InventoryMovement {
+  id                    String                @id @default(cuid())
+  productId             String
+  type                  InventoryMovementType
+  quantityDelta         Int
+  stockOnHandAfter      Int
+  stockReservedAfter    Int
+  unitCostCentsSnapshot Int?
+  referenceType         MovementReferenceType
+  referenceId           String
+  idempotencyKey        String                @unique
+  reason                String
+  actorId               String?
+  createdAt             DateTime              @default(now())
+
+  product     Product           @relation(fields: [productId], references: [id])
+  actor       User?             @relation(fields: [actorId], references: [id], onDelete: SetNull)
+  servicePart ServiceOrderPart?
+
+  @@index([productId, createdAt])
+  @@index([referenceType, referenceId])
+}
+
+model StockReservation {
+  id            String            @id @default(cuid())
+  orderId       String
+  productId     String
+  quantity      Int
+  status        ReservationStatus @default(ACTIVE)
+  expiresAt     DateTime
+  releasedAt    DateTime?
+  releaseReason String?
+  createdAt     DateTime          @default(now())
+
+  order   Order   @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  product Product @relation(fields: [productId], references: [id])
+
+  @@index([orderId])
+  @@index([productId, status])
+  @@index([status, expiresAt])
+}
+
+model Cart {
+  id           String     @id @default(cuid())
+  sessionToken String     @unique
+  userId       String?
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+
+  user  User?      @relation(fields: [userId], references: [id], onDelete: SetNull)
+  items CartItem[]
+
+  @@index([userId])
+}
+
+model CartItem {
+  id        String   @id @default(cuid())
+  cartId    String
+  productId String
+  quantity  Int
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  cart    Cart    @relation(fields: [cartId], references: [id], onDelete: Cascade)
+  product Product @relation(fields: [productId], references: [id])
+
+  @@unique([cartId, productId])
+}
+
+model Order {
+  id                        String         @id @default(cuid())
+  orderNumber               String         @unique
+  idempotencyKey            String         @unique
+  userId                    String?
+  guestEmail                String?
+  guestName                 String?
+  guestPhone                String?
+  guestVerificationCodeHash String?
+  status                    OrderStatus    @default(PENDING_PAYMENT)
+  paymentStatus             PaymentStatus  @default(UNPAID)
+  deliveryMethod            DeliveryMethod
+  deliveryStatus            DeliveryStatus @default(PENDING)
+  deliveryZoneId            String?
+  deliveryAddressSnapshot   Json?
+  subtotalCents             Int
+  discountCents             Int            @default(0)
+  assemblyFeeCents          Int            @default(0)
+  deliveryFeeCents          Int            @default(0)
+  totalCents                Int
+  paymentMethod             PaymentMethod
+  sourceQuoteId             String?
+  notes                     String?
+  reservationExpiresAt      DateTime?
+  createdAt                 DateTime       @default(now())
+  updatedAt                 DateTime       @updatedAt
+
+  user          User?              @relation(fields: [userId], references: [id], onDelete: SetNull)
+  deliveryZone  DeliveryZone?      @relation(fields: [deliveryZoneId], references: [id], onDelete: SetNull)
+  items         OrderItem[]
+  payments      Payment[]
+  reservations  StockReservation[]
+  returns       ProductReturn[]
+  consultations Consultation[]
+
+  @@index([userId, createdAt])
+  @@index([status])
+  @@index([paymentStatus])
+}
+
+model OrderItem {
+  id                     String  @id @default(cuid())
+  orderId                String
+  productId              String
+  skuSnapshot            String
+  productNameSnapshot    String
+  modelSnapshot          String
+  unitPriceCentsSnapshot Int
+  unitCostCentsSnapshot  Int
+  warrantyMonthsSnapshot Int?
+  warrantyTermsSnapshot  String?
+  quantity               Int
+  lineTotalCents         Int
+
+  order      Order           @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  product    Product         @relation(fields: [productId], references: [id])
+  returns    ProductReturn[]
+  warranties Warranty[]
+
+  @@index([orderId])
+  @@index([productId])
+}
+
+model Payment {
+  id                String        @id @default(cuid())
+  orderId           String
+  idempotencyKey    String        @unique
+  method            PaymentMethod
+  amountCents       Int
+  status            PaymentStatus @default(PROOF_SUBMITTED)
+  proofFilePath     String?
+  proofMimeType     String?
+  proofSizeBytes    Int?
+  referenceNumber   String?
+  submittedByUserId String?
+  reviewedByUserId  String?
+  reviewedAt        DateTime?
+  reviewNotes       String?
+  isLateSubmission  Boolean       @default(false)
+  createdAt         DateTime      @default(now())
+
+  order           Order @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  submittedByUser User? @relation("SubmittedPayments", fields: [submittedByUserId], references: [id], onDelete: SetNull)
+  reviewedByUser  User? @relation("ReviewedPayments", fields: [reviewedByUserId], references: [id], onDelete: SetNull)
+
+  @@index([orderId])
+  @@index([status])
+}
+
+model ProductReturn {
+  id                       String                 @id @default(cuid())
+  orderId                  String
+  orderItemId              String
+  productId                String
+  quantity                 Int
+  reason                   String
+  physicalValidationStatus ReturnValidationStatus @default(PENDING_RECEIPT)
+  validatedById            String?
+  validatedAt              DateTime?
+  validationNotes          String?
+  idempotencyKey           String                 @unique
+  createdAt                DateTime               @default(now())
+
+  order       Order     @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  orderItem   OrderItem @relation(fields: [orderItemId], references: [id])
+  product     Product   @relation(fields: [productId], references: [id])
+  validatedBy User?     @relation(fields: [validatedById], references: [id], onDelete: SetNull)
+
+  @@index([orderId])
+  @@index([productId])
+}
+
+model PcConfiguration {
+  id                      String              @id @default(cuid())
+  shareToken              String              @unique
+  userId                  String?
+  name                    String
+  buildMode               BuildMode           @default(NEW_PC)
+  budgetCents             Int
+  primaryUse              BuildPrimaryUse     @default(GAMING)
+  gamesOrPrograms         String?
+  currentEquipmentNotes   String?
+  itemsJson               Json
+  compatibilityStatus     CompatibilityStatus
+  compatibilityReportJson Json
+  upgradeStagesJson       Json?
+  subtotalCents           Int
+  assemblyFeeCents        Int                 @default(0)
+  totalCents              Int
+  version                 Int                 @default(1)
+  createdAt               DateTime            @default(now())
+  updatedAt               DateTime            @updatedAt
+
+  user   User?   @relation(fields: [userId], references: [id], onDelete: SetNull)
+  quotes Quote[]
+
+  @@index([userId])
+}
+
+model Quote {
+  id                String      @id @default(cuid())
+  quoteNumber       String      @unique
+  type              QuoteType
+  userId            String?
+  customerName      String
+  customerEmail     String
+  customerPhone     String
+  companyName       String?
+  taxIdNit          String?
+  notes             String?
+  status            QuoteStatus @default(DRAFT)
+  currentVersion    Int         @default(1)
+  validUntil        DateTime
+  pcConfigurationId String?
+  serviceOrderId    String?
+  convertedOrderId  String?
+  createdAt         DateTime    @default(now())
+  updatedAt         DateTime    @updatedAt
+
+  user            User?            @relation(fields: [userId], references: [id], onDelete: SetNull)
+  pcConfiguration PcConfiguration? @relation(fields: [pcConfigurationId], references: [id], onDelete: SetNull)
+  serviceOrder    ServiceOrder?    @relation(fields: [serviceOrderId], references: [id], onDelete: SetNull)
+  versions        QuoteVersion[]
+
+  @@index([userId])
+  @@index([status])
+  @@index([serviceOrderId])
+}
+
+model QuoteVersion {
+  id                    String             @id @default(cuid())
+  quoteId               String
+  version               Int
+  itemsSnapshotJson     Json
+  subtotalCents         Int
+  assemblyOrLaborCents  Int                @default(0)
+  totalCents            Int
+  termsSnapshot         String
+  changeReason          String?
+  status                QuoteVersionStatus @default(PENDING)
+  createdById           String?
+  decidedByUserId       String?
+  decidedAt             DateTime?
+  decisionNotes         String?
+  createdAt             DateTime           @default(now())
+
+  quote         Quote @relation(fields: [quoteId], references: [id], onDelete: Cascade)
+  createdBy     User? @relation("QuoteVersionCreator", fields: [createdById], references: [id], onDelete: SetNull)
+  decidedByUser User? @relation("QuoteVersionDecider", fields: [decidedByUserId], references: [id], onDelete: SetNull)
+
+  @@unique([quoteId, version])
+}
+
+model ServiceCatalog {
+  id                     String             @id @default(cuid())
+  slug                   String             @unique
+  name                   String
+  category               ServiceCategory
+  description            String
+  scope                  String
+  pricingType            ServicePricingType
+  basePriceCents         Int?
+  estimatedDurationHours Int                @default(2)
+  conditions             String
+  imageUrl               String?
+  isActive               Boolean            @default(true)
+  sortOrder              Int                @default(0)
+  createdAt              DateTime           @default(now())
+  updatedAt              DateTime           @updatedAt
+
+  serviceOrders ServiceOrder[]
+}
+
+model ServiceOrder {
+  id                         String                  @id @default(cuid())
+  ticketNumber               String                  @unique
+  userId                     String?
+  customerName               String
+  customerEmail              String
+  customerPhone              String
+  serviceCatalogId           String
+  deviceType                 DeviceType
+  deviceBrandModel           String
+  deviceSerial               String?
+  accessoriesReceived        String?
+  initialPhysicalState       String?
+  reportedSymptoms           String
+  preferredSchedule          DateTime?
+  deliveryModality           ServiceDeliveryModality @default(DROP_OFF_POINT)
+  status                     ServiceOrderStatus      @default(REQUEST_RECEIVED)
+  assignedTechId             String?
+  diagnosisReport            String?
+  internalNotes              String?
+  laborCents                 Int                     @default(0)
+  partsTotalCents            Int                     @default(0)
+  totalApprovedCents         Int                     @default(0)
+  activeQuoteVersion         Int?
+  agreedDeliveryDate         DateTime?
+  closingSummary             String?
+  performedTestsJson         Json?
+  maintenanceRecommendations String?
+  createdAt                  DateTime                @default(now())
+  updatedAt                  DateTime                @updatedAt
+
+  user           User?                  @relation("CustomerServiceOrders", fields: [userId], references: [id], onDelete: SetNull)
+  assignedTech   User?                  @relation("AssignedTechServices", fields: [assignedTechId], references: [id], onDelete: SetNull)
+  serviceCatalog ServiceCatalog         @relation(fields: [serviceCatalogId], references: [id])
+  timeline       ServiceOrderTimeline[]
+  parts          ServiceOrderPart[]
+  attachments    ServiceAttachment[]
+  quotes         Quote[]
+  warranties     Warranty[]
+  consultations  Consultation[]
+
+  @@index([userId, createdAt])
+  @@index([assignedTechId, status])
+  @@index([status])
+  @@index([preferredSchedule])
+}
+
+model ServiceOrderTimeline {
+  id             String              @id @default(cuid())
+  serviceOrderId String
+  fromStatus     ServiceOrderStatus?
+  toStatus       ServiceOrderStatus
+  publicMessage  String
+  internalNote   String?
+  actorId        String?
+  createdAt      DateTime            @default(now())
+
+  serviceOrder ServiceOrder @relation(fields: [serviceOrderId], references: [id], onDelete: Cascade)
+  actor        User?        @relation(fields: [actorId], references: [id], onDelete: SetNull)
+
+  @@index([serviceOrderId, createdAt])
+}
+
+model ServiceOrderPart {
+  id                     String   @id @default(cuid())
+  serviceOrderId         String
+  productId              String
+  productNameSnapshot    String
+  skuSnapshot            String
+  quantity               Int
+  unitPriceCentsSnapshot Int
+  unitCostCentsSnapshot  Int
+  inventoryMovementId    String   @unique
+  createdAt              DateTime @default(now())
+
+  serviceOrder      ServiceOrder      @relation(fields: [serviceOrderId], references: [id], onDelete: Cascade)
+  product           Product           @relation(fields: [productId], references: [id])
+  inventoryMovement InventoryMovement @relation(fields: [inventoryMovementId], references: [id])
+
+  @@index([serviceOrderId])
+}
+
+model ServiceAttachment {
+  id             String   @id @default(cuid())
+  serviceOrderId String
+  filePath       String
+  mimeType       String
+  sizeBytes      Int
+  caption        String?
+  isInternal     Boolean  @default(false)
+  uploadedById   String?
+  createdAt      DateTime @default(now())
+
+  serviceOrder ServiceOrder @relation(fields: [serviceOrderId], references: [id], onDelete: Cascade)
+  uploadedBy   User?        @relation(fields: [uploadedById], references: [id], onDelete: SetNull)
+
+  @@index([serviceOrderId])
+}
+
+model Warranty {
+  id                    String         @id @default(cuid())
+  code                  String         @unique
+  userId                String
+  orderItemId           String?
+  serviceOrderId        String?
+  itemLabel             String
+  durationMonths        Int
+  startsAt              DateTime
+  expiresAt             DateTime
+  terms                 String
+  deliveryEvidenceNotes String?
+  status                WarrantyStatus @default(ACTIVE)
+  createdAt             DateTime       @default(now())
+  updatedAt             DateTime       @updatedAt
+
+  user         User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  orderItem    OrderItem?      @relation(fields: [orderItemId], references: [id], onDelete: SetNull)
+  serviceOrder ServiceOrder?   @relation(fields: [serviceOrderId], references: [id], onDelete: SetNull)
+  claims       WarrantyClaim[]
+
+  @@index([userId])
+  @@index([status])
+}
+
+model WarrantyClaim {
+  id              String              @id @default(cuid())
+  warrantyId      String
+  userId          String
+  description     String
+  status          WarrantyClaimStatus @default(SUBMITTED)
+  resolutionNotes String?
+  createdAt       DateTime            @default(now())
+  updatedAt       DateTime            @updatedAt
+
+  warranty Warranty @relation(fields: [warrantyId], references: [id], onDelete: Cascade)
+  user     User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([warrantyId])
+  @@index([userId])
+}
+
+model Consultation {
+  id             String             @id @default(cuid())
+  userId         String?
+  customerName   String
+  customerEmail  String
+  subject        String
+  orderId        String?
+  serviceOrderId String?
+  productId      String?
+  status         ConsultationStatus @default(OPEN)
+  createdAt      DateTime           @default(now())
+  updatedAt      DateTime           @updatedAt
+
+  user         User?                 @relation(fields: [userId], references: [id], onDelete: SetNull)
+  order        Order?                @relation(fields: [orderId], references: [id], onDelete: SetNull)
+  serviceOrder ServiceOrder?         @relation(fields: [serviceOrderId], references: [id], onDelete: SetNull)
+  product      Product?              @relation(fields: [productId], references: [id], onDelete: SetNull)
+  messages     ConsultationMessage[]
+
+  @@index([userId])
+  @@index([status])
+}
+
+model ConsultationMessage {
+  id             String   @id @default(cuid())
+  consultationId String
+  senderRole     Role
+  senderName     String
+  body           String
+  createdAt      DateTime @default(now())
+
+  consultation Consultation @relation(fields: [consultationId], references: [id], onDelete: Cascade)
+
+  @@index([consultationId, createdAt])
+}
+
+model BusinessConfig {
+  key               String   @id
+  valueJson         Json
+  isPendingRealData Boolean  @default(false)
+  description       String
+  updatedById       String?
+  updatedAt         DateTime @updatedAt
+
+  updatedBy User? @relation(fields: [updatedById], references: [id], onDelete: SetNull)
+}
+
+model AuditLog {
+  id         String   @id @default(cuid())
+  actorId    String?
+  actorRole  Role?
+  action     String
+  entityType String
+  entityId   String
+  beforeJson Json?
+  afterJson  Json?
+  ipAddress  String?
+  createdAt  DateTime @default(now())
+
+  actor User? @relation(fields: [actorId], references: [id], onDelete: SetNull)
+
+  @@index([entityType, entityId])
+  @@index([actorId, createdAt])
+  @@index([createdAt])
+}

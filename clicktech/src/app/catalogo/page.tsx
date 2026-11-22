@@ -52,6 +52,8 @@ export default async function CatalogoPage({
     stockAvailable: getAvailableStock(p),
     socket: p.compatibilitySpec?.socket ?? null,
     ramGeneration: p.compatibilitySpec?.ramGeneration ?? null,
+    isPrebuiltPc: p.isPrebuiltPc,
+    shortSpecsJson: (p.shortSpecsJson as Record<string, string> | null) ?? null,
   }));
 
   return (

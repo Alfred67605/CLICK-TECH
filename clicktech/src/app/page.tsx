@@ -32,6 +32,7 @@ export default async function HomePage() {
         brand: { select: { name: true } },
         category: { select: { slug: true, name: true } },
         images: { orderBy: [{ isPrimary: "desc" }, { sortOrder: "asc" }], take: 1 },
+        compatibilitySpec: { select: { socket: true, ramGeneration: true } },
       },
     }),
     prisma.product.findMany({
@@ -41,6 +42,7 @@ export default async function HomePage() {
         brand: { select: { name: true } },
         category: { select: { slug: true, name: true } },
         images: { orderBy: [{ isPrimary: "desc" }, { sortOrder: "asc" }], take: 1 },
+        compatibilitySpec: { select: { socket: true, ramGeneration: true } },
       },
     }),
     prisma.serviceCatalog.findMany({
@@ -66,6 +68,10 @@ export default async function HomePage() {
     promoPriceCents: p.promoPriceCents,
     promoLabel: p.promoLabel,
     stockAvailable: getAvailableStock(p),
+    socket: p.compatibilitySpec?.socket ?? null,
+    ramGeneration: p.compatibilitySpec?.ramGeneration ?? null,
+    isPrebuiltPc: p.isPrebuiltPc,
+    shortSpecsJson: (p.shortSpecsJson as Record<string, string> | null) ?? null,
   });
 
   const faqs = [

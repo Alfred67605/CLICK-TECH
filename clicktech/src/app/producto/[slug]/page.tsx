@@ -45,6 +45,7 @@ export default async function ProductoDetallePage({
       brand: { select: { name: true } },
       category: { select: { slug: true, name: true } },
       images: { orderBy: [{ isPrimary: "desc" }, { sortOrder: "asc" }], take: 1 },
+      compatibilitySpec: { select: { socket: true, ramGeneration: true } },
     },
   });
 
@@ -476,6 +477,10 @@ export default async function ProductoDetallePage({
                   promoPriceCents: r.promoPriceCents,
                   promoLabel: r.promoLabel,
                   stockAvailable: getAvailableStock(r),
+                  socket: r.compatibilitySpec?.socket ?? null,
+                  ramGeneration: r.compatibilitySpec?.ramGeneration ?? null,
+                  isPrebuiltPc: r.isPrebuiltPc,
+                  shortSpecsJson: (r.shortSpecsJson as Record<string, string> | null) ?? null,
                 }}
               />
             ))}

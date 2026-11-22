@@ -95,7 +95,7 @@ export function ServiceIntakeClient({
       </div>
 
       {/* Service cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
         {services.map((s) => {
           const isSelected = s.id === serviceCatalogId;
           return (
@@ -103,30 +103,39 @@ export function ServiceIntakeClient({
               key={s.id}
               type="button"
               onClick={() => setServiceCatalogId(s.id)}
-              className="ct-card text-left rounded-xl border p-4 flex flex-col gap-2"
-              style={{
-                backgroundColor: "var(--bg-surface)",
-                borderColor: isSelected ? "var(--accent-cyan)" : "var(--border-subtle)",
-              }}
+              className={`ct-card text-left rounded-2xl border p-4 flex flex-col gap-3 transition-all cursor-pointer ${
+                isSelected
+                  ? "border-cyan-400 shadow-[0_0_24px_rgba(0,229,255,0.2)] bg-cyan-950/20"
+                  : "border-slate-800/80 hover:border-slate-700 bg-slate-900/60"
+              }`}
             >
               {s.imageUrl && (
-                <div className="aspect-[16/9] w-full rounded-lg overflow-hidden mb-1" style={{ backgroundColor: "var(--bg-card-media)" }}>
-                  <img src={s.imageUrl} alt={s.name} className="w-full h-full object-cover" />
+                <div className="aspect-[16/9] w-full rounded-xl overflow-hidden relative group">
+                  <img
+                    src={s.imageUrl}
+                    alt={s.name}
+                    className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+                  />
+                  <div className="absolute top-2.5 right-2.5 px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider bg-black/75 text-cyan-300 border border-cyan-500/30 backdrop-blur-md">
+                    ~{s.estimatedDurationHours} h
+                  </div>
                 </div>
               )}
               <div className="flex items-center justify-between w-full text-xs">
-                <span className="font-bold" style={{ color: "var(--accent-cyan)" }}>
+                <span className="font-heading font-black text-sm text-white">
                   {s.pricingType === "FIXED" && s.basePriceCents
                     ? formatBsCompact(s.basePriceCents)
                     : "Sujeto a diagnóstico"}
                 </span>
-                <span style={{ color: "var(--text-muted)" }}>~{s.estimatedDurationHours} h</span>
+                <span className="text-[11px] font-mono text-cyan-400">
+                  {isSelected ? "● Seleccionado" : "Click para elegir"}
+                </span>
               </div>
-              <h2 className="font-heading font-bold text-base">{s.name}</h2>
-              <p className="text-xs leading-relaxed" style={{ color: "var(--text-secondary)" }}>
+              <h2 className="font-heading font-bold text-base text-white line-clamp-1">{s.name}</h2>
+              <p className="text-xs leading-relaxed text-slate-300 line-clamp-2">
                 {s.description}
               </p>
-              <p className="text-[11px] mt-auto pt-2 border-t w-full" style={{ borderColor: "var(--border-subtle)", color: "var(--text-muted)" }}>
+              <p className="text-[11px] mt-auto pt-2 border-t w-full border-slate-800 text-slate-400 line-clamp-1">
                 {s.conditions}
               </p>
             </button>

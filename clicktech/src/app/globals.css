@@ -105,12 +105,12 @@ body {
   font-variant-numeric: tabular-nums;
 }
 
-/* Responsive wide layout container */
+/* Responsive full-width fluid layout container */
 .ct-container {
   width: 100%;
-  max-width: 1720px;
-  margin-left: auto;
-  margin-right: auto;
+  max-width: 100%;
+  margin-left: 0;
+  margin-right: 0;
   padding-left: 1rem;
   padding-right: 1rem;
 }
@@ -131,8 +131,8 @@ body {
 
 @media (min-width: 1536px) {
   .ct-container {
-    padding-left: 3rem;
-    padding-right: 3rem;
+    padding-left: 2.5rem;
+    padding-right: 2.5rem;
   }
 }
 

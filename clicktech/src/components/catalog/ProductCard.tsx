@@ -64,19 +64,21 @@ export function ProductCard({ product }: { product: ProductCardData }) {
 
   return (
     <article
-      className="ct-card group relative rounded-2xl flex flex-col overflow-hidden p-4 sm:p-5 transition-all"
+      className="ct-card group relative min-w-0 w-full rounded-2xl flex flex-col overflow-hidden p-3.5 sm:p-4 transition-all"
       style={{
-        background: "linear-gradient(180deg, #FFFFFF 0%, #F1F5F9 48%, #FFFFFF 100%)",
-        border: isPromo ? "1.5px solid rgba(220, 38, 38, 0.42)" : "1.5px solid rgba(148, 163, 184, 0.42)",
+        background: isPromo
+          ? "linear-gradient(180deg, #FFFFFF 0%, #FFF5F5 48%, #FFFFFF 100%)"
+          : "linear-gradient(180deg, #FFFFFF 0%, #F1F5F9 48%, #FFFFFF 100%)",
+        border: isPromo ? "1.5px solid rgba(220, 38, 38, 0.44)" : "1.5px solid rgba(148, 163, 184, 0.42)",
         boxShadow: isPromo
-          ? "0 14px 32px -16px rgba(200, 16, 46, 0.25)"
+          ? "0 14px 32px -16px rgba(200, 16, 46, 0.28)"
           : "0 14px 30px -16px rgba(15, 23, 42, 0.18)",
       }}
     >
-      {/* Top-Right & Bottom-Left Diagonal Flyer Accents (Image 2 style) */}
-      <div aria-hidden="true" className="pointer-events-none absolute top-3 right-3 z-0 flex items-center gap-1.5 opacity-90">
+      {/* Top-Right & Bottom-Left Diagonal Flyer Accents */}
+      <div aria-hidden="true" className="pointer-events-none absolute top-2.5 right-2.5 z-0 flex items-center gap-1.5 opacity-90">
         <span
-          className="block w-4 h-12 -skew-x-[22deg]"
+          className="block w-3.5 h-11 -skew-x-[22deg]"
           style={{
             background: isPromo
               ? "linear-gradient(180deg, #DC2626 0%, rgba(220,38,38,0.12) 100%)"
@@ -84,37 +86,37 @@ export function ProductCard({ product }: { product: ProductCardData }) {
           }}
         />
         <span
-          className="block w-3 h-10 -skew-x-[22deg] translate-y-2.5"
+          className="block w-2.5 h-9 -skew-x-[22deg] translate-y-2"
           style={{ background: "linear-gradient(180deg, #CBD5E1 0%, rgba(203,213,225,0.15) 100%)" }}
         />
       </div>
       <div aria-hidden="true" className="pointer-events-none absolute bottom-0 left-2 z-0 flex items-end gap-1.5 opacity-85">
         <span
-          className="block w-6 h-8 skew-x-[22deg] translate-y-1"
+          className="block w-5 h-7 skew-x-[22deg] translate-y-1"
           style={{ background: "linear-gradient(180deg, #CBD5E1 0%, #94A3B8 100%)" }}
         />
         <span
-          className="block w-3 h-10 skew-x-[22deg] translate-y-1"
+          className="block w-2.5 h-9 skew-x-[22deg] translate-y-1"
           style={{ background: ribbonGradient }}
         />
       </div>
 
       {/* Top Slanted Ribbon Header */}
-      <div className="relative z-10 flex flex-col items-center text-center space-y-2">
-        <div className="flex items-center justify-center gap-1">
+      <div className="relative z-10 min-w-0 flex flex-col items-center text-center space-y-1.5">
+        <div className="flex items-center justify-center gap-1 max-w-full">
           <span
-            className="inline-flex items-center gap-1 px-3.5 py-0.5 -skew-x-12 text-[10px] font-black uppercase tracking-wider text-white shadow-sm"
+            className="inline-flex items-center gap-1 px-3 py-0.5 -skew-x-12 text-[10px] font-black uppercase tracking-wider text-white shadow-sm truncate max-w-full"
             style={{ background: ribbonGradient }}
           >
-            <span className="skew-x-12 inline-flex items-center gap-1">
+            <span className="skew-x-12 inline-flex items-center gap-1 truncate">
               {isPromo ? (
                 <>
-                  <Flame className="w-3 h-3 fill-white" />
+                  <Flame className="w-3 h-3 fill-white shrink-0" />
                   {hasDiscount ? `BLACK FRIDAY -${discountPct}%` : "OFERTA ESPECIAL"}
                 </>
               ) : product.isPrebuiltPc ? (
                 <>
-                  <Sparkles className="w-3 h-3" /> PC COMPLETA
+                  <Sparkles className="w-3 h-3 shrink-0" /> PC COMPLETA
                 </>
               ) : (
                 product.categoryName
@@ -123,68 +125,84 @@ export function ProductCard({ product }: { product: ProductCardData }) {
           </span>
           <span
             aria-hidden="true"
-            className="inline-block w-1 h-4 -skew-x-12 opacity-65"
+            className="inline-block w-1 h-4 -skew-x-12 opacity-65 shrink-0"
             style={{ backgroundColor: accentColor }}
           />
           <span
             aria-hidden="true"
-            className="inline-block w-1 h-4 -skew-x-12 opacity-30"
+            className="inline-block w-1 h-4 -skew-x-12 opacity-30 shrink-0"
             style={{ backgroundColor: accentColor }}
           />
         </div>
 
         {/* Brand & Centered Product Name */}
-        <div className="w-full space-y-0.5 px-2">
-          <div className="font-display text-base sm:text-lg font-black uppercase tracking-tight text-slate-950 leading-none">
+        <div className="w-full min-w-0 space-y-0.5 px-1">
+          <div className="font-display text-base font-black uppercase tracking-tight text-slate-950 leading-none truncate">
             {product.brandName}
           </div>
           <Link
             href={`/producto/${product.slug}`}
-            className="font-heading font-bold text-sm sm:text-[15px] leading-snug line-clamp-2 min-h-[2.5rem] hover:underline block text-slate-900"
+            className="font-heading font-bold text-sm leading-snug line-clamp-2 min-h-[2.45rem] hover:underline block text-slate-900"
           >
             {product.name}
           </Link>
         </div>
 
         {/* Short Accent Divider + Specs */}
-        <div className="w-full flex flex-col items-center gap-1">
+        <div className="w-full min-w-0 flex flex-col items-center gap-1">
           <div className="flex items-center gap-1.5">
             <span className="block w-8 h-1 rounded-full" style={{ backgroundColor: accentColor }} />
             <span className="block w-12 h-[1px] bg-slate-300" />
           </div>
           {highlightSpec && (
-            <p className="text-[11px] font-medium text-slate-600 truncate max-w-full px-2">
+            <p className="text-[11px] font-medium text-slate-600 truncate w-full px-1">
               {highlightSpec}
             </p>
           )}
         </div>
       </div>
 
-      {/* Center Showcase: Pure-White Product Image over Luminous Ring + 3D Silver Pedestal */}
+      {/* Center Showcase: Larger Product Photo over Ember Glow + Luminous Ring + 3D Silver Pedestal */}
       <Link
         href={`/producto/${product.slug}`}
-        className="relative z-10 my-2 h-44 sm:h-48 w-full flex items-center justify-center"
+        className="relative z-10 my-1.5 h-48 sm:h-52 w-full flex items-center justify-center"
+        style={{ perspective: "900px" }}
       >
+        {/* Subtle Fire / Cyan Ember Aura at Pedestal Base */}
+        <div
+          aria-hidden="true"
+          className="absolute bottom-1 left-1/2 -translate-x-1/2 w-[82%] h-12 rounded-full blur-xl pointer-events-none"
+          style={{
+            background: isPromo
+              ? "radial-gradient(ellipse at center, rgba(239, 68, 68, 0.28) 0%, rgba(249, 115, 22, 0.14) 55%, transparent 80%)"
+              : "radial-gradient(ellipse at center, rgba(14, 165, 233, 0.2) 0%, transparent 78%)",
+          }}
+        />
+
         {/* Soft White Halo */}
         <div
           aria-hidden="true"
-          className="absolute top-2 w-36 h-36 sm:w-40 sm:h-40 rounded-full pointer-events-none"
+          className="absolute top-2 w-40 h-40 rounded-full pointer-events-none"
           style={{
-            border: "2px solid rgba(255, 255, 255, 0.95)",
-            boxShadow: "0 0 24px rgba(255, 255, 255, 0.95)",
+            border: "2px solid rgba(255, 255, 255, 0.96)",
+            boxShadow: isPromo
+              ? "0 0 24px rgba(255, 255, 255, 0.95), 0 0 18px rgba(249, 115, 22, 0.18)"
+              : "0 0 24px rgba(255, 255, 255, 0.95)",
           }}
         />
 
         {/* 3D Elliptical Silver Pedestal */}
         <div
           aria-hidden="true"
-          className="absolute bottom-1.5 left-1/2 -translate-x-1/2 w-[82%] max-w-[230px] h-10 pointer-events-none"
+          className="absolute bottom-1.5 left-1/2 -translate-x-1/2 w-[84%] max-w-[235px] h-10 pointer-events-none"
         >
           <div
             className="absolute bottom-0 inset-x-0 h-7 rounded-[50%]"
             style={{
               background: "linear-gradient(90deg, #94A3B8 0%, #E2E8F0 35%, #FFFFFF 52%, #CBD5E1 75%, #94A3B8 100%)",
-              boxShadow: "0 8px 18px -5px rgba(15, 23, 42, 0.22), 0 0 12px rgba(255,255,255,0.9)",
+              boxShadow: isPromo
+                ? "0 9px 18px -5px rgba(185, 28, 28, 0.28), 0 0 12px rgba(255,255,255,0.9)"
+                : "0 8px 18px -5px rgba(15, 23, 42, 0.22), 0 0 12px rgba(255,255,255,0.9)",
             }}
           />
           <div
@@ -200,7 +218,10 @@ export function ProductCard({ product }: { product: ProductCardData }) {
             src={product.imageUrl}
             alt={product.imageAlt}
             loading="lazy"
-            className="ct-zoom-media relative z-10 w-[86%] h-[86%] -translate-y-2 object-contain mix-blend-multiply"
+            className="relative z-10 w-[90%] h-[90%] -translate-y-2 object-contain transition-transform duration-300 ease-out group-hover:-translate-y-3 group-hover:scale-[1.06] group-hover:[transform:translateY(-10px)_rotateY(8deg)_scale(1.06)]"
+            style={{
+              filter: "drop-shadow(0 14px 18px rgba(15, 23, 42, 0.24))",
+            }}
           />
         ) : (
           <span className="text-xs relative z-10 text-slate-500">
@@ -210,9 +231,9 @@ export function ProductCard({ product }: { product: ProductCardData }) {
       </Link>
 
       {/* Bottom Pricing Pill + Actions + Stock Footer */}
-      <div className="relative z-10 mt-auto pt-1 space-y-2.5">
+      <div className="relative z-10 mt-auto pt-1 min-w-0 space-y-2">
         {/* Dynamic Price Block */}
-        <div className="flex flex-col items-center gap-1.5">
+        <div className="flex flex-col items-center gap-1 min-w-0">
           {hasDiscount ? (
             <>
               <div className="flex items-center justify-center gap-2 text-xs">
@@ -229,28 +250,28 @@ export function ProductCard({ product }: { product: ProductCardData }) {
                 </span>
               </div>
               <div
-                className="w-full px-3 py-1.5 rounded-xl bg-white flex items-center justify-center gap-2.5 shadow-xs"
+                className="w-full px-2.5 py-1.5 rounded-xl bg-white flex items-center justify-center gap-2 shadow-xs min-w-0"
                 style={{ border: "2px solid #C8102E" }}
               >
-                <span className="px-2 py-0.5 -skew-x-12 text-[10px] font-extrabold uppercase text-white bg-[#C8102E]">
+                <span className="px-2 py-0.5 -skew-x-12 text-[10px] font-extrabold uppercase text-white bg-[#C8102E] shrink-0">
                   <span className="inline-block skew-x-12">Ahora</span>
                 </span>
-                <span className="font-display text-xl sm:text-2xl font-black tabular-nums tracking-tight text-[#C8102E]">
+                <span className="font-display text-lg sm:text-xl xl:text-[22px] font-black tabular-nums tracking-tight text-[#C8102E] truncate">
                   {formatBsCompact(activePrice)}
                 </span>
               </div>
             </>
           ) : (
-            <div className="w-full px-3 py-1.5 rounded-xl bg-white border border-slate-300 flex items-center justify-center gap-2 shadow-xs">
-              <span className="font-display text-xl sm:text-2xl font-black tabular-nums tracking-tight text-slate-950">
+            <div className="w-full px-2.5 py-1.5 rounded-xl bg-white border border-slate-300 flex items-center justify-center gap-2 shadow-xs min-w-0">
+              <span className="font-display text-lg sm:text-xl xl:text-[22px] font-black tabular-nums tracking-tight text-slate-950 truncate">
                 {formatBsCompact(activePrice)}
               </span>
             </div>
           )}
         </div>
 
-        {/* Action Pill Row ("Añadir" keyword preserved for E2E tests) */}
-        <div className="flex items-center gap-2">
+        {/* Action Pill Row ("Añadir" keyword preserved for E2E tests, min-w-0 prevents right clipping) */}
+        <div className="flex items-center gap-1.5 min-w-0 w-full">
           <button
             type="button"
             data-sound="none"
@@ -262,7 +283,7 @@ export function ProductCard({ product }: { product: ProductCardData }) {
                 setTimeout(() => setJustAdded(false), 1400);
               }
             }}
-            className="ct-btn flex-1 h-10 px-4 rounded-full text-xs font-black uppercase tracking-wider text-white flex items-center justify-center gap-2 shadow-md transition-transform hover:scale-[1.02] disabled:opacity-45 disabled:cursor-not-allowed"
+            className="ct-btn flex-1 min-w-0 h-10 px-3 rounded-full text-[11px] sm:text-xs font-black uppercase tracking-wide text-white flex items-center justify-center gap-1.5 shadow-md transition-transform hover:scale-[1.02] whitespace-nowrap disabled:opacity-45 disabled:cursor-not-allowed"
             style={{
               background: justAdded
                 ? "linear-gradient(90deg, #059669 0%, #047857 100%)"
@@ -273,14 +294,14 @@ export function ProductCard({ product }: { product: ProductCardData }) {
           >
             {justAdded ? (
               <>
-                <Check className="w-4 h-4" />
+                <Check className="w-4 h-4 shrink-0" />
                 <span>¡Añadido!</span>
               </>
             ) : inStock ? (
               <>
-                <ShoppingCart className="w-4 h-4" />
-                <span className="border-l border-white/30 pl-2">AÑADIR AHORA</span>
-                <ChevronRight className="w-3.5 h-3.5" />
+                <ShoppingCart className="w-3.5 h-3.5 shrink-0" />
+                <span className="border-l border-white/30 pl-1.5 truncate">AÑADIR AHORA</span>
+                <ChevronRight className="w-3.5 h-3.5 shrink-0" />
               </>
             ) : (
               <span>Agotado</span>
@@ -304,7 +325,7 @@ export function ProductCard({ product }: { product: ProductCardData }) {
             }
             aria-label={inCompare ? "Quitar de comparación" : "Comparar modelo"}
             aria-pressed={inCompare}
-            className="ct-btn h-10 w-10 shrink-0 rounded-full border flex items-center justify-center text-xs font-semibold shadow-xs"
+            className="ct-btn h-9 w-9 sm:h-10 sm:w-10 shrink-0 rounded-full border flex items-center justify-center text-xs font-semibold shadow-xs"
             style={{
               borderColor: inCompare ? "#0284C7" : "#CBD5E1",
               backgroundColor: inCompare ? "#E0F2FE" : "#FFFFFF",

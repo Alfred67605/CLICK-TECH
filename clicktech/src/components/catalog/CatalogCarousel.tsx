@@ -1,7 +1,9 @@
 "use client";
 
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
+import gsap from "gsap";
+import { useGSAP } from "@gsap/react";
 import {
   ChevronLeft,
   ChevronRight,
@@ -15,12 +17,19 @@ import { useStore } from "@/components/providers/StoreProvider";
 import { useUISound } from "@/hooks/useUISound";
 import { formatBsCompact } from "@/lib/domain/money";
 import type { ProductCardData } from "@/components/catalog/ProductCard";
+import { EmberParticlesCanvas } from "@/components/ui/EmberParticlesCanvas";
+import { Interactive3DProduct } from "@/components/catalog/Interactive3DProduct";
+
+gsap.registerPlugin(useGSAP);
 
 type CarouselFilter = "all" | "black-friday";
 
 export function CatalogCarousel({ products }: { products: ProductCardData[] }) {
   const { addToCart } = useStore();
   const { playClick, playHover } = useUISound();
+
+  const stageRef = useRef<HTMLElement | null>(null);
+  const directionRef = useRef<1 | -1>(1);
 
   const [campaignTab, setCampaignTab] = useState<CarouselFilter>("all");
   const [activeIndex, setActiveIndex] = useState(0);
@@ -68,10 +77,85 @@ export function CatalogCarousel({ products }: { products: ProductCardData[] }) {
       return;
     }
     const timer = window.setInterval(() => {
+      directionRef.current = 1;
       setActiveIndex((prev) => (prev + 1) % slides.length);
     }, 3000);
     return () => window.clearInterval(timer);
   }, [slides.length, isPaused, isHovered]);
+
+  // Pro directional GSAP transition choreography on slide change
+  useGSAP(
+    () => {
+      if (!active) return;
+      if (typeof window !== "undefined" && window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+        return;
+      }
+      const dir = directionRef.current;
+      const staggerEls = gsap.utils.toArray<HTMLElement>("[data-carousel-stagger]");
+      const mediaEl = stageRef.current?.querySelector<HTMLElement>("[data-carousel-hero-media]");
+
+      const tl = gsap.timeline();
+      if (staggerEls.length > 0) {
+        tl.fromTo(
+          staggerEls,
+          { x: dir * -30, opacity: 0, y: 8 },
+          {
+            x: 0,
+            opacity: 1,
+            y: 0,
+            duration: 0.52,
+            stagger: 0.055,
+            ease: "power3.out",
+            clearProps: "transform",
+          },
+          0
+        );
+      }
+      if (mediaEl) {
+        tl.fromTo(
+          mediaEl,
+          { x: dir * 80, scale: 0.84, opacity: 0 },
+          {
+            x: 0,
+            scale: 1,
+            opacity: 1,
+            duration: 0.72,
+            ease: "expo.out",
+            clearProps: "opacity",
+          },
+          0
+        );
+      }
+    },
+    { scope: stageRef, dependencies: [active?.id] }
+  );
+
+  // Live 3-second countdown progress bar synced cleanly with pause/hover state
+  useGSAP(
+    () => {
+      if (!active) return;
+      const barEl = stageRef.current?.querySelector<HTMLElement>("[data-carousel-progress]");
+      if (!barEl) return;
+      gsap.killTweensOf(barEl);
+
+      if (
+        isPaused ||
+        isHovered ||
+        slides.length <= 1 ||
+        (typeof window !== "undefined" && window.matchMedia("(prefers-reduced-motion: reduce)").matches)
+      ) {
+        gsap.set(barEl, { scaleX: 0 });
+        return;
+      }
+
+      gsap.fromTo(
+        barEl,
+        { scaleX: 0 },
+        { scaleX: 1, duration: 3, ease: "none" }
+      );
+    },
+    { scope: stageRef, dependencies: [active?.id, isPaused, isHovered, slides.length] }
+  );
 
   if (!active) return null;
 
@@ -94,34 +178,39 @@ export function CatalogCarousel({ products }: { products: ProductCardData[] }) {
 
   function goPrev() {
     playClick();
+    directionRef.current = -1;
     setActiveIndex((prev) => (prev - 1 + slides.length) % slides.length);
   }
 
   function goNext() {
     playClick();
+    directionRef.current = 1;
     setActiveIndex((prev) => (prev + 1) % slides.length);
   }
 
   return (
     <section
+      ref={stageRef}
       aria-label="Vitrina Hero ClickTech y Ofertas Black Friday"
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
-      className="relative rounded-3xl overflow-hidden transition-all duration-300"
+      className="relative rounded-3xl overflow-hidden transition-colors duration-300"
       style={{
-        background: "linear-gradient(135deg, #FFFFFF 0%, #EEF2F7 52%, #E2E8F0 100%)",
-        border: isPromoHero ? "2px solid rgba(220, 38, 38, 0.42)" : "2px solid rgba(14, 165, 233, 0.35)",
+        background: isPromoHero
+          ? "linear-gradient(135deg, #FFFFFF 0%, #FFF5F5 46%, #E2E8F0 100%)"
+          : "linear-gradient(135deg, #FFFFFF 0%, #EEF2F7 52%, #E2E8F0 100%)",
+        border: isPromoHero ? "2px solid rgba(220, 38, 38, 0.45)" : "2px solid rgba(14, 165, 233, 0.35)",
         boxShadow: isPromoHero
-          ? "0 22px 48px -18px rgba(200, 16, 46, 0.32)"
+          ? "0 24px 52px -18px rgba(200, 16, 46, 0.35)"
           : "0 22px 48px -18px rgba(2, 132, 199, 0.25)",
       }}
     >
       {/* Top Bar: Campaign Tabs & Live Counter */}
       <div
-        className="relative z-20 px-4 sm:px-6 py-2.5 border-b flex flex-wrap items-center justify-between gap-3"
+        className="relative z-30 px-4 sm:px-6 py-2.5 border-b flex flex-wrap items-center justify-between gap-3"
         style={{
           borderColor: "rgba(148, 163, 184, 0.3)",
-          backgroundColor: "rgba(255, 255, 255, 0.88)",
+          backgroundColor: "rgba(255, 255, 255, 0.9)",
           backdropFilter: "blur(8px)",
         }}
       >
@@ -131,6 +220,7 @@ export function CatalogCarousel({ products }: { products: ProductCardData[] }) {
             data-sound="none"
             onClick={() => {
               playClick();
+              directionRef.current = 1;
               setCampaignTab("all");
               setActiveIndex(0);
             }}
@@ -159,6 +249,7 @@ export function CatalogCarousel({ products }: { products: ProductCardData[] }) {
               data-sound="none"
               onClick={() => {
                 playClick();
+                directionRef.current = 1;
                 setCampaignTab("black-friday");
                 setActiveIndex(0);
               }}
@@ -215,8 +306,26 @@ export function CatalogCarousel({ products }: { products: ProductCardData[] }) {
         </div>
       </div>
 
-      {/* Main Commercial Studio Banner Stage (Image 1 Layout) */}
-      <div className="relative px-10 sm:px-14 py-6 sm:py-8 overflow-hidden">
+      {/* Main Commercial Studio Banner Stage + Fire Embers / Sparks + Enlarged 3D Rotatable Product */}
+      <div className="relative px-10 sm:px-14 py-5 sm:py-7 overflow-hidden">
+        {/* Bottom Fire / Energy Ambient Aura */}
+        <div
+          aria-hidden="true"
+          className="pointer-events-none absolute inset-0 z-0"
+          style={{
+            background: isPromoHero
+              ? "radial-gradient(ellipse at 65% 108%, rgba(239, 68, 68, 0.25) 0%, rgba(249, 115, 22, 0.12) 40%, transparent 72%)"
+              : "radial-gradient(ellipse at 65% 108%, rgba(14, 165, 233, 0.2) 0%, rgba(56, 189, 248, 0.08) 42%, transparent 72%)",
+          }}
+        />
+
+        {/* Floating Fire Embers / Tech Sparks Canvas */}
+        <EmberParticlesCanvas
+          variant={isPromoHero ? "fire" : "cyan"}
+          density={46}
+          className="absolute inset-0 z-10"
+        />
+
         {/* Diagonal Graphic Corner Bars (Top-Right & Bottom-Left) */}
         <div aria-hidden="true" className="pointer-events-none absolute top-4 right-5 z-0 flex items-center gap-2 opacity-90">
           <span
@@ -251,7 +360,7 @@ export function CatalogCarousel({ products }: { products: ProductCardData[] }) {
           aria-label="Producto anterior del carrusel"
           className="ct-btn absolute left-2 sm:left-3 top-1/2 -translate-y-1/2 z-30 h-11 w-9 sm:h-14 sm:w-11 rounded-xl border flex items-center justify-center shadow-md"
           style={{
-            backgroundColor: "rgba(255, 255, 255, 0.92)",
+            backgroundColor: "rgba(255, 255, 255, 0.94)",
             borderColor: "#CBD5E1",
             color: "#0F172A",
           }}
@@ -266,7 +375,7 @@ export function CatalogCarousel({ products }: { products: ProductCardData[] }) {
           aria-label="Siguiente producto del carrusel"
           className="ct-btn absolute right-2 sm:right-3 top-1/2 -translate-y-1/2 z-30 h-11 w-9 sm:h-14 sm:w-11 rounded-xl border flex items-center justify-center shadow-md"
           style={{
-            backgroundColor: "rgba(255, 255, 255, 0.92)",
+            backgroundColor: "rgba(255, 255, 255, 0.94)",
             borderColor: "#CBD5E1",
             color: "#0F172A",
           }}
@@ -274,15 +383,15 @@ export function CatalogCarousel({ products }: { products: ProductCardData[] }) {
           <ChevronRight className="w-6 h-6" />
         </button>
 
-        {/* Active Slide Content */}
+        {/* Active Slide Content (5 cols Copy + 7 cols Large Interactive 3D Product) */}
         <div
           key={active.id}
-          className="relative z-10 grid grid-cols-1 lg:grid-cols-12 gap-6 items-center"
+          className="relative z-20 grid grid-cols-1 lg:grid-cols-12 gap-4 sm:gap-6 items-center"
         >
           {/* Left Copy, Dynamic Ribbon, Price Pill & CTA */}
-          <div className="lg:col-span-6 space-y-3.5">
+          <div className="lg:col-span-5 space-y-3">
             {/* Slanted Commercial Ribbon + // bars */}
-            <div className="flex items-center gap-1.5">
+            <div data-carousel-stagger className="flex items-center gap-1.5">
               <span
                 className="inline-flex items-center gap-1.5 px-4 py-1 -skew-x-12 text-xs sm:text-sm font-black uppercase tracking-wider text-white shadow-md"
                 style={{ background: primaryRibbonGradient }}
@@ -307,28 +416,28 @@ export function CatalogCarousel({ products }: { products: ProductCardData[] }) {
             </div>
 
             {/* Bold Brand & Product Title */}
-            <Link href={`/producto/${active.slug}`} className="block group space-y-1">
+            <Link data-carousel-stagger href={`/producto/${active.slug}`} className="block group space-y-1">
               <div className="font-display text-2xl sm:text-4xl font-black uppercase tracking-tight leading-none text-slate-950">
                 {active.brandName}
               </div>
-              <h2 className="font-heading text-lg sm:text-2xl font-extrabold tracking-tight leading-snug text-slate-800 group-hover:underline">
+              <h2 className="font-heading text-lg sm:text-xl xl:text-2xl font-extrabold tracking-tight leading-snug text-slate-800 group-hover:underline">
                 {active.name}
               </h2>
             </Link>
 
             {/* Accent Bar */}
-            <div className="flex items-center gap-2 pt-0.5">
+            <div data-carousel-stagger className="flex items-center gap-2 pt-0.5">
               <span className="block h-1.5 w-14 rounded-full" style={{ backgroundColor: accentColor }} />
               <span className="block h-0.5 w-20 rounded-full bg-slate-300" />
             </div>
 
             {/* Crisp Specs Chips */}
             {specsList.length > 0 && (
-              <div className="flex flex-wrap gap-1.5">
+              <div data-carousel-stagger className="flex flex-wrap gap-1.5">
                 {specsList.map(([k, v]) => (
                   <span
                     key={k}
-                    className="px-2.5 py-1 rounded-lg border text-xs font-medium bg-white/85 border-slate-300 text-slate-700 shadow-xs"
+                    className="px-2.5 py-1 rounded-lg border text-xs font-medium bg-white/90 border-slate-300 text-slate-700 shadow-xs"
                   >
                     <strong className="font-bold text-slate-900">{k}:</strong> {v}
                   </span>
@@ -337,7 +446,7 @@ export function CatalogCarousel({ products }: { products: ProductCardData[] }) {
             )}
 
             {/* Dynamic White-Pill Price Display */}
-            <div className="pt-1 space-y-2">
+            <div data-carousel-stagger className="pt-1 space-y-1.5">
               {hasDiscount && (
                 <div className="flex flex-wrap items-center gap-2.5 text-sm">
                   <span className="font-medium text-slate-600">Antes</span>
@@ -381,7 +490,7 @@ export function CatalogCarousel({ products }: { products: ProductCardData[] }) {
             </div>
 
             {/* Pill Gradient CTA + Secondary Link (Zero "Añadir" word so E2E targets ProductCard cleanly) */}
-            <div className="pt-1 flex flex-wrap items-center gap-3">
+            <div data-carousel-stagger className="pt-1 flex flex-wrap items-center gap-2.5">
               <button
                 type="button"
                 data-sound="none"
@@ -389,7 +498,7 @@ export function CatalogCarousel({ products }: { products: ProductCardData[] }) {
                 disabled={active.stockAvailable <= 0}
                 onClick={() => addToCart(active.id, 1)}
                 aria-label={`Agregar ${active.name} al carrito`}
-                className="ct-btn h-12 px-6 rounded-full text-xs sm:text-sm font-black uppercase tracking-wider text-white inline-flex items-center gap-2.5 shadow-lg transition-transform hover:scale-[1.02] disabled:opacity-45"
+                className="ct-btn h-11 px-5 rounded-full text-xs sm:text-sm font-black uppercase tracking-wider text-white inline-flex items-center gap-2.5 shadow-lg transition-transform hover:scale-[1.02] disabled:opacity-45"
                 style={{ background: ctaGradient }}
               >
                 <ShoppingCart className="w-4 h-4" />
@@ -399,85 +508,46 @@ export function CatalogCarousel({ products }: { products: ProductCardData[] }) {
 
               <Link
                 href={`/producto/${active.slug}`}
-                className="ct-btn h-11 px-4 rounded-full border border-slate-300 bg-white/90 text-xs sm:text-sm font-bold text-slate-800 hover:bg-white inline-flex items-center justify-center shadow-xs"
+                className="ct-btn h-11 px-4 rounded-full border border-slate-300 bg-white/95 text-xs sm:text-sm font-bold text-slate-800 hover:bg-white inline-flex items-center justify-center shadow-xs"
               >
                 Ver ficha
               </Link>
             </div>
           </div>
 
-          {/* Right Product Showcase over Luminous Ring & 3D Silver Pedestal */}
-          <div className="lg:col-span-6">
-            <Link
-              href={`/producto/${active.slug}`}
-              className="block relative h-64 sm:h-72 lg:h-80 flex items-center justify-center group"
-            >
-              {/* Glowing Circular Ring Halo behind product */}
-              <div
-                aria-hidden="true"
-                className="absolute top-2 w-52 h-52 sm:w-64 sm:h-64 rounded-full pointer-events-none"
-                style={{
-                  border: "3px solid rgba(255, 255, 255, 0.95)",
-                  boxShadow: "0 0 36px rgba(255, 255, 255, 0.95), inset 0 0 24px rgba(255, 255, 255, 0.7)",
-                  background: "radial-gradient(circle, rgba(255,255,255,0.65) 0%, rgba(255,255,255,0) 72%)",
-                }}
-              />
-
-              {/* 3D Cylindrical Silver Pedestal */}
-              <div
-                aria-hidden="true"
-                className="absolute bottom-3 left-1/2 -translate-x-1/2 w-[82%] max-w-[360px] h-16 pointer-events-none"
-              >
-                {/* Pedestal base cylinder wall */}
-                <div
-                  className="absolute bottom-0 inset-x-0 h-11 rounded-[50%]"
-                  style={{
-                    background: "linear-gradient(90deg, #94A3B8 0%, #E2E8F0 35%, #FFFFFF 52%, #CBD5E1 75%, #94A3B8 100%)",
-                    boxShadow: "0 12px 24px -6px rgba(15, 23, 42, 0.24), 0 0 18px rgba(255,255,255,0.8)",
-                  }}
-                />
-                {/* Pedestal top metallic disc */}
-                <div
-                  className="absolute top-0 inset-x-0 h-11 rounded-[50%] border border-white"
-                  style={{
-                    background: "linear-gradient(180deg, #FFFFFF 0%, #E2E8F0 70%, #CBD5E1 100%)",
-                  }}
-                />
-              </div>
-
-              {/* Isolated Product Image on Pure White blended seamlessly via mix-blend-multiply */}
-              {active.imageUrl ? (
-                <img
-                  src={active.imageUrl}
-                  alt={active.name}
-                  className="relative z-10 w-[82%] h-[84%] -translate-y-3 object-contain mix-blend-multiply transition-transform duration-500 group-hover:scale-105"
-                />
-              ) : (
-                <span className="relative z-10 text-xs text-slate-500">Sin imagen</span>
-              )}
-
-              {/* Subtle Stock Badge */}
-              <span
-                className="absolute bottom-1 right-2 z-20 px-2.5 py-1 rounded-full text-[11px] font-bold shadow-sm border"
-                style={{
-                  backgroundColor: "rgba(15, 23, 42, 0.88)",
-                  color: "#34D399",
-                  borderColor: "rgba(52, 211, 153, 0.4)",
-                }}
-              >
-                Stock: {active.stockAvailable} en Calle Oruro
-              </span>
-            </Link>
+          {/* Right Large Interactive 3D Product Showcase (7 cols, drag to spin 360°) */}
+          <div className="lg:col-span-7">
+            <Interactive3DProduct
+              src={active.imageUrl}
+              alt={active.name}
+              variant={isPromoHero ? "fire" : "cyan"}
+              size="hero"
+              badgeText={`Stock: ${active.stockAvailable} en Calle Oruro`}
+              productKey={active.id}
+            />
           </div>
         </div>
       </div>
 
-      {/* Bottom Interactive Slide Dots + 3s Indicator */}
+      {/* Live 3s Autoplay Progress Bar */}
+      <div className="relative z-30 h-1 w-full bg-slate-200/80 overflow-hidden">
+        <div
+          data-carousel-progress
+          className="h-full w-full origin-left"
+          style={{
+            background: isPromoHero
+              ? "linear-gradient(90deg, #DC2626 0%, #F97316 100%)"
+              : "linear-gradient(90deg, #0284C7 0%, #00E5FF 100%)",
+          }}
+        />
+      </div>
+
+      {/* Bottom Interactive Slide Dots + Status */}
       <div
-        className="relative z-20 px-4 sm:px-6 py-2.5 border-t flex items-center justify-between gap-3 overflow-x-auto"
+        className="relative z-30 px-4 sm:px-6 py-2.5 border-t flex items-center justify-between gap-3 overflow-x-auto"
         style={{
           borderColor: "rgba(148, 163, 184, 0.3)",
-          backgroundColor: "rgba(255, 255, 255, 0.88)",
+          backgroundColor: "rgba(255, 255, 255, 0.9)",
         }}
       >
         <div className="flex items-center gap-1.5">
@@ -492,6 +562,7 @@ export function CatalogCarousel({ products }: { products: ProductCardData[] }) {
                 aria-label={`Ver slide ${idx + 1}: ${s.name}`}
                 onClick={() => {
                   playClick();
+                  directionRef.current = idx >= safeIndex ? 1 : -1;
                   setActiveIndex(idx);
                 }}
                 className="h-2.5 rounded-full transition-all"

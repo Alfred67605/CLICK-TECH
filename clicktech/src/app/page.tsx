@@ -17,6 +17,7 @@ import { HyperFramesHeroPlayer } from "@/components/catalog/HyperFramesHeroPlaye
 import { PotosiRouteCalculator } from "@/components/maps/PotosiRouteCalculator";
 import { BudgetBuildPreview, type PrebuiltPcSummary } from "@/components/home/BudgetBuildPreview";
 import { FaqAccordion } from "@/components/home/FaqAccordion";
+import { EmberParticlesCanvas } from "@/components/ui/EmberParticlesCanvas";
 
 export const dynamic = "force-dynamic";
 
@@ -115,7 +116,8 @@ export default async function HomePage() {
         className="relative border-b overflow-hidden ct-grid-bg"
         style={{ borderColor: "var(--border-subtle)" }}
       >
-        <div className="ct-container py-10 lg:py-16 grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
+        <EmberParticlesCanvas variant="fire" density={26} className="absolute inset-0 z-0 opacity-75" />
+        <div className="ct-container relative z-10 py-10 lg:py-16 grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
           <div className="lg:col-span-6 space-y-6 ct-hero-enter">
             <h1
               className="font-display text-3xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight leading-[1.08]"

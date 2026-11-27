@@ -23,6 +23,8 @@ import { prisma } from "@/lib/prisma";
 import { getPublicBusinessSettings } from "@/lib/domain/business-config";
 import { getAvailableStock } from "@/lib/domain/inventory-orders";
 import { formatBsCompact } from "@/lib/domain/money";
+import { Interactive3DProduct } from "@/components/catalog/Interactive3DProduct";
+import { EmberParticlesCanvas } from "@/components/ui/EmberParticlesCanvas";
 import { ProductDetailActions } from "@/components/catalog/ProductDetailActions";
 import { ProductCard } from "@/components/catalog/ProductCard";
 
@@ -238,40 +240,37 @@ export default async function ProductoDetallePage({
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
-        {/* Product gallery */}
+        {/* Product gallery (Enlarged Interactive 3D Stage + Floating Particles) */}
         <div className="lg:col-span-6 space-y-3">
           <div
-            className="rounded-2xl border aspect-[4/3] flex items-center justify-center p-6 relative"
+            className="rounded-2xl border p-4 sm:p-6 relative overflow-hidden"
             style={{
               background: "linear-gradient(135deg, #FFFFFF 0%, #F1F5F9 55%, #E2E8F0 100%)",
               borderColor: "var(--border-subtle)",
             }}
           >
-            {/* Subtle 3D Studio Silver Pedestal */}
-            <div
-              aria-hidden="true"
-              className="absolute bottom-4 left-1/2 -translate-x-1/2 w-[72%] max-w-[300px] h-10 pointer-events-none"
-            >
-              <div
-                className="w-full h-full rounded-[50%] border border-white"
-                style={{
-                  background: "linear-gradient(180deg, #FFFFFF 0%, #E2E8F0 65%, #CBD5E1 100%)",
-                  boxShadow: "0 10px 24px -6px rgba(15, 23, 42, 0.2)",
-                }}
+            <EmberParticlesCanvas
+              variant={
+                product.promoPriceCents && product.promoPriceCents < product.priceCents
+                  ? "fire"
+                  : "cyan"
+              }
+              density={28}
+              className="absolute inset-0 z-0"
+            />
+            <div className="relative z-10">
+              <Interactive3DProduct
+                src={primaryImg?.url ?? null}
+                alt={primaryImg?.altText ?? product.name}
+                variant={
+                  product.promoPriceCents && product.promoPriceCents < product.priceCents
+                    ? "fire"
+                    : "cyan"
+                }
+                size="detail"
+                productKey={product.id}
               />
             </div>
-
-            {primaryImg ? (
-              <img
-                src={primaryImg.url}
-                alt={primaryImg.altText}
-                className="relative z-10 w-full h-full object-contain mix-blend-multiply"
-              />
-            ) : (
-              <span className="text-sm relative z-10" style={{ color: "#475569" }}>
-                Sin imagen disponible
-              </span>
-            )}
             <span
               className="absolute top-3 left-3 z-20 px-2.5 py-1 rounded-md text-xs font-semibold border"
               style={{

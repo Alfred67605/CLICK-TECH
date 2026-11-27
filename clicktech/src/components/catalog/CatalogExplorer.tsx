@@ -211,7 +211,7 @@ export function CatalogExplorer({
       <div className="flex flex-col lg:flex-row gap-7 items-start">
         {/* Left Sidebar / Filters */}
         <aside
-          className={`w-full lg:w-72 xl:w-80 shrink-0 space-y-6 ${mobileFilterOpen ? "block" : "hidden lg:block"
+          className={`w-full lg:w-64 xl:w-68 shrink-0 space-y-6 ${mobileFilterOpen ? "block" : "hidden lg:block"
             }`}
         >
           <div
@@ -552,7 +552,7 @@ export function CatalogExplorer({
               </button>
             </div>
           ) : (
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-5">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-4 sm:gap-5 w-full min-w-0">
               {filtered.map((p) => (
                 <ProductCard key={p.id} product={p} />
               ))}

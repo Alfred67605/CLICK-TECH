@@ -9,7 +9,20 @@ export async function authorizeOrderAccess(
   const order = await prisma.order.findFirst({
     where: { OR: [{ id: orderId }, { orderNumber: orderId }] },
     include: {
-      items: true,
+      items: {
+        include: {
+          product: {
+            select: {
+              slug: true,
+              images: {
+                orderBy: [{ isPrimary: "desc" }, { sortOrder: "asc" }],
+                take: 1,
+                select: { url: true, altText: true },
+              },
+            },
+          },
+        },
+      },
       payments: { orderBy: { createdAt: "desc" } },
       deliveryZone: true,
       reservations: true,

@@ -79,17 +79,39 @@ export function AdminSidebar({
   const sidebarBody = (
     <div
       ref={sidebarRef}
-      className="rounded-[20px] border border-white/10 bg-[#0B0F1A] p-4 flex flex-col gap-5 shadow-2xl"
+      className="rounded-[20px] border p-4 flex flex-col gap-5"
+      style={{
+        backgroundColor: "var(--bg-surface)",
+        borderColor: "var(--border-subtle)",
+        boxShadow: "var(--shadow-card)",
+      }}
     >
       {/* Identity Header inside Sidebar */}
-      <div className="flex items-center justify-between gap-2 pb-3 border-b border-white/10">
+      <div
+        className="flex items-center justify-between gap-2 pb-3 border-b"
+        style={{ borderColor: "var(--border-subtle)" }}
+      >
         <div className="flex items-center gap-2.5 min-w-0">
-          <div className="w-9 h-9 rounded-xl bg-cyan-500/10 border border-cyan-400/30 flex items-center justify-center shrink-0 text-[#00E5FF]">
+          <div
+            className="w-9 h-9 rounded-xl border flex items-center justify-center shrink-0"
+            style={{
+              backgroundColor: "var(--accent-cyan-soft)",
+              borderColor: "var(--border-strong)",
+              color: "var(--accent-cyan)",
+            }}
+          >
             <ShieldCheck className="w-4 h-4" />
           </div>
           <div className="min-w-0">
-            <p className="text-xs font-semibold text-white truncate">{userName}</p>
-            <p className="text-[11px] font-mono text-slate-400">Rol {userRole}</p>
+            <p
+              className="text-xs font-semibold truncate"
+              style={{ color: "var(--text-primary)" }}
+            >
+              {userName}
+            </p>
+            <p className="text-[11px] font-mono" style={{ color: "var(--text-muted)" }}>
+              Rol {userRole}
+            </p>
           </div>
         </div>
         <button
@@ -100,7 +122,12 @@ export function AdminSidebar({
             onCloseMobile();
           }}
           aria-label="Cerrar menú administrativo"
-          className="lg:hidden h-8 w-8 rounded-lg border border-white/10 flex items-center justify-center text-slate-300 hover:text-white"
+          className="lg:hidden h-8 w-8 rounded-lg border flex items-center justify-center"
+          style={{
+            borderColor: "var(--border-subtle)",
+            backgroundColor: "var(--bg-chassis)",
+            color: "var(--text-secondary)",
+          }}
         >
           <X className="w-4 h-4" />
         </button>
@@ -114,7 +141,10 @@ export function AdminSidebar({
 
           return (
             <div key={group} className="space-y-1.5">
-              <p className="px-3 text-[11px] font-semibold uppercase tracking-wider text-slate-500">
+              <p
+                className="px-3 text-[11px] font-semibold uppercase tracking-wider"
+                style={{ color: "var(--text-muted)" }}
+              >
                 {group}
               </p>
               <div className="space-y-1">
@@ -131,28 +161,40 @@ export function AdminSidebar({
                       aria-current={active ? "page" : undefined}
                       onClick={() => handleSelect(item.id)}
                       onPointerEnter={() => playHover()}
-                      className={`ct-btn relative w-full h-10 px-3 rounded-xl text-xs font-semibold flex items-center justify-between gap-2 text-left transition-colors ${
-                        active ? "text-[#00E5FF]" : "text-slate-400 hover:text-slate-100"
-                      }`}
+                      className="ct-btn relative w-full h-10 px-3 rounded-xl text-xs font-semibold flex items-center justify-between gap-2 text-left transition-colors"
+                      style={{
+                        color: active ? "var(--accent-cyan)" : "var(--text-secondary)",
+                      }}
                     >
                       {active && (
                         <span
                           data-flip-id="admin-nav-active"
                           aria-hidden="true"
-                          className="absolute inset-0 rounded-xl bg-white/[0.07] border border-cyan-400/35 shadow-[inset_0_1px_0_rgba(255,255,255,0.08)]"
+                          className="absolute inset-0 rounded-xl border"
+                          style={{
+                            backgroundColor: "var(--accent-cyan-soft)",
+                            borderColor: "var(--border-strong)",
+                          }}
                         />
                       )}
                       <span className="relative z-10 flex items-center gap-2.5 min-w-0">
-                        <Icon className={`w-4 h-4 shrink-0 ${active ? "text-[#00E5FF]" : "text-slate-400"}`} />
+                        <Icon
+                          className="w-4 h-4 shrink-0"
+                          style={{
+                            color: active ? "var(--accent-cyan)" : "var(--text-muted)",
+                          }}
+                        />
                         <span className="truncate">{item.label}</span>
                       </span>
                       {typeof count === "number" && count > 0 && (
                         <span
-                          className={`relative z-10 px-1.5 py-0.5 rounded-md text-[10px] font-mono tabular-nums ${
-                            active
-                              ? "bg-cyan-400/20 text-[#00E5FF]"
-                              : "bg-white/5 text-slate-400"
-                          }`}
+                          className="relative z-10 px-1.5 py-0.5 rounded-md text-[10px] font-mono tabular-nums"
+                          style={{
+                            backgroundColor: active
+                              ? "var(--bg-surface)"
+                              : "var(--bg-chassis)",
+                            color: active ? "var(--accent-cyan)" : "var(--text-muted)",
+                          }}
                         >
                           {count}
                         </span>
@@ -187,7 +229,10 @@ export function AdminSidebar({
             className="ct-backdrop fixed inset-0 bg-black/75 backdrop-blur-xs"
             onClick={onCloseMobile}
           />
-          <div className="relative z-10 w-[85vw] max-w-xs h-full overflow-y-auto p-3 bg-[#02040A]">
+          <div
+            className="relative z-10 w-[85vw] max-w-xs h-full overflow-y-auto p-3"
+            style={{ backgroundColor: "var(--bg-chassis)" }}
+          >
             {sidebarBody}
           </div>
         </div>

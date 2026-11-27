@@ -139,8 +139,8 @@ export function SiteHeader({ initialUser }: { initialUser: AuthUserSummary | nul
             />
           </Link>
 
-          {/* Search bar (desktop) */}
-          <form onSubmit={handleSearch} className="hidden lg:flex flex-1 max-w-md relative">
+          {/* Search bar (desktop xl+) */}
+          <form onSubmit={handleSearch} className="hidden xl:flex flex-1 min-w-[180px] max-w-md relative">
             <label htmlFor="header-search" className="sr-only">
               Buscar productos, marca, modelo o SKU
             </label>
@@ -151,7 +151,7 @@ export function SiteHeader({ initialUser }: { initialUser: AuthUserSummary | nul
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="Buscar GPU, Ryzen, laptop o SKU..."
-              className="w-full h-10 pl-3.5 pr-20 rounded-xl border text-sm focus:outline-none"
+              className="w-full h-10 pl-3.5 pr-10 2xl:pr-20 rounded-xl border text-sm focus:outline-none"
               style={{
                 backgroundColor: "var(--bg-surface)",
                 borderColor: "var(--border-subtle)",
@@ -160,7 +160,7 @@ export function SiteHeader({ initialUser }: { initialUser: AuthUserSummary | nul
             />
             <kbd
               aria-hidden="true"
-              className="pointer-events-none hidden xl:inline-flex items-center px-1.5 py-0.5 rounded border text-[10px] font-mono absolute right-10 top-2.5"
+              className="pointer-events-none hidden 2xl:inline-flex items-center px-1.5 py-0.5 rounded border text-[10px] font-mono absolute right-10 top-2.5"
               style={{
                 borderColor: "var(--border-subtle)",
                 backgroundColor: "var(--bg-chassis)",
@@ -180,7 +180,7 @@ export function SiteHeader({ initialUser }: { initialUser: AuthUserSummary | nul
           </form>
 
           {/* Primary navigation */}
-          <nav aria-label="Navegación principal" className="hidden md:flex items-center gap-1 text-sm font-medium">
+          <nav aria-label="Navegación principal" className="hidden lg:flex items-center gap-1 text-sm font-medium">
             <Link
               href="/catalogo"
               className="px-3 py-2 rounded-xl transition-colors hover:opacity-90"
@@ -354,7 +354,7 @@ export function SiteHeader({ initialUser }: { initialUser: AuthUserSummary | nul
               onClick={() => setMobileMenuOpen((v) => !v)}
               aria-label="Abrir menú"
               aria-expanded={mobileMenuOpen}
-              className="ct-btn md:hidden h-10 w-10 rounded-lg border flex items-center justify-center"
+              className="ct-btn lg:hidden h-10 w-10 rounded-lg border flex items-center justify-center"
               style={{
                 borderColor: "var(--border-subtle)",
                 backgroundColor: "var(--bg-surface)",
@@ -366,10 +366,10 @@ export function SiteHeader({ initialUser }: { initialUser: AuthUserSummary | nul
           </div>
         </div>
 
-        {/* Mobile menu */}
+        {/* Mobile / tablet menu */}
         {mobileMenuOpen && (
           <div
-            className="md:hidden border-t px-4 py-4 space-y-3"
+            className="lg:hidden border-t px-4 py-4 space-y-3"
             style={{ backgroundColor: "var(--bg-surface)", borderColor: "var(--border-subtle)" }}
           >
             <form onSubmit={handleSearch} className="flex gap-2">
@@ -489,7 +489,7 @@ export function SiteHeader({ initialUser }: { initialUser: AuthUserSummary | nul
 
       {/* Slide-over Cart Drawer */}
       {cartOpen && (
-        <div className="fixed inset-0 z-50 flex justify-end" role="dialog" aria-modal="true" aria-label="Carrito de compras">
+        <div className="fixed inset-0 z-[70] flex justify-end" role="dialog" aria-modal="true" aria-label="Carrito de compras">
           <div
             className="ct-backdrop fixed inset-0 bg-black/70 backdrop-blur-xs"
             onClick={() => setCartOpen(false)}

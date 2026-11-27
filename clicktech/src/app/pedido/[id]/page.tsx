@@ -36,6 +36,15 @@ export default async function PedidoDetallePage({
   }
 
   const o = authz.order;
+  const rawAddr = (o.deliveryAddressSnapshot ?? null) as {
+    street?: string;
+    reference?: string;
+    city?: string;
+    department?: string;
+    lat?: number;
+    lng?: number;
+  } | null;
+
   return (
     <OrderDetailClient
       guestCode={sp.code ?? null}
@@ -55,7 +64,20 @@ export default async function PedidoDetallePage({
         createdAt: o.createdAt.toISOString(),
         guestName: o.guestName,
         guestEmail: o.guestEmail,
-        items: o.items,
+        notes: o.notes,
+        deliveryZoneName: o.deliveryZone?.name ?? null,
+        deliveryAddress: rawAddr,
+        items: o.items.map((it) => ({
+          id: it.id,
+          skuSnapshot: it.skuSnapshot,
+          productNameSnapshot: it.productNameSnapshot,
+          quantity: it.quantity,
+          unitPriceCentsSnapshot: it.unitPriceCentsSnapshot,
+          lineTotalCents: it.lineTotalCents,
+          warrantyMonthsSnapshot: it.warrantyMonthsSnapshot,
+          imageUrl: it.product?.images?.[0]?.url ?? null,
+          productSlug: it.product?.slug ?? null,
+        })),
         payments: o.payments.map((p) => ({
           id: p.id,
           status: p.status,

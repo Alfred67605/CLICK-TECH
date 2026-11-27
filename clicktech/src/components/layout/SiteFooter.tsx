@@ -58,8 +58,10 @@ export function SiteFooter({ settings }: { settings: PublicBusinessSettings }) {
               </a>
             </li>
             <li>
-              Taller central:{" "}
-              {settings.physicalAddress ? settings.physicalAddress : "Recojo coordinado en Potosí"}
+              Tienda central:{" "}
+              <strong style={{ color: "var(--text-primary)" }}>
+                {settings.physicalAddress ? settings.physicalAddress : "Calle Oruro, Zona Central, Potosí"}
+              </strong>
             </li>
             <li>Horarios: {settings.businessHours}</li>
           </ul>

@@ -1,12 +1,37 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { FileText, Upload, XCircle } from "lucide-react";
+import {
+  Bike,
+  CheckCircle2,
+  Clock,
+  ExternalLink,
+  FileText,
+  MapPin,
+  MessageCircle,
+  Package,
+  QrCode,
+  ShieldCheck,
+  Store,
+  Upload,
+  XCircle,
+} from "lucide-react";
 import { useStore } from "@/components/providers/StoreProvider";
 import { formatBs } from "@/lib/domain/money";
 import { formatDateLaPaz } from "@/lib/utils";
+import {
+  DELIVERY_METHOD_META,
+  DELIVERY_STATUS_META,
+  ORDER_STATUS_META,
+  PAYMENT_STATUS_META,
+  STORE_LOCATION,
+  getEstimatedEtaText,
+  getOrderProgressStep,
+  getToneStyles,
+} from "@/lib/domain/status-labels";
+import { buildClickTechQrPayload, generateQrDataUrl } from "@/lib/ui/qr-generator";
 
 export interface OrderDetailView {
   id: string;
@@ -24,6 +49,16 @@ export interface OrderDetailView {
   createdAt: string;
   guestName: string | null;
   guestEmail: string | null;
+  notes?: string | null;
+  deliveryZoneName?: string | null;
+  deliveryAddress?: {
+    street?: string;
+    reference?: string;
+    city?: string;
+    department?: string;
+    lat?: number;
+    lng?: number;
+  } | null;
   items: Array<{
     id: string;
     skuSnapshot: string;
@@ -32,6 +67,8 @@ export interface OrderDetailView {
     unitPriceCentsSnapshot: number;
     lineTotalCents: number;
     warrantyMonthsSnapshot: number | null;
+    imageUrl?: string | null;
+    productSlug?: string | null;
   }>;
   payments: Array<{
     id: string;
@@ -45,6 +82,14 @@ export interface OrderDetailView {
   }>;
 }
 
+const TRACKING_STEPS = [
+  { label: "Pedido recibido", desc: "Stock reservado" },
+  { label: "Pago verificado", desc: "Conciliado" },
+  { label: "Preparando en Calle Oruro", desc: "Pruebas y precinto" },
+  { label: "En camino / Listo", desc: "Listo o en ruta" },
+  { label: "Entregado", desc: "Garantía activa" },
+];
+
 export function OrderDetailClient({
   order,
   guestCode,
@@ -57,6 +102,7 @@ export function OrderDetailClient({
   const [referenceNumber, setReferenceNumber] = useState("");
   const [file, setFile] = useState<File | null>(null);
   const [busy, setBusy] = useState(false);
+  const [qrUrl, setQrUrl] = useState<string>("");
 
   const codeParam = guestCode ? `?code=${encodeURIComponent(guestCode)}` : "";
   const canUploadProof =
@@ -67,6 +113,66 @@ export function OrderDetailClient({
     order.status !== "CANCELLED" &&
     order.status !== "DELIVERED" &&
     order.status !== "PAID_CONFIRMED";
+
+  useEffect(() => {
+    if (!canUploadProof) return;
+    let active = true;
+    const payload = buildClickTechQrPayload({
+      reference: order.orderNumber,
+      totalCents: order.totalCents,
+      detail: "PEDIDO_WEB",
+    });
+    generateQrDataUrl(payload)
+      .then((u) => {
+        if (active) setQrUrl(u);
+      })
+      .catch(() => {});
+    return () => {
+      active = false;
+    };
+  }, [canUploadProof, order.orderNumber, order.totalCents]);
+
+  const orderMeta = ORDER_STATUS_META[order.status] ?? {
+    label: order.status,
+    description: "Estado operativo del pedido.",
+    tone: "neutral" as const,
+  };
+  const paymentMeta = PAYMENT_STATUS_META[order.paymentStatus] ?? {
+    label: order.paymentStatus,
+    description: "Estado del pago.",
+    tone: "neutral" as const,
+  };
+  const deliveryMeta = DELIVERY_STATUS_META[order.deliveryStatus] ?? {
+    label: order.deliveryStatus,
+    description: "Estado de despacho.",
+    tone: "neutral" as const,
+  };
+  const deliveryMethodInfo = DELIVERY_METHOD_META[order.deliveryMethod] ?? {
+    label: order.deliveryMethod,
+    shortLabel: order.deliveryMethod,
+  };
+
+  const orderTone = getToneStyles(orderMeta.tone);
+  const paymentTone = getToneStyles(paymentMeta.tone);
+  const deliveryTone = getToneStyles(deliveryMeta.tone);
+  const isCancelled = order.status === "CANCELLED" || order.status === "EXPIRED";
+  const currentStep = getOrderProgressStep(order.status, order.deliveryStatus);
+  const etaText = getEstimatedEtaText(order.deliveryMethod, order.status, order.deliveryStatus);
+
+  const destLat = order.deliveryAddress?.lat ?? -19.5865;
+  const destLng = order.deliveryAddress?.lng ?? -65.7512;
+  const hasDeliveryRoute =
+    order.deliveryMethod === "LOCAL_DELIVERY" &&
+    typeof destLat === "number" &&
+    typeof destLng === "number";
+
+  const mapEmbedUrl = hasDeliveryRoute
+    ? `https://maps.google.com/maps?saddr=${STORE_LOCATION.lat},${STORE_LOCATION.lng}&daddr=${destLat},${destLng}&hl=es&output=embed`
+    : `https://maps.google.com/maps?q=${STORE_LOCATION.lat},${STORE_LOCATION.lng}&hl=es&z=16&output=embed`;
+
+  const mapExternalUrl = hasDeliveryRoute
+    ? `https://www.google.com/maps/dir/${STORE_LOCATION.lat},${STORE_LOCATION.lng}/${destLat},${destLng}`
+    : `https://www.google.com/maps/search/?api=1&query=${STORE_LOCATION.lat},${STORE_LOCATION.lng}`;
 
   async function uploadProof(e: React.FormEvent) {
     e.preventDefault();
@@ -120,41 +226,68 @@ export function OrderDetailClient({
   }
 
   return (
-    <div className="max-w-5xl mx-auto px-4 sm:px-6 py-8 space-y-6">
-      <div
-        className="rounded-2xl border p-6 space-y-4"
-        style={{ backgroundColor: "var(--bg-surface)", borderColor: "var(--border-strong)" }}
+    <div className="ct-container py-8 space-y-6">
+      {/* Top Status & PedidosYa-Style Summary Hero */}
+      <section
+        className="rounded-2xl border p-5 sm:p-6 space-y-5"
+        style={{
+          backgroundColor: "var(--bg-surface)",
+          borderColor: "var(--border-strong)",
+          boxShadow: "var(--shadow-card)",
+        }}
       >
         <div className="flex flex-wrap items-start justify-between gap-4">
-          <div>
-            <p className="text-xs font-semibold uppercase" style={{ color: "var(--accent-cyan)" }}>
-              Comprobante operativo ClickTech · {order.orderNumber}
+          <div className="space-y-1">
+            <p className="text-xs font-bold uppercase tracking-wider" style={{ color: "var(--accent-cyan)" }}>
+              Seguimiento de Pedido ClickTech · {order.orderNumber}
             </p>
-            <h1 className="font-display text-2xl font-bold mt-1">Detalle de Pedido</h1>
-            <p className="text-xs mt-1" style={{ color: "var(--text-muted)" }}>
+            <h1 className="font-display text-2xl sm:text-3xl font-bold" style={{ color: "var(--text-primary)" }}>
+              {isCancelled ? "Pedido detenido" : orderMeta.label}
+            </h1>
+            <p className="text-xs sm:text-sm" style={{ color: "var(--text-secondary)" }}>
+              {orderMeta.description}
+            </p>
+            <p className="text-xs pt-0.5" style={{ color: "var(--text-muted)" }}>
               Fecha (La Paz): {formatDateLaPaz(order.createdAt)}
               {order.reservationExpiresAt && order.status === "PENDING_PAYMENT"
                 ? ` · Reserva vigente hasta: ${formatDateLaPaz(order.reservationExpiresAt)}`
                 : ""}
             </p>
           </div>
+
           <div className="flex flex-wrap gap-2">
             <a
               href={`/api/orders/${encodeURIComponent(order.id)}/receipt${codeParam}`}
               target="_blank"
               rel="noopener noreferrer"
-              className="ct-btn h-10 px-4 rounded-lg border text-xs font-semibold inline-flex items-center gap-1.5"
-              style={{ borderColor: "var(--border-strong)", color: "var(--accent-cyan)" }}
+              className="ct-btn h-10 px-4 rounded-xl border text-xs font-bold inline-flex items-center gap-1.5"
+              style={{
+                borderColor: "var(--border-strong)",
+                backgroundColor: "var(--accent-cyan-soft)",
+                color: "var(--accent-cyan)",
+              }}
             >
               <FileText className="w-4 h-4" />
-              Comprobante descargable
+              Comprobante / Factura PDF
+            </a>
+            <a
+              href={`https://wa.me/${STORE_LOCATION.whatsapp}?text=${encodeURIComponent(
+                `Hola ClickTech (+591 67605477), consulto por el estado de mi pedido ${order.orderNumber}.`
+              )}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="ct-btn h-10 px-4 rounded-xl text-xs font-bold inline-flex items-center gap-1.5"
+              style={{ backgroundColor: "#25D366", color: "#FFFFFF" }}
+            >
+              <MessageCircle className="w-4 h-4" />
+              Soporte WhatsApp
             </a>
             {canCancel && (
               <button
                 type="button"
                 disabled={busy}
                 onClick={cancelOrder}
-                className="ct-btn h-10 px-4 rounded-lg border text-xs font-semibold inline-flex items-center gap-1.5"
+                className="ct-btn h-10 px-4 rounded-xl border text-xs font-semibold inline-flex items-center gap-1.5"
                 style={{ borderColor: "var(--status-danger)", color: "var(--status-danger)" }}
               >
                 <XCircle className="w-4 h-4" />
@@ -166,57 +299,284 @@ export function OrderDetailClient({
 
         {guestCode && (
           <div
-            className="rounded-lg border p-3 text-xs"
-            style={{ backgroundColor: "var(--bg-chassis)", borderColor: "var(--accent-cyan)" }}
+            className="rounded-xl border p-3.5 text-xs flex flex-wrap items-center justify-between gap-2"
+            style={{ backgroundColor: "var(--bg-chassis)", borderColor: "var(--border-strong)" }}
           >
-            <strong>Código de consulta de invitado:</strong>{" "}
-            <code className="font-bold">{guestCode}</code> — Guárdalo para volver a consultar o subir comprobantes de este pedido.
+            <span>
+              <strong>Código de consulta de invitado:</strong>{" "}
+              <code className="font-mono font-bold px-2 py-0.5 rounded" style={{ backgroundColor: "var(--accent-cyan-soft)", color: "var(--accent-cyan)" }}>
+                {guestCode}
+              </code>{" "}
+              — Guárdalo para seguir tu pedido o subir tu comprobante en cualquier momento.
+            </span>
           </div>
         )}
 
-        {/* Separated Order / Payment / Delivery states */}
+        {/* PedidosYa-Style 5-Step Progress Timeline */}
+        {!isCancelled && (
+          <div
+            className="rounded-2xl border p-4 sm:p-5 space-y-4"
+            style={{ backgroundColor: "var(--bg-chassis)", borderColor: "var(--border-subtle)" }}
+          >
+            <div className="flex flex-wrap items-center justify-between gap-2">
+              <div className="flex items-center gap-2 text-xs font-bold" style={{ color: "var(--text-primary)" }}>
+                <Bike className="w-4 h-4" style={{ color: "var(--accent-cyan)" }} />
+                <span>Progreso en tiempo real</span>
+              </div>
+              <span
+                className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full border text-xs font-bold"
+                style={{
+                  backgroundColor: "var(--accent-cyan-soft)",
+                  borderColor: "var(--border-strong)",
+                  color: "var(--accent-cyan)",
+                }}
+              >
+                <Clock className="w-3.5 h-3.5" />
+                Tiempo estimado: {etaText}
+              </span>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-5 gap-3">
+              {TRACKING_STEPS.map((st, idx) => {
+                const done = idx <= currentStep;
+                const active = idx === currentStep;
+                return (
+                  <div
+                    key={st.label}
+                    className="rounded-xl border p-3 flex sm:flex-col items-center sm:items-start gap-3 sm:gap-1.5"
+                    style={{
+                      backgroundColor: active
+                        ? "var(--accent-cyan-soft)"
+                        : done
+                        ? "var(--bg-surface)"
+                        : "transparent",
+                      borderColor: active
+                        ? "var(--accent-cyan)"
+                        : done
+                        ? "var(--border-strong)"
+                        : "var(--border-subtle)",
+                    }}
+                  >
+                    <div className="flex items-center gap-2">
+                      <span
+                        className={`w-6 h-6 rounded-full text-[11px] font-extrabold flex items-center justify-center shrink-0 ${
+                          active ? "animate-pulse" : ""
+                        }`}
+                        style={{
+                          backgroundColor: done ? "var(--accent-cyan)" : "var(--bg-surface)",
+                          color: done ? "var(--accent-cyan-ink)" : "var(--text-muted)",
+                          border: "1px solid var(--border-subtle)",
+                        }}
+                      >
+                        {done ? <CheckCircle2 className="w-3.5 h-3.5" /> : idx + 1}
+                      </span>
+                      <span
+                        className="text-xs font-bold"
+                        style={{ color: done ? "var(--text-primary)" : "var(--text-muted)" }}
+                      >
+                        {st.label}
+                      </span>
+                    </div>
+                    <p className="text-[11px] sm:pl-8" style={{ color: "var(--text-muted)" }}>
+                      {st.desc}
+                    </p>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        )}
+
+        {/* Separated Clear Spanish Status Cards (preserving exact E2E data-testid values cleanly) */}
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs">
-          <div className="rounded-xl border p-3" style={{ backgroundColor: "var(--bg-chassis)", borderColor: "var(--border-subtle)" }}>
-            <span style={{ color: "var(--text-muted)" }}>Estado del pedido</span>
-            <p className="font-heading font-bold text-sm mt-0.5" data-testid="order-status">
+          <div
+            className="rounded-xl border p-3.5 space-y-1"
+            style={{ backgroundColor: "var(--bg-chassis)", borderColor: "var(--border-subtle)" }}
+          >
+            <span className="font-medium" style={{ color: "var(--text-muted)" }}>
+              Estado del pedido
+            </span>
+            <p className="font-heading font-bold text-sm" style={{ color: orderTone.text }}>
+              {orderMeta.label}
+            </p>
+            <code
+              data-testid="order-status"
+              className="inline-block font-mono text-[10px] px-1.5 py-0.5 rounded border"
+              style={{
+                backgroundColor: orderTone.bg,
+                borderColor: orderTone.border,
+                color: orderTone.text,
+              }}
+            >
               {order.status}
-            </p>
+            </code>
           </div>
-          <div className="rounded-xl border p-3" style={{ backgroundColor: "var(--bg-chassis)", borderColor: "var(--border-subtle)" }}>
-            <span style={{ color: "var(--text-muted)" }}>Estado del pago</span>
-            <p className="font-heading font-bold text-sm mt-0.5" data-testid="payment-status">
+
+          <div
+            className="rounded-xl border p-3.5 space-y-1"
+            style={{ backgroundColor: "var(--bg-chassis)", borderColor: "var(--border-subtle)" }}
+          >
+            <span className="font-medium" style={{ color: "var(--text-muted)" }}>
+              Estado del pago
+            </span>
+            <p className="font-heading font-bold text-sm" style={{ color: paymentTone.text }}>
+              {paymentMeta.label}
+            </p>
+            <code
+              data-testid="payment-status"
+              className="inline-block font-mono text-[10px] px-1.5 py-0.5 rounded border"
+              style={{
+                backgroundColor: paymentTone.bg,
+                borderColor: paymentTone.border,
+                color: paymentTone.text,
+              }}
+            >
               {order.paymentStatus}
-            </p>
+            </code>
           </div>
-          <div className="rounded-xl border p-3" style={{ backgroundColor: "var(--bg-chassis)", borderColor: "var(--border-subtle)" }}>
-            <span style={{ color: "var(--text-muted)" }}>Estado de entrega</span>
-            <p className="font-heading font-bold text-sm mt-0.5">
-              {order.deliveryMethod} · {order.deliveryStatus}
+
+          <div
+            className="rounded-xl border p-3.5 space-y-1"
+            style={{ backgroundColor: "var(--bg-chassis)", borderColor: "var(--border-subtle)" }}
+          >
+            <span className="font-medium" style={{ color: "var(--text-muted)" }}>
+              Logística y entrega
+            </span>
+            <p className="font-heading font-bold text-sm" style={{ color: deliveryTone.text }}>
+              {deliveryMethodInfo.shortLabel} · {deliveryMeta.label}
             </p>
+            <span className="block text-[11px]" style={{ color: "var(--text-secondary)" }}>
+              {order.deliveryZoneName ? `Zona: ${order.deliveryZoneName}` : STORE_LOCATION.shortName}
+            </span>
           </div>
         </div>
-      </div>
+      </section>
+
+      {/* PedidosYa-Style Live Map & Route Tracker */}
+      <section
+        className="rounded-2xl border p-5 sm:p-6 grid grid-cols-1 lg:grid-cols-12 gap-5 items-stretch"
+        style={{
+          backgroundColor: "var(--bg-surface)",
+          borderColor: "var(--border-subtle)",
+          boxShadow: "var(--shadow-card)",
+        }}
+      >
+        <div className="lg:col-span-7 rounded-xl border overflow-hidden min-h-[260px]" style={{ borderColor: "var(--border-subtle)" }}>
+          <iframe
+            title="Mapa de seguimiento de pedido ClickTech Potosí"
+            width="100%"
+            height="100%"
+            style={{ border: 0, minHeight: "260px" }}
+            loading="lazy"
+            referrerPolicy="no-referrer-when-downgrade"
+            src={mapEmbedUrl}
+          />
+        </div>
+
+        <div className="lg:col-span-5 flex flex-col justify-between gap-4">
+          <div className="space-y-3">
+            <div className="flex items-center justify-between gap-2">
+              <h2 className="font-heading text-base font-bold flex items-center gap-2">
+                <MapPin className="w-4 h-4" style={{ color: "var(--accent-cyan)" }} />
+                Mapa de Ruta en Vivo
+              </h2>
+              <a
+                href={mapExternalUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-xs font-bold inline-flex items-center gap-1 underline"
+                style={{ color: "var(--accent-cyan)" }}
+              >
+                Ver en Google Maps <ExternalLink className="w-3 h-3" />
+              </a>
+            </div>
+
+            <div className="rounded-xl border p-3.5 space-y-2.5 text-xs" style={{ backgroundColor: "var(--bg-chassis)", borderColor: "var(--border-subtle)" }}>
+              <div className="flex items-start gap-2.5">
+                <Store className="w-4 h-4 shrink-0 mt-0.5" style={{ color: "var(--accent-cyan)" }} />
+                <div>
+                  <p className="font-bold" style={{ color: "var(--text-primary)" }}>
+                    Origen: {STORE_LOCATION.name}
+                  </p>
+                  <p style={{ color: "var(--text-muted)" }}>{STORE_LOCATION.address}</p>
+                </div>
+              </div>
+              <div className="border-t pt-2.5 flex items-start gap-2.5" style={{ borderColor: "var(--border-subtle)" }}>
+                <Package className="w-4 h-4 shrink-0 mt-0.5" style={{ color: "var(--status-ok)" }} />
+                <div>
+                  <p className="font-bold" style={{ color: "var(--text-primary)" }}>
+                    Destino: {deliveryMethodInfo.label}
+                  </p>
+                  <p style={{ color: "var(--text-secondary)" }}>
+                    {order.deliveryAddress?.street
+                      ? `${order.deliveryAddress.street}${order.deliveryAddress.reference ? ` · Ref: ${order.deliveryAddress.reference}` : ""}`
+                      : order.deliveryMethod === "PICKUP_POTOSI"
+                      ? `Horario de atención: ${STORE_LOCATION.schedule}`
+                      : "Coordinado con el titular"}
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            {order.notes && (
+              <div className="rounded-xl border p-3 text-xs" style={{ backgroundColor: "var(--bg-chassis)", borderColor: "var(--border-subtle)" }}>
+                <p className="font-bold mb-0.5" style={{ color: "var(--text-muted)" }}>Observaciones registradas:</p>
+                <p style={{ color: "var(--text-secondary)" }}>{order.notes}</p>
+              </div>
+            )}
+          </div>
+
+          <div
+            className="rounded-xl border p-3 text-xs flex items-center gap-2.5"
+            style={{ backgroundColor: "var(--accent-cyan-soft)", borderColor: "var(--border-strong)" }}
+          >
+            <ShieldCheck className="w-4 h-4 shrink-0" style={{ color: "var(--accent-cyan)" }} />
+            <span style={{ color: "var(--text-primary)" }}>
+              Entregas protegidas con precinto numerado ClickTech y validación directa al <strong>{STORE_LOCATION.whatsappDisplay}</strong>.
+            </span>
+          </div>
+        </div>
+      </section>
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+        {/* Products List with Thumbnails */}
         <div className="lg:col-span-7 space-y-4">
           <div
             className="rounded-2xl border overflow-hidden"
-            style={{ backgroundColor: "var(--bg-surface)", borderColor: "var(--border-subtle)" }}
+            style={{ backgroundColor: "var(--bg-surface)", borderColor: "var(--border-subtle)", boxShadow: "var(--shadow-card)" }}
           >
             <h2 className="p-4 font-heading font-bold text-base border-b" style={{ borderColor: "var(--border-subtle)" }}>
               Productos y montos en Bs
             </h2>
             <div className="divide-y text-xs sm:text-sm" style={{ borderColor: "var(--border-subtle)" }}>
               {order.items.map((it) => (
-                <div key={it.id} className="p-4 flex justify-between gap-4">
-                  <div>
-                    <p className="font-semibold">{it.productNameSnapshot}</p>
-                    <p className="text-xs tabular-nums" style={{ color: "var(--text-muted)" }}>
-                      {it.skuSnapshot} · {it.quantity} x {formatBs(it.unitPriceCentsSnapshot)}
-                      {it.warrantyMonthsSnapshot ? ` · Garantía: ${it.warrantyMonthsSnapshot} m` : ""}
-                    </p>
+                <div key={it.id} className="p-4 flex items-center justify-between gap-4">
+                  <div className="flex items-center gap-3 min-w-0">
+                    <div
+                      className="w-12 h-12 rounded-xl border overflow-hidden shrink-0 flex items-center justify-center"
+                      style={{ backgroundColor: "var(--bg-card-media)", borderColor: "var(--border-subtle)" }}
+                    >
+                      {it.imageUrl ? (
+                        <img src={it.imageUrl} alt={it.productNameSnapshot} className="w-full h-full object-cover" />
+                      ) : (
+                        <Package className="w-5 h-5" style={{ color: "var(--text-muted)" }} />
+                      )}
+                    </div>
+                    <div className="min-w-0">
+                      {it.productSlug ? (
+                        <Link href={`/producto/${it.productSlug}`} className="font-semibold hover:underline block truncate">
+                          {it.productNameSnapshot}
+                        </Link>
+                      ) : (
+                        <p className="font-semibold truncate">{it.productNameSnapshot}</p>
+                      )}
+                      <p className="text-xs tabular-nums" style={{ color: "var(--text-muted)" }}>
+                        {it.skuSnapshot} · {it.quantity} x {formatBs(it.unitPriceCentsSnapshot)}
+                        {it.warrantyMonthsSnapshot ? ` · Garantía: ${it.warrantyMonthsSnapshot} m` : ""}
+                      </p>
+                    </div>
                   </div>
-                  <span className="font-bold tabular-nums">{formatBs(it.lineTotalCents)}</span>
+                  <span className="font-bold tabular-nums shrink-0">{formatBs(it.lineTotalCents)}</span>
                 </div>
               ))}
             </div>
@@ -247,19 +607,35 @@ export function OrderDetailClient({
           </div>
         </div>
 
+        {/* QR + Upload Proof + Payment History */}
         <aside className="lg:col-span-5 space-y-4">
           {canUploadProof && (
             <form
               onSubmit={uploadProof}
               className="rounded-2xl border p-5 space-y-3"
-              style={{ backgroundColor: "var(--bg-surface)", borderColor: "var(--border-strong)" }}
+              style={{ backgroundColor: "var(--bg-surface)", borderColor: "var(--border-strong)", boxShadow: "var(--shadow-card)" }}
             >
               <h2 className="font-heading text-base font-bold flex items-center gap-2">
                 <Upload className="w-4 h-4" style={{ color: "var(--accent-cyan)" }} />
                 Subir comprobante de transferencia / QR
               </h2>
+
+              {qrUrl && (
+                <div className="rounded-xl border p-3 flex items-center gap-3" style={{ backgroundColor: "var(--bg-chassis)", borderColor: "var(--border-subtle)" }}>
+                  <img src={qrUrl} alt="QR de pago del pedido" className="w-20 h-20 rounded-lg bg-white p-1 border shrink-0" />
+                  <div className="text-[11px] space-y-1">
+                    <p className="font-bold flex items-center gap-1" style={{ color: "var(--accent-cyan)" }}>
+                      <QrCode className="w-3.5 h-3.5" /> QR Simple · {formatBs(order.totalCents)}
+                    </p>
+                    <p style={{ color: "var(--text-muted)" }}>
+                      Escanea y luego registra tu número de operación o captura abajo.
+                    </p>
+                  </div>
+                </div>
+              )}
+
               <p className="text-xs" style={{ color: "var(--text-muted)" }}>
-                El comprobante queda almacenado en repositorio privado y en estado <strong>pendiente de revisión manual</strong> hasta ser verificado por personal autorizado.
+                El comprobante queda almacenado en repositorio privado y en estado <strong>pendiente de revisión manual</strong> hasta ser verificado.
               </p>
               <input
                 type="text"
@@ -292,7 +668,7 @@ export function OrderDetailClient({
 
           <div
             className="rounded-2xl border p-5 space-y-3"
-            style={{ backgroundColor: "var(--bg-surface)", borderColor: "var(--border-subtle)" }}
+            style={{ backgroundColor: "var(--bg-surface)", borderColor: "var(--border-subtle)", boxShadow: "var(--shadow-card)" }}
           >
             <h2 className="font-heading text-base font-bold">Historial de pagos registrados</h2>
             {order.payments.length === 0 ? (
@@ -301,35 +677,38 @@ export function OrderDetailClient({
               </p>
             ) : (
               <div className="space-y-2.5 text-xs">
-                {order.payments.map((p) => (
-                  <div
-                    key={p.id}
-                    className="rounded-xl border p-3 space-y-1"
-                    style={{ backgroundColor: "var(--bg-chassis)", borderColor: "var(--border-subtle)" }}
-                  >
-                    <div className="flex justify-between font-semibold">
-                      <span>Estado: {p.status}</span>
-                      <span className="tabular-nums">{formatBs(p.amountCents)}</span>
+                {order.payments.map((p) => {
+                  const pMeta = PAYMENT_STATUS_META[p.status];
+                  return (
+                    <div
+                      key={p.id}
+                      className="rounded-xl border p-3 space-y-1"
+                      style={{ backgroundColor: "var(--bg-chassis)", borderColor: "var(--border-subtle)" }}
+                    >
+                      <div className="flex justify-between font-semibold">
+                        <span>{pMeta?.label ?? p.status}</span>
+                        <span className="tabular-nums">{formatBs(p.amountCents)}</span>
+                      </div>
+                      {p.referenceNumber && <p>Ref: {p.referenceNumber}</p>}
+                      {p.isLateSubmission && (
+                        <p style={{ color: "var(--status-warn)" }}>
+                          Envío tardío tras vencimiento de reserva: requiere revalidación de stock.
+                        </p>
+                      )}
+                      {p.reviewNotes && <p style={{ color: "var(--text-muted)" }}>Nota: {p.reviewNotes}</p>}
+                      {p.proofFilePath && (
+                        <Link
+                          href={`/api/private-files/${p.proofFilePath}`}
+                          target="_blank"
+                          className="underline block"
+                          style={{ color: "var(--accent-cyan)" }}
+                        >
+                          Ver comprobante privado
+                        </Link>
+                      )}
                     </div>
-                    {p.referenceNumber && <p>Ref: {p.referenceNumber}</p>}
-                    {p.isLateSubmission && (
-                      <p style={{ color: "var(--status-warn)" }}>
-                        Envío tardío tras vencimiento de reserva: requiere revalidación de stock.
-                      </p>
-                    )}
-                    {p.reviewNotes && <p style={{ color: "var(--text-muted)" }}>Nota: {p.reviewNotes}</p>}
-                    {p.proofFilePath && (
-                      <Link
-                        href={`/api/private-files/${p.proofFilePath}`}
-                        target="_blank"
-                        className="underline block"
-                        style={{ color: "var(--accent-cyan)" }}
-                      >
-                        Ver comprobante privado
-                      </Link>
-                    )}
-                  </div>
-                ))}
+                  );
+                })}
               </div>
             )}
           </div>

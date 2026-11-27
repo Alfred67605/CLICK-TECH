@@ -1,6 +1,24 @@
 import Link from "next/link";
+import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { ArrowLeft, CheckCircle2, Cpu, ExternalLink, MessageCircle, ShieldCheck, Truck, XCircle } from "lucide-react";
+import {
+  ArrowLeft,
+  Box,
+  CheckCircle2,
+  Cpu,
+  ExternalLink,
+  Gauge,
+  HardDrive,
+  Layers,
+  MemoryStick,
+  MessageCircle,
+  Monitor,
+  ShieldCheck,
+  Sparkles,
+  Truck,
+  XCircle,
+  Zap,
+} from "lucide-react";
 import { prisma } from "@/lib/prisma";
 import { getPublicBusinessSettings } from "@/lib/domain/business-config";
 import { getAvailableStock } from "@/lib/domain/inventory-orders";
@@ -9,6 +27,69 @@ import { ProductDetailActions } from "@/components/catalog/ProductDetailActions"
 import { ProductCard } from "@/components/catalog/ProductCard";
 
 export const dynamic = "force-dynamic";
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ slug: string }>;
+}): Promise<Metadata> {
+  const { slug } = await params;
+  const product = await prisma.product.findUnique({
+    where: { slug },
+    include: {
+      brand: { select: { name: true } },
+      category: { select: { name: true } },
+      images: { orderBy: [{ isPrimary: "desc" }, { sortOrder: "asc" }], take: 1 },
+    },
+  });
+  if (!product) {
+    return { title: "Producto no encontrado | ClickTech Potosí" };
+  }
+  const priceText = formatBsCompact(product.promoPriceCents ?? product.priceCents);
+  const img = product.images[0]?.url;
+  const desc = `${product.brand.name} · ${product.category.name} · Precio oficial ${priceText} en ClickTech Calle Oruro, Potosí.`;
+  return {
+    title: `${product.name} (${priceText}) | ClickTech Potosí`,
+    description: desc,
+    openGraph: {
+      title: `${product.name} — ${priceText}`,
+      description: desc,
+      images: img ? [{ url: img, alt: product.name }] : undefined,
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: `${product.name} — ${priceText}`,
+      description: desc,
+      images: img ? [img] : undefined,
+    },
+  };
+}
+
+function getSpecCardMeta(key: string) {
+  const k = key.toLowerCase();
+  if (k.includes("cpu") || k.includes("procesador") || k.includes("chip")) {
+    return { Icon: Cpu, accent: "var(--accent-cyan)", bg: "var(--accent-cyan-soft)", border: "var(--border-strong)" };
+  }
+  if (k.includes("ram") || k.includes("memoria")) {
+    return { Icon: MemoryStick, accent: "var(--accent-purple)", bg: "var(--accent-purple-soft)", border: "rgba(139, 92, 246, 0.35)" };
+  }
+  if (k.includes("ssd") || k.includes("almacenamiento") || k.includes("disco")) {
+    return { Icon: HardDrive, accent: "var(--status-ok)", bg: "rgba(16, 185, 129, 0.12)", border: "rgba(16, 185, 129, 0.32)" };
+  }
+  if (k.includes("pantalla") || k.includes("resoluc") || k.includes("hz") || k.includes("gpu") || k.includes("gráfica")) {
+    return { Icon: Monitor, accent: "var(--accent-cyan)", bg: "var(--accent-cyan-soft)", border: "var(--border-strong)" };
+  }
+  if (k.includes("fuente") || k.includes("watt") || k.includes("tdp") || k.includes("certific")) {
+    return { Icon: Zap, accent: "var(--status-warn)", bg: "rgba(245, 158, 11, 0.12)", border: "rgba(245, 158, 11, 0.32)" };
+  }
+  if (k.includes("placa") || k.includes("socket") || k.includes("formato")) {
+    return { Icon: Layers, accent: "var(--accent-purple)", bg: "var(--accent-purple-soft)", border: "rgba(139, 92, 246, 0.35)" };
+  }
+  if (k.includes("velocidad") || k.includes("frecuencia") || k.includes("boost")) {
+    return { Icon: Gauge, accent: "var(--status-ok)", bg: "rgba(16, 185, 129, 0.12)", border: "rgba(16, 185, 129, 0.32)" };
+  }
+  return { Icon: Box, accent: "var(--accent-cyan)", bg: "var(--bg-chassis)", border: "var(--border-subtle)" };
+}
 
 export default async function ProductoDetallePage({
   params,
@@ -283,23 +364,77 @@ export default async function ProductoDetallePage({
             </div>
           </div>
 
-          {/* Verified Specifications Table */}
+          {/* Verified Specifications Visual Grid */}
           <div
-            className="rounded-xl border overflow-hidden"
-            style={{ backgroundColor: "var(--bg-surface)", borderColor: "var(--border-subtle)" }}
+            className="rounded-2xl border p-4 sm:p-5 space-y-4"
+            style={{
+              backgroundColor: "var(--bg-surface)",
+              borderColor: "var(--border-subtle)",
+              boxShadow: "var(--shadow-card)",
+            }}
           >
-            <h2 className="px-4 py-3 font-heading font-bold text-sm border-b" style={{ borderColor: "var(--border-subtle)" }}>
-              Especificaciones verificadas
-            </h2>
-            <dl className="divide-y text-xs" style={{ borderColor: "var(--border-subtle)" }}>
-              {Object.entries(specs).map(([k, v]) => (
-                <div key={k} className="px-4 py-2.5 flex justify-between gap-4">
-                  <dt style={{ color: "var(--text-muted)" }}>{k}</dt>
-                  <dd className="font-medium text-right" style={{ color: "var(--text-primary)" }}>
-                    {v}
-                  </dd>
+            <div className="flex flex-wrap items-center justify-between gap-2 border-b pb-3" style={{ borderColor: "var(--border-subtle)" }}>
+              <div className="flex items-center gap-2">
+                <span
+                  className="w-8 h-8 rounded-xl border flex items-center justify-center"
+                  style={{
+                    backgroundColor: "var(--accent-cyan-soft)",
+                    borderColor: "var(--border-strong)",
+                    color: "var(--accent-cyan)",
+                  }}
+                >
+                  <Sparkles className="w-4 h-4" />
+                </span>
+                <div>
+                  <h2 className="font-heading font-bold text-sm sm:text-base" style={{ color: "var(--text-primary)" }}>
+                    Ficha Técnica y Especificaciones Verificadas
+                  </h2>
+                  <p className="text-[11px]" style={{ color: "var(--text-muted)" }}>
+                    {product.brand.name} · {product.category.name} · SKU {product.sku}
+                  </p>
                 </div>
-              ))}
+              </div>
+              <span
+                className="px-2.5 py-0.5 rounded-full text-[11px] font-bold border"
+                style={{
+                  backgroundColor: "rgba(16, 185, 129, 0.12)",
+                  borderColor: "rgba(16, 185, 129, 0.35)",
+                  color: "var(--status-ok)",
+                }}
+              >
+                {Object.keys(specs).length} atributos técnicos
+              </span>
+            </div>
+
+            <dl className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
+              {Object.entries(specs).map(([k, v]) => {
+                const { Icon, accent, bg, border } = getSpecCardMeta(k);
+                return (
+                  <div
+                    key={k}
+                    className="rounded-xl border p-3 flex items-start gap-3"
+                    style={{
+                      backgroundColor: "var(--bg-chassis)",
+                      borderColor: "var(--border-subtle)",
+                    }}
+                  >
+                    <div
+                      className="w-8 h-8 rounded-lg border flex items-center justify-center shrink-0 mt-0.5"
+                      style={{ backgroundColor: bg, borderColor: border, color: accent }}
+                    >
+                      <Icon className="w-4 h-4" />
+                    </div>
+                    <div className="min-w-0 flex-1">
+                      <dt className="text-[11px] font-semibold uppercase tracking-wide" style={{ color: "var(--text-muted)" }}>
+                        {k}
+                      </dt>
+                      <dd className="font-bold text-xs sm:text-sm mt-0.5 break-words" style={{ color: "var(--text-primary)" }}>
+                        {v}
+                      </dd>
+                    </div>
+                  </div>
+                );
+              })}
             </dl>
           </div>
         </div>

@@ -28,30 +28,60 @@ export function AdminKpiCard({
   const mounted = useSyncExternalStore(emptySubscribe, () => true, () => false);
   const gradId = useId().replace(/:/g, "");
 
-  const badgeStyles =
+  const badgeStyle =
     trend === "up"
-      ? "bg-emerald-500/15 text-emerald-400 border-emerald-500/30"
+      ? {
+          backgroundColor: "rgba(16, 185, 129, 0.14)",
+          color: "var(--status-ok)",
+          borderColor: "rgba(16, 185, 129, 0.35)",
+        }
       : trend === "down"
-      ? "bg-amber-500/15 text-amber-300 border-amber-500/30"
-      : "bg-white/5 text-slate-300 border-white/10";
+      ? {
+          backgroundColor: "rgba(245, 158, 11, 0.14)",
+          color: "var(--status-warn)",
+          borderColor: "rgba(245, 158, 11, 0.35)",
+        }
+      : {
+          backgroundColor: "var(--bg-chassis)",
+          color: "var(--text-secondary)",
+          borderColor: "var(--border-subtle)",
+        };
 
   return (
-    <article className="admin-stagger-item rounded-[20px] border border-white/10 bg-[#0E1424] p-5 flex flex-col justify-between gap-3 shadow-lg">
+    <article
+      className="admin-stagger-item rounded-[20px] border p-5 flex flex-col justify-between gap-3"
+      style={{
+        backgroundColor: "var(--bg-surface)",
+        borderColor: "var(--border-subtle)",
+        boxShadow: "var(--shadow-card)",
+      }}
+    >
       <div className="flex items-start justify-between gap-3">
-        <span className="text-xs font-medium text-slate-400 leading-snug">
+        <span className="text-xs font-medium leading-snug" style={{ color: "var(--text-muted)" }}>
           {label}
         </span>
-        <div className="w-8 h-8 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center shrink-0 text-slate-300">
+        <div
+          className="w-8 h-8 rounded-xl border flex items-center justify-center shrink-0"
+          style={{
+            backgroundColor: "var(--bg-chassis)",
+            borderColor: "var(--border-subtle)",
+            color: "var(--text-secondary)",
+          }}
+        >
           {icon}
         </div>
       </div>
 
       <div className="flex flex-wrap items-baseline justify-between gap-2 min-w-0">
-        <p className="font-heading text-xl sm:text-2xl font-extrabold tabular-nums tracking-tight text-white whitespace-nowrap">
+        <p
+          className="font-heading text-xl sm:text-2xl font-extrabold tabular-nums tracking-tight whitespace-nowrap"
+          style={{ color: "var(--text-primary)" }}
+        >
           {value}
         </p>
         <span
-          className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full border text-[11px] font-semibold tabular-nums shrink-0 ${badgeStyles}`}
+          className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full border text-[11px] font-semibold tabular-nums shrink-0"
+          style={badgeStyle}
         >
           {trend === "up" && <TrendingUp className="w-3 h-3" />}
           {trend === "down" && <TrendingDown className="w-3 h-3" />}
@@ -80,7 +110,7 @@ export function AdminKpiCard({
             </AreaChart>
           </ResponsiveContainer>
         ) : (
-          <div className="h-11 w-full rounded-lg bg-white/[0.03]" />
+          <div className="h-11 w-full rounded-lg" style={{ backgroundColor: "var(--bg-chassis)" }} />
         )}
       </div>
     </article>

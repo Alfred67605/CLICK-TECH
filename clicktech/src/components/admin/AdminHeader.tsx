@@ -32,24 +32,38 @@ export function AdminHeader({
   const { enabled: soundEnabled, toggleSound, playClick, playTransition } = useUISound();
 
   return (
-    <header className="rounded-[20px] border border-white/10 bg-[#0B0F1A] p-4 sm:p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4 shadow-xl">
+    <header
+      className="rounded-[20px] border p-4 sm:p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4"
+      style={{
+        backgroundColor: "var(--bg-surface)",
+        borderColor: "var(--border-subtle)",
+        boxShadow: "var(--shadow-card)",
+      }}
+    >
       <div className="space-y-1.5 min-w-0">
         {/* Dynamic Breadcrumbs */}
-        <nav aria-label="Breadcrumb" className="flex flex-wrap items-center gap-1.5 text-xs text-slate-400">
+        <nav
+          aria-label="Breadcrumb"
+          className="flex flex-wrap items-center gap-1.5 text-xs"
+          style={{ color: "var(--text-muted)" }}
+        >
           <Link
             href="/"
             data-sound="none"
             onClick={playClick}
-            className="hover:text-white transition-colors"
+            className="hover:underline transition-colors"
+            style={{ color: "var(--text-secondary)" }}
           >
             ClickTech
           </Link>
-          <ChevronRight className="w-3.5 h-3.5 text-slate-600" />
+          <ChevronRight className="w-3.5 h-3.5 opacity-60" />
           <span>Panel de Gestión</span>
-          <ChevronRight className="w-3.5 h-3.5 text-slate-600" />
-          <span className="text-slate-400">{activeItem.group}</span>
-          <ChevronRight className="w-3.5 h-3.5 text-slate-600" />
-          <span className="font-semibold text-[#00E5FF]">{activeItem.label}</span>
+          <ChevronRight className="w-3.5 h-3.5 opacity-60" />
+          <span>{activeItem.group}</span>
+          <ChevronRight className="w-3.5 h-3.5 opacity-60" />
+          <span className="font-semibold" style={{ color: "var(--accent-cyan)" }}>
+            {activeItem.label}
+          </span>
         </nav>
 
         <div className="flex items-center gap-3">
@@ -61,16 +75,24 @@ export function AdminHeader({
               onOpenMobileMenu();
             }}
             aria-label="Abrir menú del panel"
-            className="lg:hidden h-9 w-9 rounded-xl border border-white/10 bg-white/5 flex items-center justify-center text-slate-200 shrink-0"
+            className="lg:hidden h-9 w-9 rounded-xl border flex items-center justify-center shrink-0"
+            style={{
+              backgroundColor: "var(--bg-chassis)",
+              borderColor: "var(--border-subtle)",
+              color: "var(--text-primary)",
+            }}
           >
             <Menu className="w-4 h-4" />
           </button>
 
           <div className="min-w-0">
-            <h1 className="font-display text-xl sm:text-2xl font-bold tracking-tight text-white">
+            <h1
+              className="font-display text-xl sm:text-2xl font-bold tracking-tight"
+              style={{ color: "var(--text-primary)" }}
+            >
               Panel de Gestión
             </h1>
-            <p className="text-xs font-medium text-slate-400">
+            <p className="text-xs font-medium" style={{ color: "var(--text-secondary)" }}>
               Operación ClickTech · Rol: {userRole}
             </p>
           </div>
@@ -85,11 +107,20 @@ export function AdminHeader({
           onClick={toggleSound}
           aria-pressed={soundEnabled}
           aria-label={soundEnabled ? "Silenciar sonidos del panel" : "Activar sonidos del panel"}
-          className={`ct-btn h-10 px-3 rounded-xl border text-xs font-semibold flex items-center gap-2 ${
+          className="ct-btn h-10 px-3 rounded-xl border text-xs font-semibold flex items-center gap-2"
+          style={
             soundEnabled
-              ? "border-cyan-400/35 bg-cyan-400/10 text-[#00E5FF]"
-              : "border-white/10 bg-white/5 text-slate-400 hover:text-white"
-          }`}
+              ? {
+                  borderColor: "var(--border-strong)",
+                  backgroundColor: "var(--accent-cyan-soft)",
+                  color: "var(--accent-cyan)",
+                }
+              : {
+                  borderColor: "var(--border-subtle)",
+                  backgroundColor: "var(--bg-chassis)",
+                  color: "var(--text-secondary)",
+                }
+          }
         >
           {soundEnabled ? <Volume2 className="w-4 h-4" /> : <VolumeX className="w-4 h-4" />}
           <span>{soundEnabled ? "Sonido ON" : "Silenciado"}</span>
@@ -102,7 +133,12 @@ export function AdminHeader({
             playTransition();
             onRefresh();
           }}
-          className="ct-btn h-10 px-3.5 rounded-xl border border-white/10 bg-white/5 hover:bg-white/10 text-xs font-semibold text-slate-200 flex items-center gap-1.5"
+          className="ct-btn h-10 px-3.5 rounded-xl border text-xs font-semibold flex items-center gap-1.5"
+          style={{
+            borderColor: "var(--border-subtle)",
+            backgroundColor: "var(--bg-chassis)",
+            color: "var(--text-primary)",
+          }}
         >
           <RefreshCw className="w-3.5 h-3.5" />
           <span>Actualizar datos</span>
@@ -112,7 +148,11 @@ export function AdminHeader({
           href="/api/admin/reports?format=csv"
           data-sound="none"
           onClick={playTransition}
-          className="ct-btn ct-btn-primary h-10 px-4 rounded-xl bg-[#00E5FF] text-[#02040A] text-xs font-bold inline-flex items-center gap-1.5"
+          className="ct-btn ct-btn-primary h-10 px-4 rounded-xl text-xs font-bold inline-flex items-center gap-1.5"
+          style={{
+            backgroundColor: "var(--accent-cyan)",
+            color: "var(--accent-cyan-ink)",
+          }}
         >
           <Download className="w-3.5 h-3.5" />
           <span>{canSeeFinance ? "Exportar CSV" : "Reporte CSV"}</span>

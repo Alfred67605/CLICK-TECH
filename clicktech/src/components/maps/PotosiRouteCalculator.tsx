@@ -107,7 +107,7 @@ export function PotosiRouteCalculator() {
             Calculador de Ruta y Mantenimiento en Potosí
           </h2>
           <p className="text-xs sm:text-sm mt-1" style={{ color: "var(--text-secondary)" }}>
-            Calcula la distancia desde nuestro taller central hasta tu domicilio, tiempo estimado y tarifa exacta.
+            Calcula la distancia desde nuestra tienda central en <strong>Calle Oruro, Potosí</strong> hasta tu domicilio, tiempo estimado y tarifa exacta.
           </p>
         </div>
 
@@ -248,7 +248,7 @@ export function PotosiRouteCalculator() {
             <div className="flex items-center justify-between text-xs border-b pb-2" style={{ borderColor: "var(--border-subtle)" }}>
               <span style={{ color: "var(--text-muted)" }}>Origen:</span>
               <span className="font-semibold" style={{ color: "var(--text-primary)" }}>
-                🏬 Taller Central ClickTech (Potosí Centro)
+                🏬 ClickTech Calle Oruro, Potosí
               </span>
             </div>
             <div className="flex items-center justify-between text-xs border-b pb-2" style={{ borderColor: "var(--border-subtle)" }}>
@@ -344,11 +344,11 @@ export function PotosiRouteCalculator() {
               <div className="flex items-center gap-2 truncate">
                 <Car className="w-4 h-4 shrink-0" style={{ color: "var(--accent-cyan)" }} />
                 <span className="truncate">
-                  Ruta activa: <strong>Centro</strong> ➔ <strong>{currentZone.name}</strong>
+                  Ruta activa: <strong>Calle Oruro</strong> ➔ <strong>{currentZone.name}</strong>
                 </span>
               </div>
               <a
-                href={`https://www.google.com/maps/dir/-19.5888,-65.7538/${currentZone.coords.lat},${currentZone.coords.lng}`}
+                href={`https://www.google.com/maps/dir/-19.5886,-65.7536/${currentZone.coords.lat},${currentZone.coords.lng}`}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="inline-flex items-center gap-1 font-semibold text-[11px] underline shrink-0"

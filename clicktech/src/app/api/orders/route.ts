@@ -16,6 +16,9 @@ const createOrderSchema = z.object({
       street: z.string().optional(),
       reference: z.string().optional(),
       city: z.string().optional(),
+      lat: z.number().optional(),
+      lng: z.number().optional(),
+      department: z.string().optional(),
     })
     .nullable()
     .optional(),

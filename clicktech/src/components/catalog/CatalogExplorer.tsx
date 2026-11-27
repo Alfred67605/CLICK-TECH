@@ -18,6 +18,7 @@ import {
   Zap,
 } from "lucide-react";
 import { ProductCard, type ProductCardData } from "@/components/catalog/ProductCard";
+import { CatalogCarousel } from "@/components/catalog/CatalogCarousel";
 
 export interface CatalogItem extends ProductCardData {
   brandSlug: string;
@@ -191,6 +192,9 @@ export function CatalogExplorer({
         </div>
       </div>
 
+      {/* Full-Catalog Quick Showcase Carousel */}
+      {!category && !q && <CatalogCarousel products={initialProducts} />}
+
       {/* Main Full-Width Split Layout */}
       <div className="flex flex-col lg:flex-row gap-7 items-start">
         {/* Left Sidebar / Filters */}
@@ -242,7 +246,7 @@ export function CatalogExplorer({
             </div>
 
             {/* Vertical Category Navigation */}
-            <nav aria-label="Categorías del catálogo" className="space-y-1">
+            <nav aria-label="Filtro lateral de productos" className="space-y-1">
               <button
                 type="button"
                 data-sound="toggleOn"

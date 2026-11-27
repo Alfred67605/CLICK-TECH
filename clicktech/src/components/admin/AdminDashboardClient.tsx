@@ -407,7 +407,7 @@ export function AdminDashboardClient({ data }: { data: AdminSnapshotData }) {
           badges={navBadges}
         />
 
-        <div className="flex-1 min-w-0 w-full space-y-6">
+        <div className="flex-1 min-w-0 w-full space-y-6 overflow-x-clip">
           <AdminHeader
             activeItem={activeNavItem}
             userRole={data.currentUser.role}
@@ -428,8 +428,8 @@ export function AdminDashboardClient({ data }: { data: AdminSnapshotData }) {
                       value={formatBs(data.kpis.salesCollectedCents ?? 0)}
                       deltaLabel={kpiDeltas.salesDelta}
                       trend="up"
-                      accentColor="#00E5FF"
-                      icon={<DollarSign className="w-4 h-4 text-[#00E5FF]" />}
+                      accentColor="#0284C7"
+                      icon={<DollarSign className="w-4 h-4" style={{ color: "var(--accent-cyan)" }} />}
                       sparkline={kpiSparklines.salesSpark}
                     />
                   )}
@@ -439,7 +439,7 @@ export function AdminDashboardClient({ data }: { data: AdminSnapshotData }) {
                     deltaLabel={kpiDeltas.pendingDelta}
                     trend={data.kpis.pendingOrdersCount > 0 ? "down" : "up"}
                     accentColor="#F59E0B"
-                    icon={<Clock className="w-4 h-4 text-amber-400" />}
+                    icon={<Clock className="w-4 h-4" style={{ color: "var(--status-warn)" }} />}
                     sparkline={kpiSparklines.pendingSpark}
                   />
                   <AdminKpiCard
@@ -448,7 +448,7 @@ export function AdminDashboardClient({ data }: { data: AdminSnapshotData }) {
                     deltaLabel={kpiDeltas.servicesDelta}
                     trend="up"
                     accentColor="#8B5CF6"
-                    icon={<Wrench className="w-4 h-4 text-[#8B5CF6]" />}
+                    icon={<Wrench className="w-4 h-4" style={{ color: "var(--accent-purple)" }} />}
                     sparkline={kpiSparklines.servicesSpark}
                   />
                   <AdminKpiCard
@@ -457,7 +457,7 @@ export function AdminDashboardClient({ data }: { data: AdminSnapshotData }) {
                     deltaLabel={kpiDeltas.lowStockDelta}
                     trend={data.kpis.lowStockCount > 0 ? "down" : "up"}
                     accentColor={data.kpis.lowStockCount > 0 ? "#F43F5E" : "#10B981"}
-                    icon={<AlertTriangle className="w-4 h-4 text-amber-400" />}
+                    icon={<AlertTriangle className="w-4 h-4" style={{ color: "var(--status-warn)" }} />}
                     sparkline={kpiSparklines.stockSpark}
                   />
                   <AdminKpiCard
@@ -466,7 +466,7 @@ export function AdminDashboardClient({ data }: { data: AdminSnapshotData }) {
                     deltaLabel={kpiDeltas.quotesDelta}
                     trend="neutral"
                     accentColor="#38BDF8"
-                    icon={<FileText className="w-4 h-4 text-sky-400" />}
+                    icon={<FileText className="w-4 h-4" style={{ color: "var(--accent-cyan)" }} />}
                     sparkline={kpiSparklines.quotesSpark}
                   />
                 </div>
@@ -488,30 +488,47 @@ export function AdminDashboardClient({ data }: { data: AdminSnapshotData }) {
 
                 {/* Drill-down table */}
                 {(drillCategory || drillServiceStatus) && (
-                  <div className="admin-stagger-item rounded-[20px] border border-cyan-400/35 bg-[#0E1424] p-5 space-y-2.5 text-xs shadow-lg">
-                    <h3 className="font-heading font-bold text-sm text-white">
+                  <div
+                    className="admin-stagger-item rounded-[20px] border p-5 space-y-2.5 text-xs"
+                    style={{
+                      backgroundColor: "var(--bg-surface)",
+                      borderColor: "var(--border-strong)",
+                      boxShadow: "var(--shadow-card)",
+                    }}
+                  >
+                    <h3 className="font-heading font-bold text-sm" style={{ color: "var(--text-primary)" }}>
                       Registros que explican la cifra seleccionada ({drillCategory ?? drillServiceStatus})
                     </h3>
                     {drillCategory &&
                       filteredOrdersInPeriod
                         .filter((o) => o.paymentStatus === "APPROVED" && o.categoriesInOrder.includes(drillCategory))
                         .map((o) => (
-                          <div key={o.id} className="flex justify-between border-b border-white/10 py-2">
-                            <Link href={`/pedido/${o.id}`} className="underline font-semibold text-[#00E5FF]">
+                          <div
+                            key={o.id}
+                            className="flex justify-between gap-2 border-b py-2"
+                            style={{ borderColor: "var(--border-subtle)" }}
+                          >
+                            <Link href={`/pedido/${o.id}`} className="underline font-semibold" style={{ color: "var(--accent-cyan)" }}>
                               {o.orderNumber} — {o.customerLabel}
                             </Link>
-                            <span className="tabular-nums font-bold text-white">{formatBs(o.totalCents)}</span>
+                            <span className="tabular-nums font-bold" style={{ color: "var(--text-primary)" }}>
+                              {formatBs(o.totalCents)}
+                            </span>
                           </div>
                         ))}
                     {drillServiceStatus &&
                       data.serviceOrders
                         .filter((s) => s.status === drillServiceStatus)
                         .map((s) => (
-                          <div key={s.id} className="flex justify-between border-b border-white/10 py-2">
-                            <Link href={`/seguimiento/${s.ticketNumber}`} className="underline font-semibold text-[#8B5CF6]">
+                          <div
+                            key={s.id}
+                            className="flex justify-between gap-2 border-b py-2"
+                            style={{ borderColor: "var(--border-subtle)" }}
+                          >
+                            <Link href={`/seguimiento/${s.ticketNumber}`} className="underline font-semibold" style={{ color: "var(--accent-purple)" }}>
                               {s.ticketNumber} — {s.deviceBrandModel}
                             </Link>
-                            <span className="text-slate-300">{s.customerName}</span>
+                            <span style={{ color: "var(--text-secondary)" }}>{s.customerName}</span>
                           </div>
                         ))}
                   </div>
@@ -545,8 +562,12 @@ export function AdminDashboardClient({ data }: { data: AdminSnapshotData }) {
               setNewName("");
               setNewModel("");
             }}
-            className="admin-stagger-item rounded-[20px] border border-white/10 p-5 space-y-3"
-            style={{ backgroundColor: "#0E1424" }}
+            className="admin-stagger-item rounded-[20px] border p-5 space-y-3"
+            style={{
+              backgroundColor: "var(--bg-surface)",
+              borderColor: "var(--border-subtle)",
+              boxShadow: "var(--shadow-card)",
+            }}
           >
             <h2 className="font-heading font-bold text-sm flex items-center gap-1.5">
               <Plus className="w-4 h-4" style={{ color: "var(--accent-cyan)" }} /> Nuevo producto
@@ -569,7 +590,14 @@ export function AdminDashboardClient({ data }: { data: AdminSnapshotData }) {
             </div>
           </form>
 
-          <div className="admin-stagger-item overflow-x-auto rounded-[20px] border border-white/10 bg-[#0E1424]">
+          <div
+            className="admin-stagger-item overflow-x-auto rounded-[20px] border"
+            style={{
+              backgroundColor: "var(--bg-surface)",
+              borderColor: "var(--border-subtle)",
+              boxShadow: "var(--shadow-card)",
+            }}
+          >
             <table className="w-full text-xs text-left">
               <thead>
                 <tr className="border-b" style={{ borderColor: "var(--border-subtle)", color: "var(--text-muted)" }}>
@@ -642,7 +670,12 @@ export function AdminDashboardClient({ data }: { data: AdminSnapshotData }) {
                 );
                 setAdjReason("");
               }}
-              className="admin-stagger-item rounded-[20px] border border-white/10 bg-[#0E1424] p-5 space-y-3 text-xs"
+              className="admin-stagger-item rounded-[20px] border p-5 space-y-3 text-xs"
+              style={{
+                backgroundColor: "var(--bg-surface)",
+                borderColor: "var(--border-subtle)",
+                boxShadow: "var(--shadow-card)",
+              }}
             >
               <h2 className="font-heading font-bold text-sm">Ajuste manual de existencias</h2>
               <select value={adjProductId} onChange={(e) => setAdjProductId(e.target.value)} className="w-full h-9 px-2.5 rounded border" style={{ backgroundColor: "var(--bg-chassis)", borderColor: "var(--border-subtle)", color: "var(--text-primary)" }}>
@@ -657,7 +690,14 @@ export function AdminDashboardClient({ data }: { data: AdminSnapshotData }) {
               </button>
             </form>
 
-            <div className="admin-stagger-item rounded-[20px] border border-white/10 bg-[#0E1424] p-5 space-y-3 text-xs">
+            <div
+              className="admin-stagger-item rounded-[20px] border p-5 space-y-3 text-xs"
+              style={{
+                backgroundColor: "var(--bg-surface)",
+                borderColor: "var(--border-subtle)",
+                boxShadow: "var(--shadow-card)",
+              }}
+            >
               <div className="flex justify-between items-center">
                 <h2 className="font-heading font-bold text-sm">Reservas activas y vencidas</h2>
                 <button
@@ -681,7 +721,14 @@ export function AdminDashboardClient({ data }: { data: AdminSnapshotData }) {
             </div>
           </div>
 
-          <div className="admin-stagger-item rounded-[20px] border border-white/10 bg-[#0E1424] overflow-x-auto">
+          <div
+            className="admin-stagger-item rounded-[20px] border overflow-x-auto"
+            style={{
+              backgroundColor: "var(--bg-surface)",
+              borderColor: "var(--border-subtle)",
+              boxShadow: "var(--shadow-card)",
+            }}
+          >
             <table className="w-full text-xs text-left">
               <thead>
                 <tr className="border-b" style={{ borderColor: "var(--border-subtle)", color: "var(--text-muted)" }}>
@@ -733,63 +780,99 @@ export function AdminDashboardClient({ data }: { data: AdminSnapshotData }) {
                 "Orden de compra creada (stock NO sumado hasta recepción física)."
               );
             }}
-            className="admin-stagger-item rounded-[20px] border border-white/10 bg-[#0E1424] p-5 space-y-3 text-xs"
+            className="admin-stagger-item rounded-[20px] border p-5 space-y-3 text-xs"
+            style={{
+              backgroundColor: "var(--bg-surface)",
+              borderColor: "var(--border-subtle)",
+              boxShadow: "var(--shadow-card)",
+            }}
           >
-            <h2 className="font-heading font-bold text-sm">Registrar nueva orden de compra a proveedor</h2>
-            <div className="grid grid-cols-1 sm:grid-cols-5 gap-2">
-              <select value={poSupplierId} onChange={(e) => setPoSupplierId(e.target.value)} className="h-9 px-2.5 rounded border" style={{ backgroundColor: "var(--bg-chassis)", borderColor: "var(--border-subtle)", color: "var(--text-primary)" }}>
+            <h2 className="font-heading font-bold text-sm" style={{ color: "var(--text-primary)" }}>
+              Registrar nueva orden de compra a proveedor
+            </h2>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-2.5">
+              <select value={poSupplierId} onChange={(e) => setPoSupplierId(e.target.value)} className="h-9 px-2.5 rounded-lg border min-w-0" style={{ backgroundColor: "var(--bg-chassis)", borderColor: "var(--border-subtle)", color: "var(--text-primary)" }}>
                 {data.suppliers.map((s) => <option key={s.id} value={s.id}>{s.name}</option>)}
               </select>
-              <select value={poProductId} onChange={(e) => setPoProductId(e.target.value)} className="sm:col-span-2 h-9 px-2.5 rounded border" style={{ backgroundColor: "var(--bg-chassis)", borderColor: "var(--border-subtle)", color: "var(--text-primary)" }}>
+              <select value={poProductId} onChange={(e) => setPoProductId(e.target.value)} className="lg:col-span-2 h-9 px-2.5 rounded-lg border min-w-0" style={{ backgroundColor: "var(--bg-chassis)", borderColor: "var(--border-subtle)", color: "var(--text-primary)" }}>
                 {data.products.map((p) => <option key={p.id} value={p.id}>{p.sku} — {p.name}</option>)}
               </select>
-              <input type="number" min={1} value={poQty} onChange={(e) => setPoQty(e.target.value)} placeholder="Cantidad" className="h-9 px-2.5 rounded border" style={{ backgroundColor: "var(--bg-chassis)", borderColor: "var(--border-subtle)", color: "var(--text-primary)" }} />
-              <button type="submit" disabled={busy} className="ct-btn h-9 rounded font-semibold" style={{ backgroundColor: "var(--accent-cyan)", color: "var(--accent-cyan-ink)" }}>
+              <input type="number" min={1} value={poQty} onChange={(e) => setPoQty(e.target.value)} placeholder="Cantidad" className="h-9 px-2.5 rounded-lg border min-w-0" style={{ backgroundColor: "var(--bg-chassis)", borderColor: "var(--border-subtle)", color: "var(--text-primary)" }} />
+              <button type="submit" disabled={busy} className="ct-btn h-9 rounded-lg font-semibold" style={{ backgroundColor: "var(--accent-cyan)", color: "var(--accent-cyan-ink)" }}>
                 Crear OC
               </button>
             </div>
           </form>
 
           <div className="space-y-3">
-            {data.purchaseOrders.map((po) => (
-              <div key={po.id} className="rounded-xl border p-4 space-y-2 text-xs" style={{ backgroundColor: "var(--bg-surface)", borderColor: "var(--border-subtle)" }}>
-                <div className="flex flex-wrap justify-between gap-2 font-bold text-sm">
-                  <span>{po.code} — {po.supplierName}</span>
-                  <span style={{ color: "var(--accent-cyan)" }}>{po.status}</span>
+            {data.purchaseOrders.map((po) => {
+              const poStatusLabel =
+                po.status === "RECEIVED"
+                  ? "Recibida"
+                  : po.status === "ORDERED"
+                  ? "Ordenada"
+                  : po.status === "PARTIAL"
+                  ? "Parcial"
+                  : po.status === "CANCELLED"
+                  ? "Cancelada"
+                  : po.status;
+              return (
+                <div
+                  key={po.id}
+                  className="rounded-2xl border p-4 space-y-2.5 text-xs min-w-0"
+                  style={{
+                    backgroundColor: "var(--bg-surface)",
+                    borderColor: "var(--border-subtle)",
+                    boxShadow: "var(--shadow-card)",
+                  }}
+                >
+                  <div className="flex flex-wrap items-center justify-between gap-2 font-bold text-sm">
+                    <span className="min-w-0 break-words">{po.code} — {po.supplierName}</span>
+                    <span
+                      className="px-2.5 py-0.5 rounded-full text-[11px] font-semibold border shrink-0 whitespace-nowrap"
+                      style={{
+                        backgroundColor: po.status === "RECEIVED" ? "rgba(16,185,129,0.14)" : "var(--accent-cyan-soft)",
+                        borderColor: po.status === "RECEIVED" ? "rgba(16,185,129,0.35)" : "var(--border-strong)",
+                        color: po.status === "RECEIVED" ? "var(--status-ok)" : "var(--accent-cyan)",
+                      }}
+                    >
+                      {poStatusLabel}
+                    </span>
+                  </div>
+                  {po.items.map((it) => {
+                    const pending = it.orderedQty - it.receivedQty;
+                    return (
+                      <div key={it.id} className="flex flex-wrap justify-between items-center gap-2 border-t pt-2 min-w-0" style={{ borderColor: "var(--border-subtle)" }}>
+                        <span className="min-w-0 break-words">{it.skuSnapshot} — {it.productNameSnapshot} (Recibido: {it.receivedQty} / {it.orderedQty})</span>
+                        {pending > 0 && po.status !== "CANCELLED" && (
+                          <button
+                            type="button"
+                            disabled={busy}
+                            onClick={() =>
+                              apiAction(
+                                "/api/admin/purchases",
+                                "POST",
+                                {
+                                  action: "receive",
+                                  purchaseOrderId: po.id,
+                                  idempotencyKey: `rcpt-${po.id}-${it.id}-${it.receivedQty}`,
+                                  items: [{ purchaseOrderItemId: it.id, qtyReceived: pending }],
+                                },
+                                `Recepción registrada (+${pending} unidades ingresadas a stock).`
+                              )
+                            }
+                            className="ct-btn h-8 px-3 rounded-lg font-semibold shrink-0"
+                            style={{ backgroundColor: "var(--status-ok)", color: "#ffffff" }}
+                          >
+                            Recibir {pending} unid.
+                          </button>
+                        )}
+                      </div>
+                    );
+                  })}
                 </div>
-                {po.items.map((it) => {
-                  const pending = it.orderedQty - it.receivedQty;
-                  return (
-                    <div key={it.id} className="flex flex-wrap justify-between items-center gap-2 border-t pt-2" style={{ borderColor: "var(--border-subtle)" }}>
-                      <span>{it.skuSnapshot} — {it.productNameSnapshot} (Recibido: {it.receivedQty} / {it.orderedQty})</span>
-                      {pending > 0 && po.status !== "CANCELLED" && (
-                        <button
-                          type="button"
-                          disabled={busy}
-                          onClick={() =>
-                            apiAction(
-                              "/api/admin/purchases",
-                              "POST",
-                              {
-                                action: "receive",
-                                purchaseOrderId: po.id,
-                                idempotencyKey: `rcpt-${po.id}-${it.id}-${it.receivedQty}`,
-                                items: [{ purchaseOrderItemId: it.id, qtyReceived: pending }],
-                              },
-                              `Recepción registrada (+${pending} unidades ingresadas a stock).`
-                            )
-                          }
-                          className="ct-btn h-8 px-3 rounded font-semibold"
-                          style={{ backgroundColor: "var(--status-ok)", color: "#ffffff" }}
-                        >
-                          Recibir {pending} unid.
-                        </button>
-                      )}
-                    </div>
-                  );
-                })}
-              </div>
-            ))}
+              );
+            })}
           </div>
         </div>
       )}
@@ -845,7 +928,15 @@ export function AdminDashboardClient({ data }: { data: AdminSnapshotData }) {
       {tab === "pagos" && data.currentUser.role !== "TECH" && (
         <div className="space-y-3">
           {data.payments.map((p) => (
-            <div key={p.id} className="admin-stagger-item rounded-[20px] border bg-[#0E1424] p-5 flex flex-wrap items-center justify-between gap-4 text-xs" style={{ borderColor: p.status === "PROOF_SUBMITTED" ? "var(--status-warn)" : "rgba(255,255,255,0.1)" }}>
+            <div
+              key={p.id}
+              className="admin-stagger-item rounded-[20px] border p-5 flex flex-wrap items-center justify-between gap-4 text-xs"
+              style={{
+                backgroundColor: "var(--bg-surface)",
+                borderColor: p.status === "PROOF_SUBMITTED" ? "var(--status-warn)" : "var(--border-subtle)",
+                boxShadow: "var(--shadow-card)",
+              }}
+            >
               <div className="space-y-1">
                 <p className="font-heading font-bold text-sm">
                   {p.orderNumber} · {formatBs(p.amountCents)} ({p.status})
@@ -949,7 +1040,14 @@ export function AdminDashboardClient({ data }: { data: AdminSnapshotData }) {
           </div>
 
           {activeService && (
-            <div className="admin-stagger-item lg:col-span-7 rounded-[20px] border border-cyan-400/30 bg-[#0E1424] p-5 space-y-5 text-xs shadow-lg">
+            <div
+              className="admin-stagger-item lg:col-span-7 rounded-[20px] border p-5 space-y-5 text-xs"
+              style={{
+                backgroundColor: "var(--bg-surface)",
+                borderColor: "var(--border-strong)",
+                boxShadow: "var(--shadow-card)",
+              }}
+            >
               <div className="flex flex-wrap justify-between gap-2">
                 <div>
                   <h2 className="font-heading text-lg font-bold">{activeService.ticketNumber}</h2>
@@ -1088,7 +1186,14 @@ export function AdminDashboardClient({ data }: { data: AdminSnapshotData }) {
       {/* 9. CLIENTES Y GARANTÍAS */}
       {tab === "clientes" && (
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 text-xs">
-          <div className="admin-stagger-item rounded-[20px] border border-white/10 bg-[#0E1424] p-5 space-y-3">
+          <div
+            className="admin-stagger-item rounded-[20px] border p-5 space-y-3"
+            style={{
+              backgroundColor: "var(--bg-surface)",
+              borderColor: "var(--border-subtle)",
+              boxShadow: "var(--shadow-card)",
+            }}
+          >
             <h2 className="font-heading font-bold text-sm">Clientes registrados</h2>
             {data.customers.map((c) => (
               <div key={c.id} className="flex justify-between border-b py-2" style={{ borderColor: "var(--border-subtle)" }}>
@@ -1102,7 +1207,14 @@ export function AdminDashboardClient({ data }: { data: AdminSnapshotData }) {
           </div>
 
           <div className="space-y-4">
-            <div className="admin-stagger-item rounded-[20px] border border-white/10 bg-[#0E1424] p-5 space-y-2">
+            <div
+              className="admin-stagger-item rounded-[20px] border p-5 space-y-2"
+              style={{
+                backgroundColor: "var(--bg-surface)",
+                borderColor: "var(--border-subtle)",
+                boxShadow: "var(--shadow-card)",
+              }}
+            >
               <h2 className="font-heading font-bold text-sm">Consultas postventa</h2>
               {data.consultations.map((con) => (
                 <div key={con.id} className="border-b py-2 space-y-1.5" style={{ borderColor: "var(--border-subtle)" }}>
@@ -1141,7 +1253,14 @@ export function AdminDashboardClient({ data }: { data: AdminSnapshotData }) {
       {/* 10. CONFIGURACIÓN */}
       {tab === "configuracion" && data.isAdmin && (
         <div className="space-y-4 max-w-2xl text-xs">
-          <div className="admin-stagger-item rounded-[20px] border border-white/10 bg-[#0E1424] p-5 space-y-3 shadow-lg">
+          <div
+            className="admin-stagger-item rounded-[20px] border p-5 space-y-3"
+            style={{
+              backgroundColor: "var(--bg-surface)",
+              borderColor: "var(--border-subtle)",
+              boxShadow: "var(--shadow-card)",
+            }}
+          >
             <h2 className="font-heading font-bold text-base">Canales y datos comerciales</h2>
             <label className="block font-medium">Número de WhatsApp Business (dejar vacío si no hay número oficial):</label>
             <input value={whatsappInput} onChange={(e) => setWhatsappInput(e.target.value)} placeholder="+591 ..." className="w-full h-10 px-3 rounded border" style={{ backgroundColor: "var(--bg-chassis)", borderColor: "var(--border-subtle)", color: "var(--text-primary)" }} />
@@ -1202,7 +1321,14 @@ export function AdminDashboardClient({ data }: { data: AdminSnapshotData }) {
 
       {/* 11. REPORTES */}
       {tab === "reportes" && (
-        <div className="admin-stagger-item rounded-[20px] border border-white/10 bg-[#0E1424] p-5 space-y-4 text-xs shadow-lg">
+        <div
+          className="admin-stagger-item rounded-[20px] border p-5 space-y-4 text-xs"
+          style={{
+            backgroundColor: "var(--bg-surface)",
+            borderColor: "var(--border-subtle)",
+            boxShadow: "var(--shadow-card)",
+          }}
+        >
           <h2 className="font-heading font-bold text-base">Exportación de reportes calculados desde base de datos</h2>
           <p style={{ color: "var(--text-secondary)" }}>
             {data.canSeeFinance

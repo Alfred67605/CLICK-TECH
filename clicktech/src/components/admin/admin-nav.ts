@@ -32,7 +32,7 @@ export interface AdminNavItem {
   id: AdminTab;
   label: string;
   group: "Principal" | "Comercial y Stock" | "Taller y Sistema";
-  icon: React.ComponentType<{ className?: string }>;
+  icon: React.ComponentType<{ className?: string; style?: React.CSSProperties }>;
   hideForTech?: boolean;
   adminOnly?: boolean;
 }

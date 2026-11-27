@@ -20,7 +20,7 @@ import { formatBs, formatBsCompact } from "@/lib/domain/money";
 import { SERVICE_STATUS_LABELS } from "@/lib/domain/service-rules";
 import type { ServiceOrderStatus } from "@prisma/client";
 
-const emptySubscribe = () => () => {};
+const emptySubscribe = () => () => { };
 
 const DONUT_COLORS = [
   "#00E5FF",
@@ -59,11 +59,12 @@ interface AdminAnalyticsChartsProps {
 }
 
 const TOOLTIP_STYLE = {
-  backgroundColor: "#0A0F1D",
-  border: "1px solid rgba(255, 255, 255, 0.14)",
+  backgroundColor: "var(--bg-elevated)",
+  border: "1px solid var(--border-strong)",
   borderRadius: "12px",
-  color: "#F8FAFC",
+  color: "var(--text-primary)",
   fontSize: "12px",
+  boxShadow: "var(--shadow-elevated)",
 };
 
 export function AdminAnalyticsCharts({
@@ -150,15 +151,25 @@ export function AdminAnalyticsCharts({
   return (
     <div className="space-y-5">
       {/* 1. Area Chart Card with Pill Period Filters */}
-      <section className="admin-stagger-item rounded-[20px] border border-white/10 bg-[#0E1424] p-5 space-y-4 shadow-lg">
+      <section
+        className="admin-stagger-item rounded-[20px] border p-5 space-y-4"
+        style={{
+          backgroundColor: "var(--bg-surface)",
+          borderColor: "var(--border-subtle)",
+          boxShadow: "var(--shadow-card)",
+        }}
+      >
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
           <div>
-            <h2 className="font-heading font-bold text-base text-white">
+            <h2
+              className="font-heading font-bold text-base"
+              style={{ color: "var(--text-primary)" }}
+            >
               {canSeeFinance
                 ? "Evolución de ingresos y flujo de pedidos"
                 : "Flujo de órdenes técnicas recibidas"}
             </h2>
-            <p className="text-xs text-slate-400">
+            <p className="text-xs" style={{ color: "var(--text-muted)" }}>
               {canSeeFinance
                 ? "Ingresos cobrados en Bolivianos (Bs) y volumen operativo por fecha."
                 : "Actividad de recepción y diagnóstico de equipos."}
@@ -168,7 +179,11 @@ export function AdminAnalyticsCharts({
           <div
             role="group"
             aria-label="Filtro de período"
-            className="inline-flex items-center gap-1 p-1 rounded-full border border-white/10 bg-[#070B14] self-start sm:self-auto"
+            className="inline-flex items-center gap-1 p-1 rounded-full border self-start sm:self-auto"
+            style={{
+              borderColor: "var(--border-subtle)",
+              backgroundColor: "var(--bg-chassis)",
+            }}
           >
             {periodOptions.map((opt) => {
               const active = periodDays === opt.days;
@@ -182,11 +197,15 @@ export function AdminAnalyticsCharts({
                     playTransition();
                     onChangePeriod(opt.days);
                   }}
-                  className={`ct-btn h-8 px-3.5 rounded-full text-xs font-semibold transition-colors ${
+                  className="ct-btn h-8 px-3.5 rounded-full text-xs font-semibold transition-colors"
+                  style={
                     active
-                      ? "bg-[#00E5FF] text-[#02040A]"
-                      : "text-slate-400 hover:text-white"
-                  }`}
+                      ? {
+                        backgroundColor: "var(--accent-cyan)",
+                        color: "var(--accent-cyan-ink)",
+                      }
+                      : { color: "var(--text-muted)" }
+                  }
                 >
                   {opt.label}
                 </button>
@@ -197,9 +216,9 @@ export function AdminAnalyticsCharts({
 
         <div className="h-[250px] w-full min-w-0">
           {!mounted ? (
-            <div className="h-full w-full rounded-xl bg-white/[0.03]" />
+            <div className="h-full w-full rounded-xl" style={{ backgroundColor: "var(--bg-chassis)" }} />
           ) : areaSeries.length === 0 ? (
-            <div className="h-full flex items-center justify-center text-xs text-slate-400">
+            <div className="h-full flex items-center justify-center text-xs" style={{ color: "var(--text-muted)" }}>
               Sin movimientos registrados en los últimos {periodDays} días.
             </div>
           ) : (
@@ -207,20 +226,20 @@ export function AdminAnalyticsCharts({
               <AreaChart data={areaSeries} margin={{ top: 10, right: 12, left: 0, bottom: 0 }}>
                 <defs>
                   <linearGradient id="adminAreaCyan" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="0%" stopColor="#00E5FF" stopOpacity={0.35} />
-                    <stop offset="100%" stopColor="#00E5FF" stopOpacity={0.02} />
+                    <stop offset="0%" stopColor="#0284C7" stopOpacity={0.35} />
+                    <stop offset="100%" stopColor="#0284C7" stopOpacity={0.02} />
                   </linearGradient>
                 </defs>
-                <CartesianGrid stroke="rgba(255,255,255,0.06)" vertical={false} />
+                <CartesianGrid stroke="var(--border-subtle)" vertical={false} />
                 <XAxis
                   dataKey="label"
-                  stroke="#64748B"
+                  stroke="var(--text-muted)"
                   fontSize={11}
                   tickLine={false}
                   axisLine={false}
                 />
                 <YAxis
-                  stroke="#64748B"
+                  stroke="var(--text-muted)"
                   fontSize={11}
                   tickLine={false}
                   axisLine={false}
@@ -238,7 +257,7 @@ export function AdminAnalyticsCharts({
                 <Area
                   type="monotone"
                   dataKey={canSeeFinance ? "ingresoBs" : "actividad"}
-                  stroke="#00E5FF"
+                  stroke="var(--accent-cyan)"
                   strokeWidth={2.5}
                   fill="url(#adminAreaCyan)"
                   isAnimationActive={false}
@@ -252,13 +271,23 @@ export function AdminAnalyticsCharts({
       {/* 2. Bar Chart + Donut Chart Grid */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-5">
         {canSeeFinance && (
-          <section className="admin-stagger-item lg:col-span-7 rounded-[20px] border border-white/10 bg-[#0E1424] p-5 space-y-4 shadow-lg">
+          <section
+            className="admin-stagger-item lg:col-span-7 rounded-[20px] border p-5 space-y-4"
+            style={{
+              backgroundColor: "var(--bg-surface)",
+              borderColor: "var(--border-subtle)",
+              boxShadow: "var(--shadow-card)",
+            }}
+          >
             <div className="flex items-center justify-between gap-3">
               <div>
-                <h2 className="font-heading font-bold text-base text-white">
+                <h2
+                  className="font-heading font-bold text-base"
+                  style={{ color: "var(--text-primary)" }}
+                >
                   Ventas cobradas por categoría
                 </h2>
-                <p className="text-xs text-slate-400">
+                <p className="text-xs" style={{ color: "var(--text-muted)" }}>
                   Haz clic en una barra para inspeccionar los pedidos incluidos.
                 </p>
               </div>
@@ -270,7 +299,8 @@ export function AdminAnalyticsCharts({
                     playClick();
                     onSelectCategory(null);
                   }}
-                  className="text-xs font-semibold text-[#00E5FF] hover:underline shrink-0"
+                  className="text-xs font-semibold hover:underline shrink-0"
+                  style={{ color: "var(--accent-cyan)" }}
                 >
                   Quitar filtro
                 </button>
@@ -279,31 +309,31 @@ export function AdminAnalyticsCharts({
 
             <div className="h-[260px] w-full min-w-0">
               {!mounted ? (
-                <div className="h-full w-full rounded-xl bg-white/[0.03]" />
+                <div className="h-full w-full rounded-xl" style={{ backgroundColor: "var(--bg-chassis)" }} />
               ) : barData.length === 0 ? (
-                <div className="h-full flex items-center justify-center text-xs text-slate-400">
+                <div className="h-full flex items-center justify-center text-xs" style={{ color: "var(--text-muted)" }}>
                   Sin ventas cobradas en este período.
                 </div>
               ) : (
                 <ResponsiveContainer width="100%" height={250}>
                   <BarChart data={barData} margin={{ top: 8, right: 12, left: 0, bottom: 4 }}>
-                    <CartesianGrid stroke="rgba(255,255,255,0.06)" vertical={false} />
+                    <CartesianGrid stroke="var(--border-subtle)" vertical={false} />
                     <XAxis
                       dataKey="shortName"
-                      stroke="#64748B"
+                      stroke="var(--text-muted)"
                       fontSize={11}
                       tickLine={false}
                       axisLine={false}
                     />
                     <YAxis
-                      stroke="#64748B"
+                      stroke="var(--text-muted)"
                       fontSize={11}
                       tickLine={false}
                       axisLine={false}
                       tickFormatter={(v: number) => `Bs ${v}`}
                     />
                     <Tooltip
-                      cursor={{ fill: "rgba(255,255,255,0.04)" }}
+                      cursor={{ fill: "var(--accent-cyan-soft)" }}
                       contentStyle={TOOLTIP_STYLE}
                       formatter={(_val, _name, item) => {
                         const cents = (item?.payload as { cents?: number })?.cents ?? 0;
@@ -328,8 +358,8 @@ export function AdminAnalyticsCharts({
                           cursor="pointer"
                           fill={
                             !drillCategory || drillCategory === row.category
-                              ? "#00E5FF"
-                              : "rgba(0, 229, 255, 0.28)"
+                              ? "#0284C7"
+                              : "rgba(2, 132, 199, 0.28)"
                           }
                         />
                       ))}
@@ -343,16 +373,23 @@ export function AdminAnalyticsCharts({
 
         {/* Donut Chart: Service Orders by Status */}
         <section
-          className={`admin-stagger-item ${
-            canSeeFinance ? "lg:col-span-5" : "lg:col-span-12"
-          } rounded-[20px] border border-white/10 bg-[#0E1424] p-5 space-y-4 shadow-lg`}
+          className={`admin-stagger-item ${canSeeFinance ? "lg:col-span-5" : "lg:col-span-12"
+            } rounded-[20px] border p-5 space-y-4`}
+          style={{
+            backgroundColor: "var(--bg-surface)",
+            borderColor: "var(--border-subtle)",
+            boxShadow: "var(--shadow-card)",
+          }}
         >
           <div className="flex items-center justify-between gap-3">
             <div>
-              <h2 className="font-heading font-bold text-base text-white">
+              <h2
+                className="font-heading font-bold text-base"
+                style={{ color: "var(--text-primary)" }}
+              >
                 Órdenes de servicio por estado
               </h2>
-              <p className="text-xs text-slate-400">
+              <p className="text-xs" style={{ color: "var(--text-muted)" }}>
                 Selecciona un estado para ver sus tickets.
               </p>
             </div>
@@ -364,7 +401,8 @@ export function AdminAnalyticsCharts({
                   playClick();
                   onSelectServiceStatus(null);
                 }}
-                className="text-xs font-semibold text-[#8B5CF6] hover:underline shrink-0"
+                className="text-xs font-semibold hover:underline shrink-0"
+                style={{ color: "var(--accent-purple)" }}
               >
                 Ver todos
               </button>
@@ -372,7 +410,7 @@ export function AdminAnalyticsCharts({
           </div>
 
           {donutData.length === 0 ? (
-            <div className="h-[260px] flex items-center justify-center text-xs text-slate-400">
+            <div className="h-[260px] flex items-center justify-center text-xs" style={{ color: "var(--text-muted)" }}>
               Sin órdenes de servicio registradas.
             </div>
           ) : (
@@ -421,7 +459,7 @@ export function AdminAnalyticsCharts({
                     </PieChart>
                   </ResponsiveContainer>
                 ) : (
-                  <div className="h-full w-full rounded-xl bg-white/[0.03]" />
+                  <div className="h-full w-full rounded-xl" style={{ backgroundColor: "var(--bg-chassis)" }} />
                 )}
               </div>
 
@@ -437,11 +475,12 @@ export function AdminAnalyticsCharts({
                         playClick();
                         onSelectServiceStatus(selected ? null : entry.status);
                       }}
-                      className={`ct-btn w-full px-2.5 py-1.5 rounded-xl border text-xs flex items-center justify-between gap-2 text-left ${
-                        selected
-                          ? "border-white/25 bg-white/10 text-white"
-                          : "border-transparent hover:bg-white/5 text-slate-300"
-                      }`}
+                      className="ct-btn w-full px-2.5 py-1.5 rounded-xl border text-xs flex items-center justify-between gap-2 text-left"
+                      style={{
+                        borderColor: selected ? "var(--border-strong)" : "transparent",
+                        backgroundColor: selected ? "var(--accent-cyan-soft)" : "transparent",
+                        color: selected ? "var(--text-primary)" : "var(--text-secondary)",
+                      }}
                     >
                       <span className="flex items-center gap-2 min-w-0">
                         <span
@@ -450,7 +489,10 @@ export function AdminAnalyticsCharts({
                         />
                         <span className="truncate">{entry.label}</span>
                       </span>
-                      <span className="font-mono font-bold tabular-nums text-white">
+                      <span
+                        className="font-mono font-bold tabular-nums"
+                        style={{ color: "var(--text-primary)" }}
+                      >
                         {entry.count}
                       </span>
                     </button>

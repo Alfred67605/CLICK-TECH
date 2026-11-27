@@ -1,8 +1,9 @@
 "use client";
 
 import React, { useState } from "react";
-import { Check, Heart, MessageSquare, Scale, ShoppingCart } from "lucide-react";
+import { Check, ExternalLink, Heart, MessageCircle, MessageSquare, Scale, ShoppingCart } from "lucide-react";
 import { useStore } from "@/components/providers/StoreProvider";
+import { formatBsCompact } from "@/lib/domain/money";
 
 export function ProductDetailActions({
   product,
@@ -150,21 +151,47 @@ export function ProductDetailActions({
 
         {(() => {
           const cleanNum = (whatsappNumber || "59167605477").replace(/[^0-9]/g, "");
+          const publicOrigin =
+            typeof window !== "undefined" ? window.location.origin : "https://clicktech.bo";
+          const productUrl = `${publicOrigin}/producto/${product.slug}`;
+          const waText = [
+            `Hola ClickTech (+591 67605477), consulto por este producto:`,
+            `📦 *${product.name}*`,
+            `🏷️ SKU: ${product.sku} · Categoría: ${product.categoryName}`,
+            `💵 Precio publicado: *${formatBsCompact(product.priceCents)}*`,
+            `📍 Tienda: Calle Oruro, Zona Central, Potosí`,
+            `🔗 Ficha e imagen del producto: ${productUrl}`,
+          ].join("\n");
+
           return (
             <a
-              href={`https://wa.me/${cleanNum}?text=${encodeURIComponent(
-                `Hola ClickTech (+591 67605477), consulto por el producto ${product.name} (SKU: ${product.sku}).`
-              )}`}
+              href={`https://wa.me/${cleanNum}?text=${encodeURIComponent(waText)}`}
               target="_blank"
               rel="noopener noreferrer"
-              className="ct-btn h-10 px-4 rounded-lg border text-xs font-semibold flex items-center gap-1.5"
+              className="ct-btn rounded-xl border p-2.5 pr-4 flex items-center gap-3 flex-1 min-w-[260px]"
               style={{
-                borderColor: "#25D366",
-                color: "#25D366",
+                borderColor: "rgba(37, 211, 102, 0.5)",
                 backgroundColor: "rgba(37, 211, 102, 0.08)",
               }}
             >
-              Consultar por WhatsApp (67605477)
+              {product.imageUrl && (
+                <img
+                  src={product.imageUrl}
+                  alt={product.name}
+                  className="w-11 h-11 rounded-lg object-cover border shrink-0"
+                  style={{ borderColor: "rgba(37, 211, 102, 0.35)" }}
+                />
+              )}
+              <div className="min-w-0 flex-1 text-left">
+                <span className="flex items-center gap-1.5 text-xs font-bold" style={{ color: "#16A34A" }}>
+                  <MessageCircle className="w-3.5 h-3.5 shrink-0" />
+                  Consultar por WhatsApp (67605477)
+                </span>
+                <span className="block text-[11px] truncate" style={{ color: "var(--text-secondary)" }}>
+                  Envía ficha, precio ({formatBsCompact(product.priceCents)}) y foto del modelo
+                </span>
+              </div>
+              <ExternalLink className="w-3.5 h-3.5 shrink-0" style={{ color: "#16A34A" }} />
             </a>
           );
         })()}

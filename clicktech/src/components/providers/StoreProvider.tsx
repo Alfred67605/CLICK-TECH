@@ -377,7 +377,7 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
       {/* Toast region — Emil Kowalski accessible stack */}
       <div
         aria-live="polite"
-        className="fixed bottom-4 right-4 z-50 flex flex-col gap-2 max-w-sm w-full pointer-events-none px-3 sm:px-0"
+        className="fixed top-20 right-4 z-[80] flex flex-col gap-2 max-w-sm w-full pointer-events-none px-3 sm:px-0"
       >
         {toasts.map((t) => (
           <div

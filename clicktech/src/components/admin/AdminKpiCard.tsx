@@ -46,8 +46,8 @@ export function AdminKpiCard({
         </div>
       </div>
 
-      <div className="flex items-baseline justify-between gap-2">
-        <p className="font-heading text-2xl sm:text-3xl font-extrabold tabular-nums tracking-tight text-white">
+      <div className="flex flex-wrap items-baseline justify-between gap-2 min-w-0">
+        <p className="font-heading text-xl sm:text-2xl font-extrabold tabular-nums tracking-tight text-white whitespace-nowrap">
           {value}
         </p>
         <span

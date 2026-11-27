@@ -23,7 +23,6 @@ import { prisma } from "@/lib/prisma";
 import { getPublicBusinessSettings } from "@/lib/domain/business-config";
 import { getAvailableStock } from "@/lib/domain/inventory-orders";
 import { formatBsCompact } from "@/lib/domain/money";
-import { Interactive3DProduct } from "@/components/catalog/Interactive3DProduct";
 import { EmberParticlesCanvas } from "@/components/ui/EmberParticlesCanvas";
 import { ProductDetailActions } from "@/components/catalog/ProductDetailActions";
 import { ProductCard } from "@/components/catalog/ProductCard";
@@ -239,14 +238,20 @@ export default async function ProductoDetallePage({
         <span>{product.sku}</span>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
-        {/* Product gallery (Enlarged Interactive 3D Stage + Floating Particles) */}
-        <div className="lg:col-span-6 space-y-3">
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8 items-start">
+        {/* Product gallery + Warranty & Delivery below photo so both columns balance cleanly */}
+        <div className="lg:col-span-6 space-y-4">
           <div
-            className="rounded-2xl border p-4 sm:p-6 relative overflow-hidden"
+            className="rounded-2xl border h-[330px] sm:h-[400px] p-6 relative overflow-hidden flex items-center justify-center"
             style={{
-              background: "linear-gradient(135deg, #FFFFFF 0%, #F1F5F9 55%, #E2E8F0 100%)",
-              borderColor: "var(--border-subtle)",
+              background:
+                product.promoPriceCents && product.promoPriceCents < product.priceCents
+                  ? "linear-gradient(180deg, #050508 0%, #140505 52%, #330C05 86%, #4F1507 100%)"
+                  : "linear-gradient(135deg, #030A1A 0%, #071D45 48%, #0C3273 84%, #10449B 100%)",
+              borderColor:
+                product.promoPriceCents && product.promoPriceCents < product.priceCents
+                  ? "rgba(249, 115, 22, 0.55)"
+                  : "rgba(56, 189, 248, 0.45)",
             }}
           >
             <EmberParticlesCanvas
@@ -255,27 +260,53 @@ export default async function ProductoDetallePage({
                   ? "fire"
                   : "cyan"
               }
-              density={28}
+              density={44}
               className="absolute inset-0 z-0"
             />
-            <div className="relative z-10">
-              <Interactive3DProduct
-                src={primaryImg?.url ?? null}
-                alt={primaryImg?.altText ?? product.name}
-                variant={
+
+            {/* Spotlight radial glow behind product */}
+            <div
+              aria-hidden="true"
+              className="absolute inset-0 pointer-events-none z-0"
+              style={{
+                background:
                   product.promoPriceCents && product.promoPriceCents < product.priceCents
-                    ? "fire"
-                    : "cyan"
-                }
-                size="detail"
-                productKey={product.id}
+                    ? "radial-gradient(circle at 50% 46%, rgba(255,255,255,0.92) 0%, rgba(255,237,213,0.45) 38%, transparent 72%)"
+                    : "radial-gradient(circle at 50% 46%, rgba(255,255,255,0.92) 0%, rgba(224,242,254,0.48) 38%, transparent 72%)",
+              }}
+            />
+
+            {/* 3D Silver Studio Pedestal */}
+            <div
+              aria-hidden="true"
+              className="absolute bottom-4 left-1/2 -translate-x-1/2 w-[78%] max-w-[330px] h-12 pointer-events-none z-0"
+            >
+              <div
+                className="w-full h-full rounded-[50%] border border-white"
+                style={{
+                  background: "linear-gradient(180deg, #FFFFFF 0%, #E2E8F0 65%, #CBD5E1 100%)",
+                  boxShadow: "0 12px 28px -4px rgba(0, 0, 0, 0.5)",
+                }}
               />
             </div>
+
+            {primaryImg ? (
+              <img
+                src={primaryImg.url}
+                alt={primaryImg.altText}
+                className="relative z-10 w-[86%] h-[86%] object-contain"
+                style={{ filter: "drop-shadow(0 18px 22px rgba(0, 0, 0, 0.45))" }}
+              />
+            ) : (
+              <span className="text-sm relative z-10 text-slate-200">
+                Sin imagen disponible
+              </span>
+            )}
             <span
               className="absolute top-3 left-3 z-20 px-2.5 py-1 rounded-md text-xs font-semibold border"
               style={{
-                backgroundColor: "rgba(15, 23, 42, 0.85)",
-                borderColor: "rgba(255, 255, 255, 0.16)",
+                backgroundColor: "rgba(5, 8, 18, 0.85)",
+                borderColor: "rgba(255, 255, 255, 0.2)",
                 color: "#F8FAFC",
               }}
             >
@@ -284,6 +315,7 @@ export default async function ProductoDetallePage({
                 : "Fotografía verificada del modelo"}
             </span>
           </div>
+
           {primaryImg?.author && (
             <p className="text-[11px]" style={{ color: "var(--text-muted)" }}>
               Crédito fotográfico: {primaryImg.author} · {primaryImg.license} ·{" "}
@@ -292,6 +324,36 @@ export default async function ProductoDetallePage({
               </Link>
             </p>
           )}
+
+          {/* Warranty & Delivery conditions placed under image to eliminate left-column whitespace */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div
+              className="rounded-xl border p-3.5 text-xs space-y-1"
+              style={{ backgroundColor: "var(--bg-surface)", borderColor: "var(--border-subtle)" }}
+            >
+              <div className="font-semibold flex items-center gap-1.5" style={{ color: "var(--text-primary)" }}>
+                <ShieldCheck className="w-4 h-4" style={{ color: "var(--accent-cyan)" }} />
+                Garantía registrada
+              </div>
+              <p style={{ color: "var(--text-secondary)" }}>
+                {product.warrantyMonths
+                  ? `${product.warrantyMonths} meses. ${product.warrantyTerms ?? ""}`
+                  : product.warrantyTerms ?? "Sin garantía extendida configurada."}
+              </p>
+            </div>
+            <div
+              className="rounded-xl border p-3.5 text-xs space-y-1"
+              style={{ backgroundColor: "var(--bg-surface)", borderColor: "var(--border-subtle)" }}
+            >
+              <div className="font-semibold flex items-center gap-1.5" style={{ color: "var(--text-primary)" }}>
+                <Truck className="w-4 h-4" style={{ color: "var(--accent-purple)" }} />
+                Entrega en Potosí
+              </div>
+              <p style={{ color: "var(--text-secondary)" }}>
+                Recojo coordinado en Potosí o entrega en zonas habilitadas (otras zonas sujetas a cotización).
+              </p>
+            </div>
+          </div>
         </div>
 
         {/* Info & purchase */}
@@ -349,112 +411,82 @@ export default async function ProductoDetallePage({
             }}
             whatsappNumber={settings.whatsappNumber}
           />
-
-          {/* Warranty & Delivery conditions */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2">
-            <div
-              className="rounded-xl border p-3.5 text-xs space-y-1"
-              style={{ backgroundColor: "var(--bg-surface)", borderColor: "var(--border-subtle)" }}
-            >
-              <div className="font-semibold flex items-center gap-1.5" style={{ color: "var(--text-primary)" }}>
-                <ShieldCheck className="w-4 h-4" style={{ color: "var(--accent-cyan)" }} />
-                Garantía registrada
-              </div>
-              <p style={{ color: "var(--text-secondary)" }}>
-                {product.warrantyMonths
-                  ? `${product.warrantyMonths} meses. ${product.warrantyTerms ?? ""}`
-                  : product.warrantyTerms ?? "Sin garantía extendida configurada."}
-              </p>
-            </div>
-            <div
-              className="rounded-xl border p-3.5 text-xs space-y-1"
-              style={{ backgroundColor: "var(--bg-surface)", borderColor: "var(--border-subtle)" }}
-            >
-              <div className="font-semibold flex items-center gap-1.5" style={{ color: "var(--text-primary)" }}>
-                <Truck className="w-4 h-4" style={{ color: "var(--accent-purple)" }} />
-                Entrega en Potosí
-              </div>
-              <p style={{ color: "var(--text-secondary)" }}>
-                Recojo coordinado en Potosí o entrega en zonas habilitadas (otras zonas sujetas a cotización).
-              </p>
-            </div>
-          </div>
-
-          {/* Verified Specifications Visual Grid */}
-          <div
-            className="rounded-2xl border p-4 sm:p-5 space-y-4"
-            style={{
-              backgroundColor: "var(--bg-surface)",
-              borderColor: "var(--border-subtle)",
-              boxShadow: "var(--shadow-card)",
-            }}
-          >
-            <div className="flex flex-wrap items-center justify-between gap-2 border-b pb-3" style={{ borderColor: "var(--border-subtle)" }}>
-              <div className="flex items-center gap-2">
-                <span
-                  className="w-8 h-8 rounded-xl border flex items-center justify-center"
-                  style={{
-                    backgroundColor: "var(--accent-cyan-soft)",
-                    borderColor: "var(--border-strong)",
-                    color: "var(--accent-cyan)",
-                  }}
-                >
-                  <Sparkles className="w-4 h-4" />
-                </span>
-                <div>
-                  <h2 className="font-heading font-bold text-sm sm:text-base" style={{ color: "var(--text-primary)" }}>
-                    Ficha Técnica y Especificaciones Verificadas
-                  </h2>
-                  <p className="text-[11px]" style={{ color: "var(--text-muted)" }}>
-                    {product.brand.name} · {product.category.name} · SKU {product.sku}
-                  </p>
-                </div>
-              </div>
-              <span
-                className="px-2.5 py-0.5 rounded-full text-[11px] font-bold border"
-                style={{
-                  backgroundColor: "rgba(16, 185, 129, 0.12)",
-                  borderColor: "rgba(16, 185, 129, 0.35)",
-                  color: "var(--status-ok)",
-                }}
-              >
-                {Object.keys(specs).length} atributos técnicos
-              </span>
-            </div>
-
-            <dl className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
-              {Object.entries(specs).map(([k, v]) => {
-                const { Icon, accent, bg, border } = getSpecCardMeta(k);
-                return (
-                  <div
-                    key={k}
-                    className="rounded-xl border p-3 flex items-start gap-3"
-                    style={{
-                      backgroundColor: "var(--bg-chassis)",
-                      borderColor: "var(--border-subtle)",
-                    }}
-                  >
-                    <div
-                      className="w-8 h-8 rounded-lg border flex items-center justify-center shrink-0 mt-0.5"
-                      style={{ backgroundColor: bg, borderColor: border, color: accent }}
-                    >
-                      <Icon className="w-4 h-4" />
-                    </div>
-                    <div className="min-w-0 flex-1">
-                      <dt className="text-[11px] font-semibold uppercase tracking-wide" style={{ color: "var(--text-muted)" }}>
-                        {k}
-                      </dt>
-                      <dd className="font-bold text-xs sm:text-sm mt-0.5 break-words" style={{ color: "var(--text-primary)" }}>
-                        {v}
-                      </dd>
-                    </div>
-                  </div>
-                );
-              })}
-            </dl>
-          </div>
         </div>
       </div>
+
+      {/* Full-width Verified Specifications Grid (eliminates blank vertical gaps) */}
+      <section
+        className="rounded-2xl border p-5 sm:p-6 space-y-4"
+        style={{
+          backgroundColor: "var(--bg-surface)",
+          borderColor: "var(--border-subtle)",
+          boxShadow: "var(--shadow-card)",
+        }}
+      >
+        <div className="flex flex-wrap items-center justify-between gap-2 border-b pb-3" style={{ borderColor: "var(--border-subtle)" }}>
+          <div className="flex items-center gap-2">
+            <span
+              className="w-8 h-8 rounded-xl border flex items-center justify-center shrink-0"
+              style={{
+                backgroundColor: "var(--accent-cyan-soft)",
+                borderColor: "var(--border-strong)",
+                color: "var(--accent-cyan)",
+              }}
+            >
+              <Sparkles className="w-4 h-4" />
+            </span>
+            <div>
+              <h2 className="font-heading font-bold text-sm sm:text-base" style={{ color: "var(--text-primary)" }}>
+                Ficha Técnica y Especificaciones Verificadas
+              </h2>
+              <p className="text-[11px]" style={{ color: "var(--text-muted)" }}>
+                {product.brand.name} · {product.category.name} · SKU {product.sku}
+              </p>
+            </div>
+          </div>
+          <span
+            className="px-2.5 py-0.5 rounded-full text-[11px] font-bold border shrink-0"
+            style={{
+              backgroundColor: "rgba(16, 185, 129, 0.12)",
+              borderColor: "rgba(16, 185, 129, 0.35)",
+              color: "var(--status-ok)",
+            }}
+          >
+            {Object.keys(specs).length} atributos técnicos
+          </span>
+        </div>
+
+        <dl className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 text-xs">
+          {Object.entries(specs).map(([k, v]) => {
+            const { Icon, accent, bg, border } = getSpecCardMeta(k);
+            return (
+              <div
+                key={k}
+                className="rounded-xl border p-3 flex items-start gap-3"
+                style={{
+                  backgroundColor: "var(--bg-chassis)",
+                  borderColor: "var(--border-subtle)",
+                }}
+              >
+                <div
+                  className="w-8 h-8 rounded-lg border flex items-center justify-center shrink-0 mt-0.5"
+                  style={{ backgroundColor: bg, borderColor: border, color: accent }}
+                >
+                  <Icon className="w-4 h-4" />
+                </div>
+                <div className="min-w-0 flex-1">
+                  <dt className="text-[11px] font-semibold uppercase tracking-wide" style={{ color: "var(--text-muted)" }}>
+                    {k}
+                  </dt>
+                  <dd className="font-bold text-xs sm:text-sm mt-0.5 break-words" style={{ color: "var(--text-primary)" }}>
+                    {v}
+                  </dd>
+                </div>
+              </div>
+            );
+          })}
+        </dl>
+      </section>
 
       {/* COMPATIBILIDAD DIRECTA CLARA Y CONCISA */}
       {compatHighlights && (

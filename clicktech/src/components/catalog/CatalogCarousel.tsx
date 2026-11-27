@@ -18,7 +18,6 @@ import { useUISound } from "@/hooks/useUISound";
 import { formatBsCompact } from "@/lib/domain/money";
 import type { ProductCardData } from "@/components/catalog/ProductCard";
 import { EmberParticlesCanvas } from "@/components/ui/EmberParticlesCanvas";
-import { Interactive3DProduct } from "@/components/catalog/Interactive3DProduct";
 
 gsap.registerPlugin(useGSAP);
 
@@ -47,7 +46,6 @@ export function CatalogCarousel({ products }: { products: ProductCardData[] }) {
     [products]
   );
 
-  // Build curated spotlight rotation: Black Friday deals first, followed by featured/diverse SKUs
   const allSlides = useMemo(() => {
     const seen = new Set<string>();
     const ordered: ProductCardData[] = [];
@@ -98,12 +96,12 @@ export function CatalogCarousel({ products }: { products: ProductCardData[] }) {
       if (staggerEls.length > 0) {
         tl.fromTo(
           staggerEls,
-          { x: dir * -30, opacity: 0, y: 8 },
+          { x: dir * -28, opacity: 0, y: 8 },
           {
             x: 0,
             opacity: 1,
             y: 0,
-            duration: 0.52,
+            duration: 0.5,
             stagger: 0.055,
             ease: "power3.out",
             clearProps: "transform",
@@ -114,12 +112,12 @@ export function CatalogCarousel({ products }: { products: ProductCardData[] }) {
       if (mediaEl) {
         tl.fromTo(
           mediaEl,
-          { x: dir * 80, scale: 0.84, opacity: 0 },
+          { x: dir * 75, scale: 0.86, opacity: 0 },
           {
             x: 0,
             scale: 1,
             opacity: 1,
-            duration: 0.72,
+            duration: 0.68,
             ease: "expo.out",
             clearProps: "opacity",
           },
@@ -130,7 +128,7 @@ export function CatalogCarousel({ products }: { products: ProductCardData[] }) {
     { scope: stageRef, dependencies: [active?.id] }
   );
 
-  // Live 3-second countdown progress bar synced cleanly with pause/hover state
+  // Live 3-second countdown progress bar
   useGSAP(
     () => {
       if (!active) return;
@@ -148,11 +146,7 @@ export function CatalogCarousel({ products }: { products: ProductCardData[] }) {
         return;
       }
 
-      gsap.fromTo(
-        barEl,
-        { scaleX: 0 },
-        { scaleX: 1, duration: 3, ease: "none" }
-      );
+      gsap.fromTo(barEl, { scaleX: 0 }, { scaleX: 1, duration: 3, ease: "none" });
     },
     { scope: stageRef, dependencies: [active?.id, isPaused, isHovered, slides.length] }
   );
@@ -169,12 +163,12 @@ export function CatalogCarousel({ products }: { products: ProductCardData[] }) {
   const specsList = Object.entries((active.shortSpecsJson ?? {}) as Record<string, string>).slice(0, 3);
 
   const primaryRibbonGradient = isPromoHero
-    ? "linear-gradient(90deg, #DC2626 0%, #991B1B 100%)"
-    : "linear-gradient(90deg, #0284C7 0%, #0369A1 100%)";
-  const accentColor = isPromoHero ? "#C8102E" : "#0284C7";
+    ? "linear-gradient(90deg, #EF4444 0%, #EA580C 100%)"
+    : "linear-gradient(90deg, #0284C7 0%, #00B4D8 100%)";
+  const accentColor = isPromoHero ? "#F97316" : "#38BDF8";
   const ctaGradient = isPromoHero
-    ? "linear-gradient(90deg, #E11D48 0%, #B91C1C 60%, #7F1D1D 100%)"
-    : "linear-gradient(90deg, #0EA5E9 0%, #0284C7 60%, #0369A1 100%)";
+    ? "linear-gradient(90deg, #F97316 0%, #DC2626 55%, #991B1B 100%)"
+    : "linear-gradient(90deg, #00E5FF 0%, #0284C7 55%, #1D4ED8 100%)";
 
   function goPrev() {
     playClick();
@@ -197,20 +191,22 @@ export function CatalogCarousel({ products }: { products: ProductCardData[] }) {
       className="relative rounded-3xl overflow-hidden transition-colors duration-300"
       style={{
         background: isPromoHero
-          ? "linear-gradient(135deg, #FFFFFF 0%, #FFF5F5 46%, #E2E8F0 100%)"
-          : "linear-gradient(135deg, #FFFFFF 0%, #EEF2F7 52%, #E2E8F0 100%)",
-        border: isPromoHero ? "2px solid rgba(220, 38, 38, 0.45)" : "2px solid rgba(14, 165, 233, 0.35)",
+          ? "linear-gradient(180deg, #050508 0%, #140505 52%, #330C05 86%, #4F1507 100%)"
+          : "linear-gradient(135deg, #030A1A 0%, #071D45 48%, #0C3273 84%, #10449B 100%)",
+        border: isPromoHero
+          ? "2px solid rgba(249, 115, 22, 0.55)"
+          : "2px solid rgba(56, 189, 248, 0.5)",
         boxShadow: isPromoHero
-          ? "0 24px 52px -18px rgba(200, 16, 46, 0.35)"
-          : "0 22px 48px -18px rgba(2, 132, 199, 0.25)",
+          ? "0 24px 54px -18px rgba(234, 88, 12, 0.45)"
+          : "0 24px 52px -18px rgba(2, 132, 199, 0.4)",
       }}
     >
       {/* Top Bar: Campaign Tabs & Live Counter */}
       <div
         className="relative z-30 px-4 sm:px-6 py-2.5 border-b flex flex-wrap items-center justify-between gap-3"
         style={{
-          borderColor: "rgba(148, 163, 184, 0.3)",
-          backgroundColor: "rgba(255, 255, 255, 0.9)",
+          borderColor: "rgba(255, 255, 255, 0.14)",
+          backgroundColor: "rgba(5, 8, 18, 0.72)",
           backdropFilter: "blur(8px)",
         }}
       >
@@ -228,14 +224,14 @@ export function CatalogCarousel({ products }: { products: ProductCardData[] }) {
             style={
               campaignTab === "all"
                 ? {
-                    backgroundColor: "#0F172A",
-                    borderColor: "#0F172A",
-                    color: "#FFFFFF",
+                    backgroundColor: "#00E5FF",
+                    borderColor: "#00E5FF",
+                    color: "#020617",
                   }
                 : {
-                    backgroundColor: "#FFFFFF",
-                    borderColor: "#CBD5E1",
-                    color: "#334155",
+                    backgroundColor: "rgba(255,255,255,0.08)",
+                    borderColor: "rgba(255,255,255,0.22)",
+                    color: "#E2E8F0",
                   }
             }
           >
@@ -257,14 +253,14 @@ export function CatalogCarousel({ products }: { products: ProductCardData[] }) {
               style={
                 campaignTab === "black-friday"
                   ? {
-                      background: "linear-gradient(90deg, #DC2626 0%, #991B1B 100%)",
-                      borderColor: "#991B1B",
+                      background: "linear-gradient(90deg, #F97316 0%, #DC2626 100%)",
+                      borderColor: "#FB923C",
                       color: "#FFFFFF",
                     }
                   : {
-                      backgroundColor: "#FEF2F2",
-                      borderColor: "#FECACA",
-                      color: "#B91C1C",
+                      backgroundColor: "rgba(220, 38, 38, 0.22)",
+                      borderColor: "rgba(248, 113, 113, 0.45)",
+                      color: "#FECACA",
                     }
               }
             >
@@ -278,9 +274,9 @@ export function CatalogCarousel({ products }: { products: ProductCardData[] }) {
           <span
             className="px-2.5 py-0.5 rounded-full border font-semibold"
             style={{
-              borderColor: "#CBD5E1",
-              backgroundColor: "#FFFFFF",
-              color: "#334155",
+              borderColor: "rgba(255,255,255,0.2)",
+              backgroundColor: "rgba(255,255,255,0.08)",
+              color: "#E2E8F0",
             }}
           >
             {safeIndex + 1} / {slides.length} · Auto 3s
@@ -295,9 +291,9 @@ export function CatalogCarousel({ products }: { products: ProductCardData[] }) {
             aria-label={isPaused ? "Reanudar carrusel automático" : "Pausar carrusel automático"}
             className="ct-btn h-8 px-3 rounded-full border inline-flex items-center gap-1 font-sans font-bold shadow-sm"
             style={{
-              borderColor: "#CBD5E1",
-              backgroundColor: "#FFFFFF",
-              color: "#0F172A",
+              borderColor: "rgba(255,255,255,0.25)",
+              backgroundColor: "rgba(255,255,255,0.12)",
+              color: "#FFFFFF",
             }}
           >
             {isPaused ? <Play className="w-3 h-3" /> : <Pause className="w-3 h-3" />}
@@ -306,45 +302,33 @@ export function CatalogCarousel({ products }: { products: ProductCardData[] }) {
         </div>
       </div>
 
-      {/* Main Commercial Studio Banner Stage + Fire Embers / Sparks + Enlarged 3D Rotatable Product */}
-      <div className="relative px-10 sm:px-14 py-5 sm:py-7 overflow-hidden">
-        {/* Bottom Fire / Energy Ambient Aura */}
-        <div
-          aria-hidden="true"
-          className="pointer-events-none absolute inset-0 z-0"
-          style={{
-            background: isPromoHero
-              ? "radial-gradient(ellipse at 65% 108%, rgba(239, 68, 68, 0.25) 0%, rgba(249, 115, 22, 0.12) 40%, transparent 72%)"
-              : "radial-gradient(ellipse at 65% 108%, rgba(14, 165, 233, 0.2) 0%, rgba(56, 189, 248, 0.08) 42%, transparent 72%)",
-          }}
-        />
-
-        {/* Floating Fire Embers / Tech Sparks Canvas */}
+      {/* Main Bold Banner Stage with Sharp Fire Embers / Electric Sparks */}
+      <div className="relative px-10 sm:px-14 py-6 sm:py-8 overflow-hidden">
         <EmberParticlesCanvas
           variant={isPromoHero ? "fire" : "cyan"}
-          density={46}
+          density={isPromoHero ? 64 : 52}
           className="absolute inset-0 z-10"
         />
 
-        {/* Diagonal Graphic Corner Bars (Top-Right & Bottom-Left) */}
+        {/* Diagonal Graphic Corner Bars */}
         <div aria-hidden="true" className="pointer-events-none absolute top-4 right-5 z-0 flex items-center gap-2 opacity-90">
           <span
             className="block w-8 sm:w-10 h-16 sm:h-20 -skew-x-[22deg]"
             style={{
               background: isPromoHero
-                ? "linear-gradient(180deg, #DC2626 0%, rgba(220,38,38,0.08) 100%)"
-                : "linear-gradient(180deg, #0284C7 0%, rgba(2,132,199,0.08) 100%)",
+                ? "linear-gradient(180deg, #F97316 0%, rgba(220,38,38,0.1) 100%)"
+                : "linear-gradient(180deg, #38BDF8 0%, rgba(2,132,199,0.1) 100%)",
             }}
           />
           <span
             className="block w-5 sm:w-6 h-12 sm:h-16 -skew-x-[22deg] translate-y-4"
-            style={{ background: "linear-gradient(180deg, #94A3B8 0%, rgba(148,163,184,0.1) 100%)" }}
+            style={{ background: "linear-gradient(180deg, rgba(255,255,255,0.45) 0%, rgba(255,255,255,0.05) 100%)" }}
           />
         </div>
         <div aria-hidden="true" className="pointer-events-none absolute bottom-0 left-12 z-0 flex items-end gap-2 opacity-85">
           <span
             className="block w-24 sm:w-32 h-10 sm:h-12 skew-x-[32deg] translate-y-2"
-            style={{ background: "linear-gradient(90deg, #CBD5E1 0%, rgba(203,213,225,0.35) 100%)" }}
+            style={{ background: "linear-gradient(90deg, rgba(255,255,255,0.28) 0%, rgba(255,255,255,0.06) 100%)" }}
           />
           <span
             className="block w-6 sm:w-8 h-10 sm:h-12 skew-x-[32deg] translate-y-2"
@@ -358,11 +342,11 @@ export function CatalogCarousel({ products }: { products: ProductCardData[] }) {
           data-sound="none"
           onClick={goPrev}
           aria-label="Producto anterior del carrusel"
-          className="ct-btn absolute left-2 sm:left-3 top-1/2 -translate-y-1/2 z-30 h-11 w-9 sm:h-14 sm:w-11 rounded-xl border flex items-center justify-center shadow-md"
+          className="ct-btn absolute left-2 sm:left-3 top-1/2 -translate-y-1/2 z-30 h-11 w-9 sm:h-14 sm:w-11 rounded-xl border flex items-center justify-center shadow-lg backdrop-blur-md"
           style={{
-            backgroundColor: "rgba(255, 255, 255, 0.94)",
-            borderColor: "#CBD5E1",
-            color: "#0F172A",
+            backgroundColor: "rgba(9, 14, 28, 0.8)",
+            borderColor: "rgba(255, 255, 255, 0.22)",
+            color: "#FFFFFF",
           }}
         >
           <ChevronLeft className="w-6 h-6" />
@@ -373,24 +357,23 @@ export function CatalogCarousel({ products }: { products: ProductCardData[] }) {
           data-sound="none"
           onClick={goNext}
           aria-label="Siguiente producto del carrusel"
-          className="ct-btn absolute right-2 sm:right-3 top-1/2 -translate-y-1/2 z-30 h-11 w-9 sm:h-14 sm:w-11 rounded-xl border flex items-center justify-center shadow-md"
+          className="ct-btn absolute right-2 sm:right-3 top-1/2 -translate-y-1/2 z-30 h-11 w-9 sm:h-14 sm:w-11 rounded-xl border flex items-center justify-center shadow-lg backdrop-blur-md"
           style={{
-            backgroundColor: "rgba(255, 255, 255, 0.94)",
-            borderColor: "#CBD5E1",
-            color: "#0F172A",
+            backgroundColor: "rgba(9, 14, 28, 0.8)",
+            borderColor: "rgba(255, 255, 255, 0.22)",
+            color: "#FFFFFF",
           }}
         >
           <ChevronRight className="w-6 h-6" />
         </button>
 
-        {/* Active Slide Content (5 cols Copy + 7 cols Large Interactive 3D Product) */}
+        {/* Active Slide Content */}
         <div
           key={active.id}
-          className="relative z-20 grid grid-cols-1 lg:grid-cols-12 gap-4 sm:gap-6 items-center"
+          className="relative z-20 grid grid-cols-1 lg:grid-cols-12 gap-6 items-center"
         >
-          {/* Left Copy, Dynamic Ribbon, Price Pill & CTA */}
-          <div className="lg:col-span-5 space-y-3">
-            {/* Slanted Commercial Ribbon + // bars */}
+          {/* Left Copy & Price Spotlight */}
+          <div className="lg:col-span-6 space-y-3.5">
             <div data-carousel-stagger className="flex items-center gap-1.5">
               <span
                 className="inline-flex items-center gap-1.5 px-4 py-1 -skew-x-12 text-xs sm:text-sm font-black uppercase tracking-wider text-white shadow-md"
@@ -405,62 +388,58 @@ export function CatalogCarousel({ products }: { products: ProductCardData[] }) {
               </span>
               <span
                 aria-hidden="true"
-                className="inline-block w-1.5 h-6 -skew-x-12 opacity-60"
+                className="inline-block w-1.5 h-6 -skew-x-12 opacity-80"
                 style={{ backgroundColor: accentColor }}
               />
               <span
                 aria-hidden="true"
-                className="inline-block w-1.5 h-6 -skew-x-12 opacity-30"
+                className="inline-block w-1.5 h-6 -skew-x-12 opacity-40"
                 style={{ backgroundColor: accentColor }}
               />
             </div>
 
-            {/* Bold Brand & Product Title */}
             <Link data-carousel-stagger href={`/producto/${active.slug}`} className="block group space-y-1">
-              <div className="font-display text-2xl sm:text-4xl font-black uppercase tracking-tight leading-none text-slate-950">
+              <div className="font-display text-2xl sm:text-4xl font-black uppercase tracking-tight leading-none text-white">
                 {active.brandName}
               </div>
-              <h2 className="font-heading text-lg sm:text-xl xl:text-2xl font-extrabold tracking-tight leading-snug text-slate-800 group-hover:underline">
+              <h2 className="font-heading text-lg sm:text-2xl font-extrabold tracking-tight leading-snug text-slate-100 group-hover:underline">
                 {active.name}
               </h2>
             </Link>
 
-            {/* Accent Bar */}
             <div data-carousel-stagger className="flex items-center gap-2 pt-0.5">
               <span className="block h-1.5 w-14 rounded-full" style={{ backgroundColor: accentColor }} />
-              <span className="block h-0.5 w-20 rounded-full bg-slate-300" />
+              <span className="block h-0.5 w-20 rounded-full bg-white/30" />
             </div>
 
-            {/* Crisp Specs Chips */}
             {specsList.length > 0 && (
               <div data-carousel-stagger className="flex flex-wrap gap-1.5">
                 {specsList.map(([k, v]) => (
                   <span
                     key={k}
-                    className="px-2.5 py-1 rounded-lg border text-xs font-medium bg-white/90 border-slate-300 text-slate-700 shadow-xs"
+                    className="px-2.5 py-1 rounded-lg border text-xs font-medium bg-white/10 border-white/20 text-slate-100 backdrop-blur-xs"
                   >
-                    <strong className="font-bold text-slate-900">{k}:</strong> {v}
+                    <strong className="font-bold text-white">{k}:</strong> {v}
                   </span>
                 ))}
               </div>
             )}
 
-            {/* Dynamic White-Pill Price Display */}
-            <div data-carousel-stagger className="pt-1 space-y-1.5">
+            <div data-carousel-stagger className="pt-1 space-y-2">
               {hasDiscount && (
                 <div className="flex flex-wrap items-center gap-2.5 text-sm">
-                  <span className="font-medium text-slate-600">Antes</span>
+                  <span className="font-medium text-slate-300">Antes</span>
                   <span
-                    className="relative inline-block font-extrabold text-slate-700 tabular-nums"
+                    className="font-extrabold text-slate-200 tabular-nums"
                     style={{
                       textDecoration: "line-through",
-                      textDecorationColor: "#DC2626",
+                      textDecorationColor: "#FB7185",
                       textDecorationThickness: "2px",
                     }}
                   >
                     {formatBsCompact(active.priceCents)}
                   </span>
-                  <span className="text-xs font-bold text-emerald-700 bg-emerald-50 border border-emerald-200 px-2 py-0.5 rounded-full">
+                  <span className="text-xs font-bold text-emerald-200 bg-emerald-950/75 border border-emerald-400/40 px-2.5 py-0.5 rounded-full">
                     Ahorras {formatBsCompact(savingsCents)}
                   </span>
                 </div>
@@ -468,20 +447,20 @@ export function CatalogCarousel({ products }: { products: ProductCardData[] }) {
 
               <div className="flex flex-wrap items-center gap-3">
                 <div
-                  className="inline-flex items-center gap-2.5 px-5 py-2 rounded-2xl bg-white shadow-sm"
+                  className="inline-flex items-center gap-2.5 px-5 py-2 rounded-2xl bg-white shadow-xl"
                   style={{ border: `2px solid ${accentColor}` }}
                 >
                   {hasDiscount && (
                     <span
                       className="px-2.5 py-0.5 -skew-x-12 text-xs font-extrabold uppercase text-white"
-                      style={{ backgroundColor: accentColor }}
+                      style={{ backgroundColor: "#DC2626" }}
                     >
                       <span className="inline-block skew-x-12">Ahora</span>
                     </span>
                   )}
                   <span
                     className="font-display text-2xl sm:text-4xl font-black tabular-nums tracking-tight"
-                    style={{ color: isPromoHero ? "#C8102E" : "#0F172A" }}
+                    style={{ color: isPromoHero ? "#C8102E" : "#031942" }}
                   >
                     {formatBsCompact(effectivePrice)}
                   </span>
@@ -489,8 +468,7 @@ export function CatalogCarousel({ products }: { products: ProductCardData[] }) {
               </div>
             </div>
 
-            {/* Pill Gradient CTA + Secondary Link (Zero "Añadir" word so E2E targets ProductCard cleanly) */}
-            <div data-carousel-stagger className="pt-1 flex flex-wrap items-center gap-2.5">
+            <div data-carousel-stagger className="pt-1 flex flex-wrap items-center gap-3">
               <button
                 type="button"
                 data-sound="none"
@@ -498,7 +476,7 @@ export function CatalogCarousel({ products }: { products: ProductCardData[] }) {
                 disabled={active.stockAvailable <= 0}
                 onClick={() => addToCart(active.id, 1)}
                 aria-label={`Agregar ${active.name} al carrito`}
-                className="ct-btn h-11 px-5 rounded-full text-xs sm:text-sm font-black uppercase tracking-wider text-white inline-flex items-center gap-2.5 shadow-lg transition-transform hover:scale-[1.02] disabled:opacity-45"
+                className="ct-btn h-12 px-6 rounded-full text-xs sm:text-sm font-black uppercase tracking-wider text-white inline-flex items-center gap-2.5 shadow-lg transition-transform hover:scale-[1.02] disabled:opacity-45"
                 style={{ background: ctaGradient }}
               >
                 <ShoppingCart className="w-4 h-4" />
@@ -508,36 +486,98 @@ export function CatalogCarousel({ products }: { products: ProductCardData[] }) {
 
               <Link
                 href={`/producto/${active.slug}`}
-                className="ct-btn h-11 px-4 rounded-full border border-slate-300 bg-white/95 text-xs sm:text-sm font-bold text-slate-800 hover:bg-white inline-flex items-center justify-center shadow-xs"
+                className="ct-btn h-11 px-4 rounded-full border border-white/25 bg-white/12 text-xs sm:text-sm font-bold text-white hover:bg-white/20 inline-flex items-center justify-center backdrop-blur-xs"
               >
                 Ver ficha
               </Link>
             </div>
           </div>
 
-          {/* Right Large Interactive 3D Product Showcase (7 cols, drag to spin 360°) */}
-          <div className="lg:col-span-7">
-            <Interactive3DProduct
-              src={active.imageUrl}
-              alt={active.name}
-              variant={isPromoHero ? "fire" : "cyan"}
-              size="hero"
-              badgeText={`Stock: ${active.stockAvailable} en Calle Oruro`}
-              productKey={active.id}
-            />
+          {/* Right Large Clean Product Spotlight (No 360 widget, illuminated halo for black hardware pop) */}
+          <div className="lg:col-span-6">
+            <Link
+              href={`/producto/${active.slug}`}
+              className="block relative h-68 sm:h-80 lg:h-[360px] flex items-center justify-center group"
+            >
+              {/* Luminous Studio Spotlight behind dark hardware */}
+              <div
+                aria-hidden="true"
+                className="absolute inset-0 pointer-events-none"
+                style={{
+                  background: isPromoHero
+                    ? "radial-gradient(circle at 50% 46%, rgba(255,255,255,0.92) 0%, rgba(255,237,213,0.48) 36%, rgba(249,115,22,0.12) 58%, transparent 74%)"
+                    : "radial-gradient(circle at 50% 46%, rgba(255,255,255,0.92) 0%, rgba(224,242,254,0.48) 36%, rgba(56,189,248,0.14) 58%, transparent 74%)",
+                }}
+              />
+
+              {/* Circular Halo Ring */}
+              <div
+                aria-hidden="true"
+                className="absolute top-3 w-56 h-56 sm:w-72 sm:h-72 rounded-full pointer-events-none"
+                style={{
+                  border: "2.5px solid rgba(255, 255, 255, 0.9)",
+                  boxShadow: isPromoHero
+                    ? "0 0 36px rgba(255,255,255,0.55), 0 0 28px rgba(249,115,22,0.35)"
+                    : "0 0 36px rgba(255,255,255,0.55), 0 0 28px rgba(56,189,248,0.35)",
+                }}
+              />
+
+              {/* 3D Cylindrical Silver Pedestal */}
+              <div
+                aria-hidden="true"
+                className="absolute bottom-3 left-1/2 -translate-x-1/2 w-[84%] max-w-[400px] h-14 pointer-events-none"
+              >
+                <div
+                  className="absolute bottom-0 inset-x-0 h-10 rounded-[50%]"
+                  style={{
+                    background: "linear-gradient(90deg, #94A3B8 0%, #E2E8F0 35%, #FFFFFF 52%, #CBD5E1 75%, #94A3B8 100%)",
+                    boxShadow: "0 12px 26px -4px rgba(0, 0, 0, 0.55), 0 0 18px rgba(255,255,255,0.55)",
+                  }}
+                />
+                <div
+                  className="absolute top-0 inset-x-0 h-10 rounded-[50%] border border-white"
+                  style={{
+                    background: "linear-gradient(180deg, #FFFFFF 0%, #E2E8F0 70%, #CBD5E1 100%)",
+                  }}
+                />
+              </div>
+
+              {active.imageUrl ? (
+                <img
+                  data-carousel-hero-media
+                  src={active.imageUrl}
+                  alt={active.name}
+                  className="relative z-10 w-[88%] h-[88%] max-h-[320px] -translate-y-2 object-contain transition-transform duration-500 group-hover:scale-105"
+                  style={{ filter: "drop-shadow(0 18px 24px rgba(0, 0, 0, 0.45))" }}
+                />
+              ) : (
+                <span className="relative z-10 text-xs text-slate-200">Sin imagen</span>
+              )}
+
+              <span
+                className="absolute bottom-2 right-2 z-20 px-2.5 py-1 rounded-full text-[11px] font-bold shadow-md border"
+                style={{
+                  backgroundColor: "rgba(5, 8, 18, 0.88)",
+                  color: "#34D399",
+                  borderColor: "rgba(52, 211, 153, 0.45)",
+                }}
+              >
+                Stock: {active.stockAvailable} en Calle Oruro
+              </span>
+            </Link>
           </div>
         </div>
       </div>
 
       {/* Live 3s Autoplay Progress Bar */}
-      <div className="relative z-30 h-1 w-full bg-slate-200/80 overflow-hidden">
+      <div className="relative z-30 h-1 w-full bg-white/10 overflow-hidden">
         <div
           data-carousel-progress
           className="h-full w-full origin-left"
           style={{
             background: isPromoHero
-              ? "linear-gradient(90deg, #DC2626 0%, #F97316 100%)"
-              : "linear-gradient(90deg, #0284C7 0%, #00E5FF 100%)",
+              ? "linear-gradient(90deg, #F97316 0%, #EF4444 100%)"
+              : "linear-gradient(90deg, #00E5FF 0%, #38BDF8 100%)",
           }}
         />
       </div>
@@ -546,8 +586,8 @@ export function CatalogCarousel({ products }: { products: ProductCardData[] }) {
       <div
         className="relative z-30 px-4 sm:px-6 py-2.5 border-t flex items-center justify-between gap-3 overflow-x-auto"
         style={{
-          borderColor: "rgba(148, 163, 184, 0.3)",
-          backgroundColor: "rgba(255, 255, 255, 0.9)",
+          borderColor: "rgba(255, 255, 255, 0.14)",
+          backgroundColor: "rgba(5, 8, 18, 0.72)",
         }}
       >
         <div className="flex items-center gap-1.5">
@@ -570,16 +610,16 @@ export function CatalogCarousel({ products }: { products: ProductCardData[] }) {
                   width: isCurr ? "28px" : "10px",
                   backgroundColor: isCurr
                     ? slideBf
-                      ? "#DC2626"
-                      : "#0284C7"
-                    : "#CBD5E1",
+                      ? "#F97316"
+                      : "#00E5FF"
+                    : "rgba(255, 255, 255, 0.25)",
                 }}
               />
             );
           })}
         </div>
 
-        <span className="text-[11px] font-medium text-slate-600 truncate hidden sm:inline">
+        <span className="text-[11px] font-medium text-slate-300 truncate hidden sm:inline">
           {isPaused
             ? "Auto-avance pausado"
             : isHovered

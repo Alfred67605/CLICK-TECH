@@ -3,6 +3,7 @@
 export type SoundEffect =
   | "click"
   | "hover"
+  | "transition"
   | "success"
   | "toggleOn"
   | "toggleOff"
@@ -13,6 +14,7 @@ export type SoundEffect =
 const VALID_EFFECTS = new Set<SoundEffect>([
   "click",
   "hover",
+  "transition",
   "success",
   "toggleOn",
   "toggleOff",
@@ -117,14 +119,14 @@ export function triggerSound(effect: SoundEffect): void {
           freqStart: 920,
           freqEnd: 360,
           durationSec: 0.022,
-          gainPeak: 0.055,
+          gainPeak: 0.05,
         });
         playTone(ctx, {
           type: "sine",
           freqStart: 2200,
           freqEnd: 1400,
           durationSec: 0.012,
-          gainPeak: 0.025,
+          gainPeak: 0.022,
         });
         break;
       case "hover":
@@ -133,7 +135,24 @@ export function triggerSound(effect: SoundEffect): void {
           freqStart: 1380,
           freqEnd: 1520,
           durationSec: 0.014,
-          gainPeak: 0.014,
+          gainPeak: 0.012,
+        });
+        break;
+      case "transition":
+        playTone(ctx, {
+          type: "sine",
+          freqStart: 420,
+          freqEnd: 580,
+          durationSec: 0.055,
+          gainPeak: 0.036,
+        });
+        playTone(ctx, {
+          type: "sine",
+          freqStart: 560,
+          freqEnd: 720,
+          durationSec: 0.095,
+          gainPeak: 0.038,
+          delaySec: 0.03,
         });
         break;
       case "success":

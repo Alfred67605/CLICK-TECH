@@ -4,28 +4,28 @@ import React, { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import {
-  Activity,
-  BarChart3,
-  Boxes,
-  CreditCard,
+  AlertTriangle,
+  Clock,
+  DollarSign,
   Download,
-  FileSpreadsheet,
-  Package,
+  FileText,
   Plus,
-  RefreshCw,
-  Settings,
-  ShoppingBag,
-  Truck,
-  Users,
   Wrench,
 } from "lucide-react";
 import { useStore } from "@/components/providers/StoreProvider";
+import { useUISound } from "@/hooks/useUISound";
 import { formatBs } from "@/lib/domain/money";
 import { formatDateLaPaz } from "@/lib/utils";
 import {
   ALLOWED_SERVICE_TRANSITIONS,
   SERVICE_STATUS_LABELS,
 } from "@/lib/domain/service-rules";
+import { ADMIN_NAV_ITEMS, type AdminTab } from "@/components/admin/admin-nav";
+import { AdminSidebar } from "@/components/admin/AdminSidebar";
+import { AdminHeader } from "@/components/admin/AdminHeader";
+import { AdminViewTransition } from "@/components/admin/AdminViewTransition";
+import { AdminKpiCard } from "@/components/admin/AdminKpiCard";
+import { AdminAnalyticsCharts } from "@/components/admin/AdminAnalyticsCharts";
 import type { Role, ServiceOrderStatus } from "@prisma/client";
 
 export interface AdminSnapshotData {
@@ -192,26 +192,14 @@ export interface AdminSnapshotData {
   }>;
 }
 
-type AdminTab =
-  | "resumen"
-  | "productos"
-  | "inventario"
-  | "compras"
-  | "pedidos"
-  | "pagos"
-  | "cotizaciones"
-  | "servicios"
-  | "clientes"
-  | "configuracion"
-  | "reportes"
-  | "auditoria";
-
 export function AdminDashboardClient({ data }: { data: AdminSnapshotData }) {
   const router = useRouter();
   const { notify } = useStore();
+  const { playTransition, playSuccess, playError } = useUISound();
   const [tab, setTab] = useState<AdminTab>(
     data.currentUser.role === "TECH" ? "servicios" : "resumen"
   );
+  const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
   const [busy, setBusy] = useState(false);
 
   // Interactive chart drill-down filters on Resumen
@@ -301,32 +289,86 @@ export function AdminDashboardClient({ data }: { data: AdminSnapshotData }) {
     return Array.from(map.entries()).map(([status, count]) => ({ status, count }));
   }, [data.serviceOrders]);
 
-  const navItems: Array<{
-    id: AdminTab;
-    label: string;
-    icon: React.ComponentType<{ className?: string }>;
-    hideForTech?: boolean;
-    adminOnly?: boolean;
-  }> = [
-    { id: "resumen", label: "Resumen", icon: BarChart3 },
-    { id: "productos", label: "Productos", icon: Package, hideForTech: true },
-    { id: "inventario", label: "Inventario", icon: Boxes, hideForTech: true },
-    { id: "compras", label: "Compras", icon: ShoppingBag, hideForTech: true },
-    { id: "pedidos", label: "Pedidos", icon: Truck, hideForTech: true },
-    { id: "pagos", label: "Pagos", icon: CreditCard, hideForTech: true },
-    { id: "cotizaciones", label: "Cotizaciones", icon: FileSpreadsheet, hideForTech: true },
-    { id: "servicios", label: "Servicio Técnico", icon: Wrench },
-    { id: "clientes", label: "Clientes y Garantías", icon: Users },
-    { id: "configuracion", label: "Configuración", icon: Settings, adminOnly: true },
-    { id: "reportes", label: "Reportes", icon: Download },
-    { id: "auditoria", label: "Auditoría", icon: Activity, hideForTech: true },
-  ];
-
-  const visibleNav = navItems.filter((item) => {
+  const visibleNav = ADMIN_NAV_ITEMS.filter((item) => {
     if (item.adminOnly && !data.isAdmin) return false;
     if (item.hideForTech && data.currentUser.role === "TECH") return false;
     return true;
   });
+
+  const activeNavItem = visibleNav.find((item) => item.id === tab) ?? visibleNav[0] ?? ADMIN_NAV_ITEMS[0];
+
+  const kpiSparklines = useMemo(() => {
+    const approvedSeries = data.orders
+      .filter((o) => o.paymentStatus === "APPROVED")
+      .slice(0, 10)
+      .reverse()
+      .map((o) => ({ v: Math.max(1, Math.round(o.totalCents / 100)) }));
+    const salesSpark =
+      approvedSeries.length >= 2
+        ? approvedSeries
+        : [{ v: 0 }, ...approvedSeries, { v: Math.max(1, Math.round((data.kpis.salesCollectedCents ?? 0) / 100)) }];
+
+    const ordersSparkRaw = data.orders
+      .slice(0, 8)
+      .reverse()
+      .map((o, idx) => ({
+        v: ["PENDING_PAYMENT", "PAYMENT_UNDER_REVIEW"].includes(o.status) ? idx + 2 : Math.max(1, idx),
+      }));
+    const pendingSpark =
+      ordersSparkRaw.length >= 2 ? ordersSparkRaw : [{ v: 1 }, { v: Math.max(1, data.kpis.pendingOrdersCount) }];
+
+    const servicesSparkRaw = data.serviceOrders
+      .slice(0, 8)
+      .reverse()
+      .map((s, idx) => ({
+        v: ["DELIVERED", "CANCELLED", "QUOTE_REJECTED"].includes(s.status) ? Math.max(1, idx) : idx + 2,
+      }));
+    const servicesSpark =
+      servicesSparkRaw.length >= 2 ? servicesSparkRaw : [{ v: 1 }, { v: Math.max(1, data.kpis.activeServicesCount) }];
+
+    const stockSparkRaw = data.products
+      .slice(0, 8)
+      .map((p) => ({ v: Math.max(0, p.stockAvailable) }));
+    const stockSpark =
+      stockSparkRaw.length >= 2 ? stockSparkRaw : [{ v: 2 }, { v: Math.max(0, data.kpis.lowStockCount) }];
+
+    const quotesSparkRaw = data.quotes
+      .slice(0, 8)
+      .reverse()
+      .map((q) => ({ v: Math.max(1, Math.round(q.totalCents / 100)) }));
+    const quotesSpark =
+      quotesSparkRaw.length >= 2 ? quotesSparkRaw : [{ v: 1 }, { v: Math.max(1, data.kpis.openQuotesCount) }];
+
+    return { salesSpark, pendingSpark, servicesSpark, stockSpark, quotesSpark };
+  }, [data]);
+
+  const kpiDeltas = useMemo(() => {
+    const totalOrders = Math.max(1, data.orders.length);
+    const approvedCount = data.orders.filter((o) => o.paymentStatus === "APPROVED").length;
+    const approvalRate = Math.round((approvedCount / totalOrders) * 100);
+    const pendingRate = Math.round((data.kpis.pendingOrdersCount / totalOrders) * 100);
+    const serviceTotal = Math.max(1, data.serviceOrders.length);
+    const activeServicePct = Math.round((data.kpis.activeServicesCount / serviceTotal) * 100);
+    return {
+      salesDelta: approvedCount > 0 ? `${approvalRate}% cobrado` : "Sin cobros",
+      pendingDelta: data.kpis.pendingOrdersCount > 0 ? `${pendingRate}% del total` : "Al día",
+      servicesDelta: `${activeServicePct}% en curso`,
+      lowStockDelta: data.kpis.lowStockCount > 0 ? "Revisar SKU" : "Saludable",
+      quotesDelta: `${data.quotes.length} totales`,
+    };
+  }, [data]);
+
+  const navBadges: Partial<Record<AdminTab, number>> = {
+    pedidos: data.kpis.pendingOrdersCount,
+    pagos: data.payments.filter((p) => p.status === "PROOF_SUBMITTED").length,
+    servicios: data.kpis.activeServicesCount,
+    cotizaciones: data.kpis.openQuotesCount,
+  };
+
+  function handleSelectTab(nextTab: AdminTab) {
+    setTab(nextTab);
+    playTransition();
+  }
 
   async function apiAction(url: string, method: string, body?: unknown, successMsg?: string) {
     setBusy(true);
@@ -338,9 +380,11 @@ export function AdminDashboardClient({ data }: { data: AdminSnapshotData }) {
       });
       const json = await res.json();
       if (!res.ok) {
+        playError();
         notify(json.error ?? "No se pudo completar la acción.", "error");
         return null;
       }
+      playSuccess();
       if (successMsg) notify(successMsg, "success");
       router.refresh();
       return json;
@@ -350,216 +394,130 @@ export function AdminDashboardClient({ data }: { data: AdminSnapshotData }) {
   }
 
   return (
-    <div className="ct-container py-8 space-y-6">
-      <div className="flex flex-wrap items-center justify-between gap-4">
-        <div>
-          <p className="text-xs font-semibold uppercase" style={{ color: "var(--accent-purple)" }}>
-            Operación ClickTech · Rol: {data.currentUser.role}
-          </p>
-          <h1 className="font-display text-2xl sm:text-3xl font-bold">Panel de Gestión</h1>
-        </div>
-        <button
-          type="button"
-          onClick={() => router.refresh()}
-          className="ct-btn h-10 px-4 rounded-lg border text-xs font-semibold flex items-center gap-1.5"
-          style={{ borderColor: "var(--border-subtle)" }}
-        >
-          <RefreshCw className="w-3.5 h-3.5" />
-          Actualizar datos
-        </button>
-      </div>
+    <div className="ct-container py-6">
+      <div className="flex flex-col lg:flex-row gap-6 items-start">
+        <AdminSidebar
+          items={visibleNav}
+          activeTab={tab}
+          onSelectTab={handleSelectTab}
+          userRole={data.currentUser.role}
+          userName={data.currentUser.name}
+          mobileOpen={mobileSidebarOpen}
+          onCloseMobile={() => setMobileSidebarOpen(false)}
+          badges={navBadges}
+        />
 
-      {/* Horizontal Scrollable Tab Bar */}
-      <nav aria-label="Módulos administrativos" className="flex flex-wrap gap-1.5 pb-2 border-b" style={{ borderColor: "var(--border-subtle)" }}>
-        {visibleNav.map((item) => {
-          const Icon = item.icon;
-          const active = tab === item.id;
-          return (
-            <button
-              key={item.id}
-              type="button"
-              onClick={() => setTab(item.id)}
-              className="ct-btn h-9 px-3 rounded-lg border text-xs font-semibold flex items-center gap-1.5"
-              style={{
-                backgroundColor: active ? "var(--accent-cyan-soft)" : "var(--bg-surface)",
-                borderColor: active ? "var(--accent-cyan)" : "var(--border-subtle)",
-                color: active ? "var(--accent-cyan)" : "var(--text-secondary)",
-              }}
-            >
-              <Icon className="w-3.5 h-3.5" />
-              {item.label}
-            </button>
-          );
-        })}
-      </nav>
+        <div className="flex-1 min-w-0 w-full space-y-6">
+          <AdminHeader
+            activeItem={activeNavItem}
+            userRole={data.currentUser.role}
+            canSeeFinance={data.canSeeFinance}
+            onRefresh={() => router.refresh()}
+            onOpenMobileMenu={() => setMobileSidebarOpen(true)}
+          />
 
-      {/* 1. RESUMEN */}
-      {tab === "resumen" && (
-        <div className="space-y-6">
-          <div className="flex flex-wrap items-center justify-between gap-3">
-            <div className="flex items-center gap-2 text-xs">
-              <span style={{ color: "var(--text-muted)" }}>Período de gráficos:</span>
-              {([7, 30, 90, 365] as const).map((d) => (
-                <button
-                  key={d}
-                  type="button"
-                  onClick={() => setPeriodDays(d)}
-                  className="ct-btn h-8 px-3 rounded border text-xs font-semibold"
-                  style={{
-                    borderColor: periodDays === d ? "var(--accent-cyan)" : "var(--border-subtle)",
-                    color: periodDays === d ? "var(--accent-cyan)" : "var(--text-secondary)",
-                  }}
-                >
-                  {d} días
-                </button>
-              ))}
-            </div>
-            <a
-              href="/api/admin/reports?format=csv"
-              className="ct-btn h-9 px-4 rounded-lg border text-xs font-semibold inline-flex items-center gap-1.5"
-              style={{ borderColor: "var(--border-strong)", color: "var(--accent-cyan)" }}
-            >
-              <Download className="w-3.5 h-3.5" /> Exportar CSV
-            </a>
-          </div>
-
-          {/* KPI Cards */}
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
-            {data.canSeeFinance && (
-              <div className="rounded-xl border p-4" style={{ backgroundColor: "var(--bg-surface)", borderColor: "var(--border-subtle)" }}>
-                <span className="text-xs" style={{ color: "var(--text-muted)" }}>Ventas cobradas</span>
-                <p className="font-heading text-xl font-extrabold tabular-nums mt-1" style={{ color: "var(--accent-cyan)" }}>
-                  {formatBs(data.kpis.salesCollectedCents ?? 0)}
-                </p>
-              </div>
-            )}
-            <div className="rounded-xl border p-4" style={{ backgroundColor: "var(--bg-surface)", borderColor: "var(--border-subtle)" }}>
-              <span className="text-xs" style={{ color: "var(--text-muted)" }}>Pedidos pendientes</span>
-              <p className="font-heading text-2xl font-extrabold tabular-nums mt-1">{data.kpis.pendingOrdersCount}</p>
-            </div>
-            <div className="rounded-xl border p-4" style={{ backgroundColor: "var(--bg-surface)", borderColor: "var(--border-subtle)" }}>
-              <span className="text-xs" style={{ color: "var(--text-muted)" }}>Servicios activos</span>
-              <p className="font-heading text-2xl font-extrabold tabular-nums mt-1">{data.kpis.activeServicesCount}</p>
-            </div>
-            <div className="rounded-xl border p-4" style={{ backgroundColor: "var(--bg-surface)", borderColor: "var(--border-subtle)" }}>
-              <span className="text-xs" style={{ color: "var(--text-muted)" }}>Alertas stock bajo</span>
-              <p className="font-heading text-2xl font-extrabold tabular-nums mt-1" style={{ color: "var(--status-warn)" }}>
-                {data.kpis.lowStockCount}
-              </p>
-            </div>
-            <div className="rounded-xl border p-4" style={{ backgroundColor: "var(--bg-surface)", borderColor: "var(--border-subtle)" }}>
-              <span className="text-xs" style={{ color: "var(--text-muted)" }}>Cotizaciones abiertas</span>
-              <p className="font-heading text-2xl font-extrabold tabular-nums mt-1">{data.kpis.openQuotesCount}</p>
-            </div>
-          </div>
-
-          {/* 2D Readable Interactive Charts */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            {data.canSeeFinance && (
-              <div className="rounded-xl border p-5 space-y-3" style={{ backgroundColor: "var(--bg-surface)", borderColor: "var(--border-subtle)" }}>
-                <div className="flex justify-between items-center">
-                  <h2 className="font-heading font-bold text-sm">Ventas cobradas por categoría (clic para filtrar)</h2>
-                  {drillCategory && (
-                    <button type="button" onClick={() => setDrillCategory(null)} className="text-xs underline" style={{ color: "var(--accent-cyan)" }}>
-                      Quitar filtro
-                    </button>
+          <AdminViewTransition viewKey={tab} className="space-y-6">
+            {/* 1. RESUMEN */}
+            {tab === "resumen" && (
+              <div className="space-y-6">
+                {/* KPI Cards with Sparklines */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-5 gap-4">
+                  {data.canSeeFinance && (
+                    <AdminKpiCard
+                      label="Ventas cobradas"
+                      value={formatBs(data.kpis.salesCollectedCents ?? 0)}
+                      deltaLabel={kpiDeltas.salesDelta}
+                      trend="up"
+                      accentColor="#00E5FF"
+                      icon={<DollarSign className="w-4 h-4 text-[#00E5FF]" />}
+                      sparkline={kpiSparklines.salesSpark}
+                    />
                   )}
+                  <AdminKpiCard
+                    label="Pedidos pendientes"
+                    value={data.kpis.pendingOrdersCount}
+                    deltaLabel={kpiDeltas.pendingDelta}
+                    trend={data.kpis.pendingOrdersCount > 0 ? "down" : "up"}
+                    accentColor="#F59E0B"
+                    icon={<Clock className="w-4 h-4 text-amber-400" />}
+                    sparkline={kpiSparklines.pendingSpark}
+                  />
+                  <AdminKpiCard
+                    label="Servicios activos"
+                    value={data.kpis.activeServicesCount}
+                    deltaLabel={kpiDeltas.servicesDelta}
+                    trend="up"
+                    accentColor="#8B5CF6"
+                    icon={<Wrench className="w-4 h-4 text-[#8B5CF6]" />}
+                    sparkline={kpiSparklines.servicesSpark}
+                  />
+                  <AdminKpiCard
+                    label="Alertas stock bajo"
+                    value={data.kpis.lowStockCount}
+                    deltaLabel={kpiDeltas.lowStockDelta}
+                    trend={data.kpis.lowStockCount > 0 ? "down" : "up"}
+                    accentColor={data.kpis.lowStockCount > 0 ? "#F43F5E" : "#10B981"}
+                    icon={<AlertTriangle className="w-4 h-4 text-amber-400" />}
+                    sparkline={kpiSparklines.stockSpark}
+                  />
+                  <AdminKpiCard
+                    label="Cotizaciones abiertas"
+                    value={data.kpis.openQuotesCount}
+                    deltaLabel={kpiDeltas.quotesDelta}
+                    trend="neutral"
+                    accentColor="#38BDF8"
+                    icon={<FileText className="w-4 h-4 text-sky-400" />}
+                    sparkline={kpiSparklines.quotesSpark}
+                  />
                 </div>
-                {categoryChartData.length === 0 ? (
-                  <p className="text-xs" style={{ color: "var(--text-muted)" }}>Sin ventas cobradas en este período.</p>
-                ) : (
-                  <div className="space-y-2">
-                    {categoryChartData.map((row) => {
-                      const maxVal = Math.max(...categoryChartData.map((x) => x.cents), 1);
-                      const pct = Math.max(8, Math.round((row.cents / maxVal) * 100));
-                      return (
-                        <button
-                          key={row.category}
-                          type="button"
-                          onClick={() => setDrillCategory(row.category)}
-                          className="w-full text-left space-y-1 p-1.5 rounded hover:bg-white/5"
-                        >
-                          <div className="flex justify-between text-xs">
-                            <span className="font-medium">{row.category}</span>
-                            <span className="font-bold tabular-nums">{formatBs(row.cents)}</span>
+
+                {/* Interactive Recharts Analytics */}
+                <AdminAnalyticsCharts
+                  canSeeFinance={data.canSeeFinance}
+                  periodDays={periodDays}
+                  onChangePeriod={setPeriodDays}
+                  ordersInPeriod={filteredOrdersInPeriod}
+                  serviceOrders={data.serviceOrders}
+                  categoryChartData={categoryChartData}
+                  serviceChartData={serviceChartData}
+                  drillCategory={drillCategory}
+                  onSelectCategory={setDrillCategory}
+                  drillServiceStatus={drillServiceStatus}
+                  onSelectServiceStatus={setDrillServiceStatus}
+                />
+
+                {/* Drill-down table */}
+                {(drillCategory || drillServiceStatus) && (
+                  <div className="admin-stagger-item rounded-[20px] border border-cyan-400/35 bg-[#0E1424] p-5 space-y-2.5 text-xs shadow-lg">
+                    <h3 className="font-heading font-bold text-sm text-white">
+                      Registros que explican la cifra seleccionada ({drillCategory ?? drillServiceStatus})
+                    </h3>
+                    {drillCategory &&
+                      filteredOrdersInPeriod
+                        .filter((o) => o.paymentStatus === "APPROVED" && o.categoriesInOrder.includes(drillCategory))
+                        .map((o) => (
+                          <div key={o.id} className="flex justify-between border-b border-white/10 py-2">
+                            <Link href={`/pedido/${o.id}`} className="underline font-semibold text-[#00E5FF]">
+                              {o.orderNumber} — {o.customerLabel}
+                            </Link>
+                            <span className="tabular-nums font-bold text-white">{formatBs(o.totalCents)}</span>
                           </div>
-                          <div className="h-2.5 rounded-full overflow-hidden" style={{ backgroundColor: "var(--bg-chassis)" }}>
-                            <div className="h-full rounded-full" style={{ width: `${pct}%`, backgroundColor: "var(--accent-cyan)" }} />
+                        ))}
+                    {drillServiceStatus &&
+                      data.serviceOrders
+                        .filter((s) => s.status === drillServiceStatus)
+                        .map((s) => (
+                          <div key={s.id} className="flex justify-between border-b border-white/10 py-2">
+                            <Link href={`/seguimiento/${s.ticketNumber}`} className="underline font-semibold text-[#8B5CF6]">
+                              {s.ticketNumber} — {s.deviceBrandModel}
+                            </Link>
+                            <span className="text-slate-300">{s.customerName}</span>
                           </div>
-                        </button>
-                      );
-                    })}
+                        ))}
                   </div>
                 )}
               </div>
             )}
-
-            <div className="rounded-xl border p-5 space-y-3" style={{ backgroundColor: "var(--bg-surface)", borderColor: "var(--border-subtle)" }}>
-              <div className="flex justify-between items-center">
-                <h2 className="font-heading font-bold text-sm">Órdenes de servicio por estado (clic para abrir)</h2>
-                {drillServiceStatus && (
-                  <button type="button" onClick={() => setDrillServiceStatus(null)} className="text-xs underline" style={{ color: "var(--accent-purple)" }}>
-                    Ver todos
-                  </button>
-                )}
-              </div>
-              <div className="space-y-2">
-                {serviceChartData.map((row) => {
-                  const maxC = Math.max(...serviceChartData.map((x) => x.count), 1);
-                  const pct = Math.max(12, Math.round((row.count / maxC) * 100));
-                  return (
-                    <button
-                      key={row.status}
-                      type="button"
-                      onClick={() => setDrillServiceStatus(row.status)}
-                      className="w-full text-left space-y-1 p-1.5 rounded hover:bg-white/5"
-                    >
-                      <div className="flex justify-between text-xs">
-                        <span>{SERVICE_STATUS_LABELS[row.status as ServiceOrderStatus] ?? row.status}</span>
-                        <span className="font-bold tabular-nums">{row.count}</span>
-                      </div>
-                      <div className="h-2.5 rounded-full overflow-hidden" style={{ backgroundColor: "var(--bg-chassis)" }}>
-                        <div className="h-full rounded-full" style={{ width: `${pct}%`, backgroundColor: "var(--accent-purple)" }} />
-                      </div>
-                    </button>
-                  );
-                })}
-              </div>
-            </div>
-          </div>
-
-          {/* Drill-down table */}
-          {(drillCategory || drillServiceStatus) && (
-            <div className="rounded-xl border p-4 space-y-2 text-xs" style={{ backgroundColor: "var(--bg-surface)", borderColor: "var(--border-strong)" }}>
-              <h3 className="font-heading font-bold text-sm">
-                Registros que explican la cifra seleccionada ({drillCategory ?? drillServiceStatus})
-              </h3>
-              {drillCategory &&
-                filteredOrdersInPeriod
-                  .filter((o) => o.paymentStatus === "APPROVED" && o.categoriesInOrder.includes(drillCategory))
-                  .map((o) => (
-                    <div key={o.id} className="flex justify-between border-b py-1.5" style={{ borderColor: "var(--border-subtle)" }}>
-                      <Link href={`/pedido/${o.id}`} className="underline font-semibold">
-                        {o.orderNumber} — {o.customerLabel}
-                      </Link>
-                      <span className="tabular-nums">{formatBs(o.totalCents)}</span>
-                    </div>
-                  ))}
-              {drillServiceStatus &&
-                data.serviceOrders
-                  .filter((s) => s.status === drillServiceStatus)
-                  .map((s) => (
-                    <div key={s.id} className="flex justify-between border-b py-1.5" style={{ borderColor: "var(--border-subtle)" }}>
-                      <Link href={`/seguimiento/${s.ticketNumber}`} className="underline font-semibold">
-                        {s.ticketNumber} — {s.deviceBrandModel}
-                      </Link>
-                      <span>{s.customerName}</span>
-                    </div>
-                  ))}
-            </div>
-          )}
-        </div>
-      )}
 
       {/* 2. PRODUCTOS */}
       {tab === "productos" && data.currentUser.role !== "TECH" && (
@@ -587,8 +545,8 @@ export function AdminDashboardClient({ data }: { data: AdminSnapshotData }) {
               setNewName("");
               setNewModel("");
             }}
-            className="rounded-xl border p-4 space-y-3"
-            style={{ backgroundColor: "var(--bg-surface)", borderColor: "var(--border-subtle)" }}
+            className="admin-stagger-item rounded-[20px] border border-white/10 p-5 space-y-3"
+            style={{ backgroundColor: "#0E1424" }}
           >
             <h2 className="font-heading font-bold text-sm flex items-center gap-1.5">
               <Plus className="w-4 h-4" style={{ color: "var(--accent-cyan)" }} /> Nuevo producto
@@ -611,8 +569,8 @@ export function AdminDashboardClient({ data }: { data: AdminSnapshotData }) {
             </div>
           </form>
 
-          <div className="overflow-x-auto rounded-xl border" style={{ borderColor: "var(--border-subtle)" }}>
-            <table className="w-full text-xs text-left" style={{ backgroundColor: "var(--bg-surface)" }}>
+          <div className="admin-stagger-item overflow-x-auto rounded-[20px] border border-white/10 bg-[#0E1424]">
+            <table className="w-full text-xs text-left">
               <thead>
                 <tr className="border-b" style={{ borderColor: "var(--border-subtle)", color: "var(--text-muted)" }}>
                   <th className="p-3">SKU</th>
@@ -684,8 +642,7 @@ export function AdminDashboardClient({ data }: { data: AdminSnapshotData }) {
                 );
                 setAdjReason("");
               }}
-              className="rounded-xl border p-4 space-y-3 text-xs"
-              style={{ backgroundColor: "var(--bg-surface)", borderColor: "var(--border-subtle)" }}
+              className="admin-stagger-item rounded-[20px] border border-white/10 bg-[#0E1424] p-5 space-y-3 text-xs"
             >
               <h2 className="font-heading font-bold text-sm">Ajuste manual de existencias</h2>
               <select value={adjProductId} onChange={(e) => setAdjProductId(e.target.value)} className="w-full h-9 px-2.5 rounded border" style={{ backgroundColor: "var(--bg-chassis)", borderColor: "var(--border-subtle)", color: "var(--text-primary)" }}>
@@ -700,7 +657,7 @@ export function AdminDashboardClient({ data }: { data: AdminSnapshotData }) {
               </button>
             </form>
 
-            <div className="rounded-xl border p-4 space-y-3 text-xs" style={{ backgroundColor: "var(--bg-surface)", borderColor: "var(--border-subtle)" }}>
+            <div className="admin-stagger-item rounded-[20px] border border-white/10 bg-[#0E1424] p-5 space-y-3 text-xs">
               <div className="flex justify-between items-center">
                 <h2 className="font-heading font-bold text-sm">Reservas activas y vencidas</h2>
                 <button
@@ -724,8 +681,8 @@ export function AdminDashboardClient({ data }: { data: AdminSnapshotData }) {
             </div>
           </div>
 
-          <div className="rounded-xl border overflow-x-auto" style={{ borderColor: "var(--border-subtle)" }}>
-            <table className="w-full text-xs text-left" style={{ backgroundColor: "var(--bg-surface)" }}>
+          <div className="admin-stagger-item rounded-[20px] border border-white/10 bg-[#0E1424] overflow-x-auto">
+            <table className="w-full text-xs text-left">
               <thead>
                 <tr className="border-b" style={{ borderColor: "var(--border-subtle)", color: "var(--text-muted)" }}>
                   <th className="p-3">Fecha</th>
@@ -776,8 +733,7 @@ export function AdminDashboardClient({ data }: { data: AdminSnapshotData }) {
                 "Orden de compra creada (stock NO sumado hasta recepción física)."
               );
             }}
-            className="rounded-xl border p-4 space-y-3 text-xs"
-            style={{ backgroundColor: "var(--bg-surface)", borderColor: "var(--border-subtle)" }}
+            className="admin-stagger-item rounded-[20px] border border-white/10 bg-[#0E1424] p-5 space-y-3 text-xs"
           >
             <h2 className="font-heading font-bold text-sm">Registrar nueva orden de compra a proveedor</h2>
             <div className="grid grid-cols-1 sm:grid-cols-5 gap-2">
@@ -889,7 +845,7 @@ export function AdminDashboardClient({ data }: { data: AdminSnapshotData }) {
       {tab === "pagos" && data.currentUser.role !== "TECH" && (
         <div className="space-y-3">
           {data.payments.map((p) => (
-            <div key={p.id} className="rounded-xl border p-4 flex flex-wrap items-center justify-between gap-4 text-xs" style={{ backgroundColor: "var(--bg-surface)", borderColor: p.status === "PROOF_SUBMITTED" ? "var(--status-warn)" : "var(--border-subtle)" }}>
+            <div key={p.id} className="admin-stagger-item rounded-[20px] border bg-[#0E1424] p-5 flex flex-wrap items-center justify-between gap-4 text-xs" style={{ borderColor: p.status === "PROOF_SUBMITTED" ? "var(--status-warn)" : "rgba(255,255,255,0.1)" }}>
               <div className="space-y-1">
                 <p className="font-heading font-bold text-sm">
                   {p.orderNumber} · {formatBs(p.amountCents)} ({p.status})
@@ -965,7 +921,7 @@ export function AdminDashboardClient({ data }: { data: AdminSnapshotData }) {
       {/* 8. SERVICIO TÉCNICO */}
       {tab === "servicios" && (
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-          <div className="lg:col-span-5 space-y-2.5">
+          <div className="admin-stagger-item lg:col-span-5 space-y-2.5">
             <h2 className="font-heading font-bold text-sm">Órdenes técnicas ({data.serviceOrders.length})</h2>
             {data.serviceOrders.map((s) => (
               <button
@@ -993,7 +949,7 @@ export function AdminDashboardClient({ data }: { data: AdminSnapshotData }) {
           </div>
 
           {activeService && (
-            <div className="lg:col-span-7 rounded-2xl border p-5 space-y-5 text-xs" style={{ backgroundColor: "var(--bg-surface)", borderColor: "var(--border-strong)" }}>
+            <div className="admin-stagger-item lg:col-span-7 rounded-[20px] border border-cyan-400/30 bg-[#0E1424] p-5 space-y-5 text-xs shadow-lg">
               <div className="flex flex-wrap justify-between gap-2">
                 <div>
                   <h2 className="font-heading text-lg font-bold">{activeService.ticketNumber}</h2>
@@ -1132,7 +1088,7 @@ export function AdminDashboardClient({ data }: { data: AdminSnapshotData }) {
       {/* 9. CLIENTES Y GARANTÍAS */}
       {tab === "clientes" && (
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 text-xs">
-          <div className="rounded-xl border p-4 space-y-3" style={{ backgroundColor: "var(--bg-surface)", borderColor: "var(--border-subtle)" }}>
+          <div className="admin-stagger-item rounded-[20px] border border-white/10 bg-[#0E1424] p-5 space-y-3">
             <h2 className="font-heading font-bold text-sm">Clientes registrados</h2>
             {data.customers.map((c) => (
               <div key={c.id} className="flex justify-between border-b py-2" style={{ borderColor: "var(--border-subtle)" }}>
@@ -1146,7 +1102,7 @@ export function AdminDashboardClient({ data }: { data: AdminSnapshotData }) {
           </div>
 
           <div className="space-y-4">
-            <div className="rounded-xl border p-4 space-y-2" style={{ backgroundColor: "var(--bg-surface)", borderColor: "var(--border-subtle)" }}>
+            <div className="admin-stagger-item rounded-[20px] border border-white/10 bg-[#0E1424] p-5 space-y-2">
               <h2 className="font-heading font-bold text-sm">Consultas postventa</h2>
               {data.consultations.map((con) => (
                 <div key={con.id} className="border-b py-2 space-y-1.5" style={{ borderColor: "var(--border-subtle)" }}>
@@ -1185,7 +1141,7 @@ export function AdminDashboardClient({ data }: { data: AdminSnapshotData }) {
       {/* 10. CONFIGURACIÓN */}
       {tab === "configuracion" && data.isAdmin && (
         <div className="space-y-4 max-w-2xl text-xs">
-          <div className="rounded-xl border p-5 space-y-3" style={{ backgroundColor: "var(--bg-surface)", borderColor: "var(--border-subtle)" }}>
+          <div className="admin-stagger-item rounded-[20px] border border-white/10 bg-[#0E1424] p-5 space-y-3 shadow-lg">
             <h2 className="font-heading font-bold text-base">Canales y datos comerciales</h2>
             <label className="block font-medium">Número de WhatsApp Business (dejar vacío si no hay número oficial):</label>
             <input value={whatsappInput} onChange={(e) => setWhatsappInput(e.target.value)} placeholder="+591 ..." className="w-full h-10 px-3 rounded border" style={{ backgroundColor: "var(--bg-chassis)", borderColor: "var(--border-subtle)", color: "var(--text-primary)" }} />
@@ -1246,7 +1202,7 @@ export function AdminDashboardClient({ data }: { data: AdminSnapshotData }) {
 
       {/* 11. REPORTES */}
       {tab === "reportes" && (
-        <div className="rounded-xl border p-5 space-y-4 text-xs" style={{ backgroundColor: "var(--bg-surface)", borderColor: "var(--border-subtle)" }}>
+        <div className="admin-stagger-item rounded-[20px] border border-white/10 bg-[#0E1424] p-5 space-y-4 text-xs shadow-lg">
           <h2 className="font-heading font-bold text-base">Exportación de reportes calculados desde base de datos</h2>
           <p style={{ color: "var(--text-secondary)" }}>
             {data.canSeeFinance
@@ -1301,6 +1257,9 @@ export function AdminDashboardClient({ data }: { data: AdminSnapshotData }) {
           </table>
         </div>
       )}
+          </AdminViewTransition>
+        </div>
+      </div>
     </div>
   );
 }

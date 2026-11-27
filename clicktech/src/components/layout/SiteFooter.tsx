@@ -22,15 +22,15 @@ export function SiteFooter({ settings }: { settings: PublicBusinessSettings }) {
             Tecnología a tu medida · Potosí, Bolivia
           </p>
           <p className="text-xs leading-relaxed" style={{ color: "var(--text-muted)" }}>
-            Comercio electrónico, asesoría por presupuesto, ensamblaje verificado y servicio técnico con trazabilidad.
+            Hardware garantizado, armado con compatibilidad verificada y soporte técnico con seguimiento transparente.
           </p>
         </div>
 
-        <div className="space-y-2">
+        <div className="space-y-2.5">
           <h3 className="font-heading font-bold text-xs uppercase tracking-wider" style={{ color: "var(--text-primary)" }}>
             Tienda y Soluciones
           </h3>
-          <ul className="space-y-1.5 text-xs">
+          <ul className="space-y-2 text-xs">
             <li><Link href="/catalogo" className="hover:underline">Catálogo completo</Link></li>
             <li><Link href="/arma-tu-pc" className="hover:underline">Configurador Arma tu PC</Link></li>
             <li><Link href="/servicios" className="hover:underline">Servicios técnicos y citas</Link></li>
@@ -39,14 +39,14 @@ export function SiteFooter({ settings }: { settings: PublicBusinessSettings }) {
           </ul>
         </div>
 
-        <div className="space-y-2">
+        <div className="space-y-2.5">
           <h3 className="font-heading font-bold text-xs uppercase tracking-wider" style={{ color: "var(--text-primary)" }}>
             Contacto y Cobertura
           </h3>
-          <ul className="space-y-1.5 text-xs" style={{ color: "var(--text-muted)" }}>
+          <ul className="space-y-2 text-xs" style={{ color: "var(--text-muted)" }}>
             <li>Ciudad base: <strong style={{ color: "var(--text-primary)" }}>{settings.city}</strong></li>
             <li>
-              Teléfono / WhatsApp:{" "}
+              WhatsApp directo:{" "}
               <a
                 href="https://wa.me/59167605477?text=Hola%20ClickTech%2C%20quisiera%20hacer%20una%20consulta."
                 target="_blank"
@@ -54,28 +54,28 @@ export function SiteFooter({ settings }: { settings: PublicBusinessSettings }) {
                 className="font-bold hover:underline"
                 style={{ color: "#25D366" }}
               >
-                +591 67605477 (Clic para chatear)
+                +591 67605477
               </a>
             </li>
             <li>
-              Dirección física:{" "}
-              {settings.physicalAddress ? settings.physicalAddress : "Recojo coordinado (dirección por configurar)"}
+              Taller central:{" "}
+              {settings.physicalAddress ? settings.physicalAddress : "Recojo coordinado en Potosí"}
             </li>
             <li>Horarios: {settings.businessHours}</li>
           </ul>
         </div>
 
-        <div className="space-y-2">
+        <div className="space-y-2.5">
           <h3 className="font-heading font-bold text-xs uppercase tracking-wider" style={{ color: "var(--text-primary)" }}>
-            Transparencia y Créditos
+            Transparencia y Accesos
           </h3>
-          <ul className="space-y-1.5 text-xs">
-            <li><Link href="/politicas" className="hover:underline">Garantías, envíos y datos pendientes</Link></li>
-            <li><Link href="/creditos" className="hover:underline">Créditos fotográficos y licencias CC</Link></li>
+          <ul className="space-y-2 text-xs">
+            <li><Link href="/politicas" className="hover:underline">Garantías, envíos y políticas</Link></li>
+            <li><Link href="/creditos" className="hover:underline">Información y créditos</Link></li>
             <li><Link href="/login" className="hover:underline">Acceso clientes y equipo</Link></li>
           </ul>
-          <p className="text-xs pt-2" style={{ color: "var(--text-muted)" }}>
-            Precios expresados en Bolivianos (Bs). Sin facturación electrónica habilitada en demo.
+          <p className="text-xs pt-1" style={{ color: "var(--text-muted)" }}>
+            Precios oficiales expresados en Bolivianos (Bs).
           </p>
         </div>
       </div>
@@ -84,8 +84,8 @@ export function SiteFooter({ settings }: { settings: PublicBusinessSettings }) {
         className="border-t py-4 px-4 text-center text-xs"
         style={{ borderColor: "var(--border-subtle)", color: "var(--text-muted)" }}
       >
-        ClickTech — Potosí, Bolivia · Fotografías de hardware verificadas vía Wikimedia Commons (ver{" "}
-        <Link href="/creditos" className="underline">atribuciones</Link>).
+        ClickTech Potosí, Bolivia · Hardware, Ensamblaje a Medida y Servicio Técnico Especializado ·{" "}
+        <Link href="/politicas" className="underline">Garantías y cobertura</Link>
       </div>
     </footer>
   );

@@ -13,6 +13,7 @@ import {
   ShieldCheck,
 } from "lucide-react";
 import Link from "next/link";
+import { useStore } from "@/components/providers/StoreProvider";
 
 interface ChatMessage {
   id: string;
@@ -156,7 +157,9 @@ function generateMessageId(prefix: string): string {
 }
 
 export function ClickTechChatBot() {
+  const { playSound } = useStore();
   const [isOpen, setIsOpen] = useState(false);
+  const [isTyping, setIsTyping] = useState(false);
   const [inputText, setInputText] = useState("");
   const [messages, setMessages] = useState<ChatMessage[]>([
     {
@@ -179,7 +182,7 @@ export function ClickTechChatBot() {
     if (isOpen) {
       messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
     }
-  }, [messages, isOpen]);
+  }, [messages, isOpen, isTyping]);
 
   const handleSend = React.useCallback((textToSend?: string) => {
     const text = (textToSend ?? inputText).trim();
@@ -194,6 +197,7 @@ export function ClickTechChatBot() {
 
     setMessages((prev) => [...prev, userMsg]);
     if (!textToSend) setInputText("");
+    setIsTyping(true);
 
     setTimeout(() => {
       const replyData = getBotReplyContent(text);
@@ -206,9 +210,11 @@ export function ClickTechChatBot() {
         isWhatsAppAction: replyData.isWhatsAppAction,
         chips: replyData.chips,
       };
+      setIsTyping(false);
       setMessages((prev) => [...prev, replyMsg]);
+      playSound("success");
     }, 450);
-  }, [inputText]);
+  }, [inputText, playSound]);
 
   return (
     <>
@@ -216,11 +222,12 @@ export function ClickTechChatBot() {
       {!isOpen && (
         <div className="fixed bottom-5 right-5 z-50 flex items-center gap-3">
           <div
-            className="hidden sm:flex items-center gap-2 px-3.5 py-2 rounded-full border shadow-2xl backdrop-blur-md animate-bounce"
+            className="hidden sm:flex items-center gap-2 px-3.5 py-2 rounded-full border backdrop-blur-md"
             style={{
-              backgroundColor: "rgba(2, 4, 10, 0.9)",
-              borderColor: "var(--accent-cyan)",
+              backgroundColor: "color-mix(in srgb, var(--bg-surface) 92%, transparent)",
+              borderColor: "var(--border-strong)",
               color: "var(--text-primary)",
+              boxShadow: "var(--shadow-elevated)",
             }}
           >
             <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
@@ -229,13 +236,17 @@ export function ClickTechChatBot() {
 
           <button
             type="button"
-            onClick={() => setIsOpen(true)}
+            data-sound="none"
+            onClick={() => {
+              playSound("open");
+              setIsOpen(true);
+            }}
             aria-label="Abrir asistente ClickTech"
-            className="ct-btn h-14 w-14 rounded-full flex items-center justify-center shadow-2xl relative border-2 transition-transform hover:scale-105"
+            className="ct-btn h-14 w-14 rounded-full flex items-center justify-center relative border-2"
             style={{
               backgroundColor: "var(--bg-chassis)",
               borderColor: "var(--accent-cyan)",
-              boxShadow: "0 0 25px rgba(0, 229, 255, 0.35)",
+              boxShadow: "var(--shadow-card-hover)",
             }}
           >
             <Bot className="w-7 h-7" style={{ color: "var(--accent-cyan)" }} />
@@ -251,11 +262,11 @@ export function ClickTechChatBot() {
         <div
           role="dialog"
           aria-label="Asistente Virtual ClickTech"
-          className="fixed bottom-4 right-4 z-50 w-[92vw] sm:w-[410px] h-[580px] max-h-[85vh] rounded-2xl border shadow-2xl flex flex-col overflow-hidden backdrop-blur-xl animate-in fade-in zoom-in-95 duration-200"
+          className="ct-dialog fixed bottom-4 right-4 z-50 w-[92vw] sm:w-[410px] h-[580px] max-h-[85vh] rounded-2xl border flex flex-col overflow-hidden backdrop-blur-xl"
           style={{
             backgroundColor: "color-mix(in srgb, var(--bg-surface) 96%, transparent)",
             borderColor: "var(--border-strong)",
-            boxShadow: "0 10px 40px rgba(0, 0, 0, 0.7), 0 0 20px rgba(0, 229, 255, 0.15)",
+            boxShadow: "var(--shadow-elevated)",
           }}
         >
           {/* Header */}
@@ -301,9 +312,14 @@ export function ClickTechChatBot() {
               </a>
               <button
                 type="button"
-                onClick={() => setIsOpen(false)}
+                data-sound="none"
+                onClick={() => {
+                  playSound("close");
+                  setIsOpen(false);
+                }}
                 aria-label="Cerrar chat"
-                className="ct-btn p-2 rounded-lg hover:bg-white/10 text-gray-400 hover:text-white"
+                className="ct-btn p-2 rounded-lg hover:bg-white/10"
+                style={{ color: "var(--text-muted)" }}
               >
                 <X className="w-4 h-4" />
               </button>
@@ -389,6 +405,30 @@ export function ClickTechChatBot() {
                 </div>
               </div>
             ))}
+            {isTyping && (
+              <div className="flex gap-2.5 justify-start" aria-label="Asistente escribiendo">
+                <div
+                  className="w-7 h-7 rounded-lg border flex items-center justify-center shrink-0 mt-0.5"
+                  style={{
+                    backgroundColor: "var(--accent-cyan-soft)",
+                    borderColor: "var(--accent-cyan)",
+                  }}
+                >
+                  <Bot className="w-3.5 h-3.5" style={{ color: "var(--accent-cyan)" }} />
+                </div>
+                <div
+                  className="rounded-2xl rounded-tl-none px-4 py-3 border flex items-center gap-1.5"
+                  style={{
+                    backgroundColor: "var(--bg-chassis)",
+                    borderColor: "var(--border-subtle)",
+                  }}
+                >
+                  <span className="w-1.5 h-1.5 rounded-full animate-pulse" style={{ backgroundColor: "var(--accent-cyan)" }} />
+                  <span className="w-1.5 h-1.5 rounded-full animate-pulse" style={{ backgroundColor: "var(--accent-cyan)", animationDelay: "120ms" }} />
+                  <span className="w-1.5 h-1.5 rounded-full animate-pulse" style={{ backgroundColor: "var(--accent-cyan)", animationDelay: "240ms" }} />
+                </div>
+              </div>
+            )}
             <div ref={messagesEndRef} />
           </div>
 

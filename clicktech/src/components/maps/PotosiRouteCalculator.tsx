@@ -142,8 +142,9 @@ export function PotosiRouteCalculator() {
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
               <button
                 type="button"
+                data-sound="toggleOn"
                 onClick={() => setIsClickTechBuyer(true)}
-                className="ct-btn p-3 rounded-xl border text-left flex items-start gap-2.5 transition-all"
+                className="ct-btn p-3 rounded-xl border text-left flex items-start gap-2.5"
                 style={{
                   backgroundColor: isClickTechBuyer ? "var(--accent-cyan-soft)" : "var(--bg-chassis)",
                   borderColor: isClickTechBuyer ? "var(--accent-cyan)" : "var(--border-subtle)",
@@ -165,8 +166,9 @@ export function PotosiRouteCalculator() {
 
               <button
                 type="button"
+                data-sound="toggleOn"
                 onClick={() => setIsClickTechBuyer(false)}
-                className="ct-btn p-3 rounded-xl border text-left flex items-start gap-2.5 transition-all"
+                className="ct-btn p-3 rounded-xl border text-left flex items-start gap-2.5"
                 style={{
                   backgroundColor: !isClickTechBuyer ? "var(--accent-purple-soft)" : "var(--bg-chassis)",
                   borderColor: !isClickTechBuyer ? "var(--accent-purple)" : "var(--border-subtle)",

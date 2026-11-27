@@ -1,6 +1,13 @@
 "use client";
 
-import React, { createContext, useCallback, useContext, useEffect, useState } from "react";
+import React, { createContext, useCallback, useContext, useEffect, useRef, useState } from "react";
+import { AlertCircle, CheckCircle2, Info } from "lucide-react";
+import {
+  isSoundEffect,
+  setGlobalSoundEnabled,
+  triggerSound,
+  type SoundEffect,
+} from "@/lib/ui/sound-engine";
 
 export interface CartItemClient {
   id: string;
@@ -53,6 +60,9 @@ interface StoreContextValue {
   toggleFavorite: (productId: string) => void;
   theme: "dark" | "light";
   toggleTheme: () => void;
+  soundEnabled: boolean;
+  toggleSound: () => void;
+  playSound: (effect: SoundEffect) => void;
   notify: (message: string, tone?: "info" | "success" | "error") => void;
 }
 
@@ -62,11 +72,17 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
   const [items, setItems] = useState<CartItemClient[]>([]);
   const [subtotalCents, setSubtotalCents] = useState(0);
   const [itemCount, setItemCount] = useState(0);
-  const [cartOpen, setCartOpen] = useState(false);
+  const [cartOpen, setCartOpenState] = useState(false);
   const [compareItems, setCompareItems] = useState<CompareItemClient[]>([]);
   const [favorites, setFavorites] = useState<string[]>([]);
   const [theme, setTheme] = useState<"dark" | "light">("dark");
+  const [soundEnabled, setSoundEnabled] = useState(true);
   const [toasts, setToasts] = useState<ToastItem[]>([]);
+  const lastHoveredRef = useRef<HTMLElement | null>(null);
+
+  const playSound = useCallback((effect: SoundEffect) => {
+    triggerSound(effect);
+  }, []);
 
   const notify = useCallback((message: string, tone: "info" | "success" | "error" = "info") => {
     const id = `${Date.now()}-${Math.random().toString(36).slice(2, 6)}`;
@@ -104,6 +120,13 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
           setTheme(savedTheme);
           document.documentElement.setAttribute("data-theme", savedTheme);
         }
+        const savedSound = localStorage.getItem("clicktech_sound");
+        if (savedSound === "off") {
+          setSoundEnabled(false);
+          setGlobalSoundEnabled(false);
+        } else {
+          setGlobalSoundEnabled(true);
+        }
       } catch {
         // ignore storage failure
       }
@@ -113,9 +136,80 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
     };
   }, [refreshCart]);
 
+  // Global delegated tactile sound listener for all buttons and primary links
+  useEffect(() => {
+    const canHover = window.matchMedia("(hover: hover) and (pointer: fine)").matches;
+
+    function handlePointerDown(e: PointerEvent) {
+      const target = e.target as HTMLElement | null;
+      const el = target?.closest('button, a.ct-btn, [role="button"], [data-sound], nav a') as HTMLElement | null;
+      if (!el) return;
+      if ((el as HTMLButtonElement).disabled || el.getAttribute("aria-disabled") === "true") return;
+
+      const ds = el.getAttribute("data-sound");
+      if (ds === "none") return;
+      if (isSoundEffect(ds)) {
+        triggerSound(ds);
+      } else {
+        triggerSound("click");
+      }
+    }
+
+    function handlePointerOver(e: PointerEvent) {
+      if (!canHover) return;
+      const target = e.target as HTMLElement | null;
+      const el = target?.closest(".ct-btn, nav a") as HTMLElement | null;
+      if (!el) {
+        lastHoveredRef.current = null;
+        return;
+      }
+      if (lastHoveredRef.current === el) return;
+      lastHoveredRef.current = el;
+      if ((el as HTMLButtonElement).disabled || el.getAttribute("aria-disabled") === "true") return;
+      if (el.getAttribute("data-sound") === "none") return;
+      triggerSound("hover");
+    }
+
+    document.addEventListener("pointerdown", handlePointerDown, { passive: true });
+    document.addEventListener("pointerover", handlePointerOver, { passive: true });
+    return () => {
+      document.removeEventListener("pointerdown", handlePointerDown);
+      document.removeEventListener("pointerover", handlePointerOver);
+    };
+  }, []);
+
+  const setCartOpen = useCallback((open: boolean) => {
+    setCartOpenState((prev) => {
+      if (prev !== open) {
+        triggerSound(open ? "open" : "close");
+      }
+      return open;
+    });
+  }, []);
+
+  const toggleSound = useCallback(() => {
+    setSoundEnabled((prev) => {
+      const next = !prev;
+      if (next) {
+        setGlobalSoundEnabled(true);
+        triggerSound("toggleOn");
+      } else {
+        triggerSound("toggleOff");
+        setGlobalSoundEnabled(false);
+      }
+      try {
+        localStorage.setItem("clicktech_sound", next ? "on" : "off");
+      } catch {
+        // ignore
+      }
+      return next;
+    });
+  }, []);
+
   const toggleTheme = useCallback(() => {
     setTheme((prev) => {
       const next = prev === "dark" ? "light" : "dark";
+      triggerSound(next === "light" ? "toggleOn" : "toggleOff");
       document.documentElement.setAttribute("data-theme", next);
       try {
         localStorage.setItem("clicktech_theme", next);
@@ -136,16 +230,19 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
         });
         const data = await res.json();
         if (!res.ok) {
+          triggerSound("error");
           notify(data.error ?? "No se pudo añadir al carrito.", "error");
           return false;
         }
         setItems(data.items ?? []);
         setSubtotalCents(data.subtotalCents ?? 0);
         setItemCount(data.itemCount ?? 0);
-        setCartOpen(true);
+        setCartOpenState(true);
+        triggerSound("success");
         notify("Producto añadido al carrito.", "success");
         return true;
       } catch {
+        triggerSound("error");
         notify("Error de conexión al actualizar el carrito.", "error");
         return false;
       }
@@ -162,6 +259,7 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
       });
       const data = await res.json();
       if (!res.ok) {
+        triggerSound("error");
         notify(data.error ?? "Cantidad no disponible.", "error");
         return;
       }
@@ -182,6 +280,7 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
         setItems(data.items ?? []);
         setSubtotalCents(data.subtotalCents ?? 0);
         setItemCount(data.itemCount ?? 0);
+        triggerSound("close");
         notify("Producto retirado del carrito.", "info");
       }
     },
@@ -195,8 +294,10 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
         let next: CompareItemClient[];
         if (exists) {
           next = prev.filter((x) => x.id !== item.id);
+          triggerSound("toggleOff");
         } else {
           if (prev.length > 0 && prev[0].categorySlug !== item.categorySlug) {
+            triggerSound("error");
             notify(
               `Solo puedes comparar productos de la misma categoría (${prev[0].categoryName}). Limpia la comparación actual para cambiar.`,
               "error"
@@ -204,10 +305,12 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
             return prev;
           }
           if (prev.length >= 4) {
+            triggerSound("error");
             notify("Máximo 4 productos simultáneos en comparación.", "error");
             return prev;
           }
           next = [...prev, item];
+          triggerSound("toggleOn");
           notify(`${item.name} agregado a comparación (${next.length}/4).`, "success");
         }
         try {
@@ -223,6 +326,7 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
 
   const clearCompare = useCallback(() => {
     setCompareItems([]);
+    triggerSound("close");
     try {
       localStorage.removeItem("clicktech_compare");
     } catch {
@@ -232,9 +336,9 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
 
   const toggleFavorite = useCallback((productId: string) => {
     setFavorites((prev) => {
-      const next = prev.includes(productId)
-        ? prev.filter((id) => id !== productId)
-        : [...prev, productId];
+      const adding = !prev.includes(productId);
+      const next = adding ? [...prev, productId] : prev.filter((id) => id !== productId);
+      triggerSound(adding ? "toggleOn" : "toggleOff");
       try {
         localStorage.setItem("clicktech_favorites", JSON.stringify(next));
       } catch {
@@ -263,6 +367,9 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
         toggleFavorite,
         theme,
         toggleTheme,
+        soundEnabled,
+        toggleSound,
+        playSound,
         notify,
       }}
     >
@@ -275,9 +382,10 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
         {toasts.map((t) => (
           <div
             key={t.id}
-            className="ct-toast pointer-events-auto rounded-lg border px-4 py-3 text-sm font-medium shadow-xl backdrop-blur-md"
+            className="ct-toast pointer-events-auto rounded-xl border px-4 py-3 text-sm font-medium backdrop-blur-md flex items-center gap-2.5"
             style={{
-              backgroundColor: "var(--bg-surface)",
+              backgroundColor: "color-mix(in srgb, var(--bg-surface) 94%, transparent)",
+              boxShadow: "var(--shadow-elevated)",
               borderColor:
                 t.tone === "error"
                   ? "var(--status-danger)"
@@ -287,7 +395,16 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
               color: "var(--text-primary)",
             }}
           >
-            {t.message}
+            {t.tone === "success" && (
+              <CheckCircle2 className="w-4 h-4 shrink-0" style={{ color: "var(--accent-cyan)" }} />
+            )}
+            {t.tone === "error" && (
+              <AlertCircle className="w-4 h-4 shrink-0" style={{ color: "var(--status-danger)" }} />
+            )}
+            {t.tone === "info" && (
+              <Info className="w-4 h-4 shrink-0" style={{ color: "var(--text-muted)" }} />
+            )}
+            <span>{t.message}</span>
           </div>
         ))}
       </div>

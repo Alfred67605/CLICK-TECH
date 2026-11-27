@@ -3,8 +3,6 @@
 import React, { useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import {
-  Check,
-  ChevronRight,
   Cpu,
   Filter,
   HardDrive,
@@ -120,34 +118,43 @@ export function CatalogExplorer({
     (maxBs ? 1 : 0);
 
   return (
-    <div className="w-full px-4 sm:px-6 lg:px-8 xl:px-10 py-6 space-y-6">
-      {/* Top Header Row - Minimalist & Expansive */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b pb-4" style={{ borderColor: "var(--border-subtle)" }}>
+    <div className="ct-container py-6 space-y-6">
+      {/* Top Header Row - Minimalist & Full-Width */}
+      <div
+        className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b pb-5"
+        style={{ borderColor: "var(--border-subtle)" }}
+      >
         <div className="space-y-1">
-          <div className="flex items-center gap-3">
-            <h1 className="font-display text-2xl sm:text-3xl font-black tracking-tight text-white">
-              Catálogo de Hardware
+          <div className="flex flex-wrap items-center gap-3">
+            <h1 className="font-display text-2xl sm:text-3xl font-black tracking-tight" style={{ color: "var(--text-primary)" }}>
+              Catálogo ClickTech
             </h1>
-            <span className="font-mono text-xs font-bold px-2.5 py-0.5 rounded-full bg-cyan-950/80 text-cyan-300 border border-cyan-500/40">
+            <span
+              className="font-mono text-xs font-bold px-2.5 py-0.5 rounded-full border"
+              style={{
+                backgroundColor: "var(--accent-cyan-soft)",
+                borderColor: "var(--border-strong)",
+                color: "var(--accent-cyan)",
+              }}
+            >
               {filtered.length} productos
             </span>
           </div>
-          <p className="text-xs sm:text-sm" style={{ color: "var(--text-muted)" }}>
+          <p className="text-xs sm:text-sm" style={{ color: "var(--text-secondary)" }}>
             Equipos y componentes con disponibilidad real en Potosí y despacho verificado en Bolivianos (Bs).
           </p>
         </div>
 
-        {/* Search Bar on Desktop Top */}
         <div className="flex items-center gap-3 w-full md:w-auto">
           <div className="relative flex-1 md:w-80">
-            <Search className="w-4 h-4 absolute left-3.5 top-3 text-slate-400" />
+            <Search className="w-4 h-4 absolute left-3.5 top-3" style={{ color: "var(--text-muted)" }} />
             <input
               id="cat-search"
               type="search"
               value={q}
               onChange={(e) => setQ(e.target.value)}
               placeholder="Buscar GPU, Ryzen, laptop o SKU..."
-              className="w-full h-10 pl-10 pr-12 rounded-xl border text-sm transition-all focus:border-cyan-400 focus:outline-none"
+              className="w-full h-10 pl-10 pr-10 rounded-xl border text-sm focus:outline-none"
               style={{
                 backgroundColor: "var(--bg-surface)",
                 borderColor: "var(--border-subtle)",
@@ -157,8 +164,10 @@ export function CatalogExplorer({
             {q && (
               <button
                 type="button"
+                aria-label="Limpiar búsqueda"
                 onClick={() => setQ("")}
-                className="absolute right-3 top-3 text-slate-400 hover:text-white"
+                className="ct-btn absolute right-3 top-3"
+                style={{ color: "var(--text-muted)" }}
               >
                 <X className="w-4 h-4" />
               </button>
@@ -167,6 +176,7 @@ export function CatalogExplorer({
 
           <button
             type="button"
+            data-sound="toggleOn"
             onClick={() => setMobileFilterOpen(!mobileFilterOpen)}
             className="lg:hidden ct-btn h-10 px-4 rounded-xl border flex items-center gap-2 text-xs font-bold shrink-0"
             style={{
@@ -182,48 +192,81 @@ export function CatalogExplorer({
       </div>
 
       {/* Main Full-Width Split Layout */}
-      <div className="flex flex-col lg:flex-row gap-8 items-start">
-        {/* Left Sidebar / Filters (Sticky on Desktop) */}
+      <div className="flex flex-col lg:flex-row gap-7 items-start">
+        {/* Left Sidebar / Filters */}
         <aside
-          className={`w-full lg:w-72 xl:w-80 shrink-0 space-y-6 ${
-            mobileFilterOpen ? "block" : "hidden lg:block"
-          }`}
+          className={`w-full lg:w-72 xl:w-80 shrink-0 space-y-6 ${mobileFilterOpen ? "block" : "hidden lg:block"
+            }`}
         >
           <div
             className="rounded-2xl border p-5 space-y-5"
-            style={{ backgroundColor: "var(--bg-surface)", borderColor: "var(--border-subtle)" }}
+            style={{
+              backgroundColor: "var(--bg-surface)",
+              borderColor: "var(--border-subtle)",
+              boxShadow: "var(--shadow-card)",
+            }}
           >
             <div className="flex items-center justify-between border-b pb-3" style={{ borderColor: "var(--border-subtle)" }}>
-              <span className="font-bold text-xs uppercase tracking-wider text-slate-400 flex items-center gap-2">
-                <Filter className="w-3.5 h-3.5 text-cyan-400" /> Categorías
+              <span className="font-bold text-xs uppercase tracking-wider flex items-center gap-2" style={{ color: "var(--text-muted)" }}>
+                <Filter className="w-3.5 h-3.5" style={{ color: "var(--accent-cyan)" }} /> Categorías
               </span>
               {category && (
                 <button
                   type="button"
+                  data-sound="toggleOff"
                   onClick={() => setCategory("")}
-                  className="text-xs text-cyan-400 hover:underline font-medium"
+                  className="text-xs hover:underline font-semibold"
+                  style={{ color: "var(--accent-cyan)" }}
                 >
                   Ver todas
                 </button>
               )}
             </div>
 
+            {/* Accessible Select synchronized for keyboard & E2E */}
+            <div className="lg:sr-only">
+              <label htmlFor="cat-select">Categoría</label>
+              <select
+                id="cat-select"
+                aria-label="Categoría"
+                value={category}
+                onChange={(e) => setCategory(e.target.value)}
+              >
+                <option value="">Todas las categorías</option>
+                {categories.map((c) => (
+                  <option key={c.slug} value={c.slug}>
+                    {c.name}
+                  </option>
+                ))}
+              </select>
+            </div>
+
             {/* Vertical Category Navigation */}
-            <nav className="space-y-1">
+            <nav aria-label="Categorías del catálogo" className="space-y-1">
               <button
                 type="button"
+                data-sound="toggleOn"
                 onClick={() => setCategory("")}
-                className={`w-full text-left px-3 py-2 rounded-xl text-xs sm:text-sm font-semibold flex items-center justify-between transition-all ${
+                className="ct-btn w-full text-left px-3 py-2 rounded-xl text-xs sm:text-sm font-semibold flex items-center justify-between border"
+                style={
                   category === ""
-                    ? "bg-cyan-950/70 text-cyan-300 border border-cyan-500/40 shadow-sm"
-                    : "text-slate-300 hover:bg-slate-800/50 hover:text-white"
-                }`}
+                    ? {
+                      backgroundColor: "var(--accent-cyan-soft)",
+                      borderColor: "var(--border-strong)",
+                      color: "var(--accent-cyan)",
+                    }
+                    : {
+                      backgroundColor: "transparent",
+                      borderColor: "transparent",
+                      color: "var(--text-secondary)",
+                    }
+                }
               >
                 <span className="flex items-center gap-2.5">
-                  <Layers className="w-4 h-4 text-cyan-400" />
+                  <Layers className="w-4 h-4" style={{ color: "var(--accent-cyan)" }} />
                   <span>Todos los productos</span>
                 </span>
-                <span className="font-mono text-[11px] text-slate-400">
+                <span className="font-mono text-[11px]" style={{ color: "var(--text-muted)" }}>
                   {initialProducts.length}
                 </span>
               </button>
@@ -235,20 +278,30 @@ export function CatalogExplorer({
                   <button
                     key={c.slug}
                     type="button"
+                    data-sound={isSelected ? "toggleOff" : "toggleOn"}
                     onClick={() => setCategory(isSelected ? "" : c.slug)}
-                    className={`w-full text-left px-3 py-2 rounded-xl text-xs sm:text-sm font-semibold flex items-center justify-between transition-all ${
+                    className="ct-btn w-full text-left px-3 py-2 rounded-xl text-xs sm:text-sm font-semibold flex items-center justify-between border"
+                    style={
                       isSelected
-                        ? "bg-cyan-950/70 text-cyan-300 border border-cyan-500/40 shadow-sm"
-                        : "text-slate-300 hover:bg-slate-800/50 hover:text-white"
-                    }`}
+                        ? {
+                          backgroundColor: "var(--accent-cyan-soft)",
+                          borderColor: "var(--border-strong)",
+                          color: "var(--accent-cyan)",
+                        }
+                        : {
+                          backgroundColor: "transparent",
+                          borderColor: "transparent",
+                          color: "var(--text-secondary)",
+                        }
+                    }
                   >
                     <span className="flex items-center gap-2.5 truncate">
-                      <span className={isSelected ? "text-cyan-400" : "text-slate-400"}>
+                      <span style={{ color: isSelected ? "var(--accent-cyan)" : "var(--text-muted)" }}>
                         {categoryIcons[c.slug] || <Layers className="w-4 h-4" />}
                       </span>
                       <span className="truncate">{c.name}</span>
                     </span>
-                    <span className="font-mono text-[11px] text-slate-400 ml-2">
+                    <span className="font-mono text-[11px] ml-2" style={{ color: "var(--text-muted)" }}>
                       {count}
                     </span>
                   </button>
@@ -258,13 +311,13 @@ export function CatalogExplorer({
 
             {/* Hardware Compatibility Quick Filters */}
             <div className="pt-4 border-t space-y-4" style={{ borderColor: "var(--border-subtle)" }}>
-              <span className="font-bold text-xs uppercase tracking-wider text-slate-400 block">
+              <span className="font-bold text-xs uppercase tracking-wider block" style={{ color: "var(--text-muted)" }}>
                 Compatibilidad Técnica
               </span>
 
               <div className="space-y-3">
                 <div>
-                  <label htmlFor="socket-filter" className="block text-[11px] text-slate-400 mb-1">
+                  <label htmlFor="socket-filter" className="block text-[11px] mb-1" style={{ color: "var(--text-muted)" }}>
                     Socket de Procesador
                   </label>
                   <select
@@ -286,7 +339,7 @@ export function CatalogExplorer({
                 </div>
 
                 <div>
-                  <label htmlFor="ram-filter" className="block text-[11px] text-slate-400 mb-1">
+                  <label htmlFor="ram-filter" className="block text-[11px] mb-1" style={{ color: "var(--text-muted)" }}>
                     Generación de RAM
                   </label>
                   <select
@@ -307,7 +360,7 @@ export function CatalogExplorer({
                 </div>
 
                 <div>
-                  <label htmlFor="brand-filter" className="block text-[11px] text-slate-400 mb-1">
+                  <label htmlFor="brand-filter" className="block text-[11px] mb-1" style={{ color: "var(--text-muted)" }}>
                     Marca
                   </label>
                   <select
@@ -331,7 +384,7 @@ export function CatalogExplorer({
                 </div>
 
                 <div>
-                  <label htmlFor="max-price" className="block text-[11px] text-slate-400 mb-1">
+                  <label htmlFor="max-price" className="block text-[11px] mb-1" style={{ color: "var(--text-muted)" }}>
                     Precio máximo (Bs)
                   </label>
                   <input
@@ -357,7 +410,9 @@ export function CatalogExplorer({
                     onChange={(e) => setInStockOnly(e.target.checked)}
                     className="w-4 h-4 accent-[#00E5FF] rounded"
                   />
-                  <span className="text-xs font-medium text-slate-300">Solo disponibles</span>
+                  <span className="text-xs font-medium" style={{ color: "var(--text-secondary)" }}>
+                    Solo disponibles
+                  </span>
                 </label>
               </div>
             </div>
@@ -365,9 +420,10 @@ export function CatalogExplorer({
             {activeFiltersCount > 0 && (
               <button
                 type="button"
+                data-sound="close"
                 onClick={resetAll}
-                className="ct-btn w-full h-9 rounded-xl border flex items-center justify-center gap-1.5 text-xs font-bold text-slate-300 hover:text-white"
-                style={{ borderColor: "var(--border-subtle)" }}
+                className="ct-btn w-full h-9 rounded-xl border flex items-center justify-center gap-1.5 text-xs font-bold"
+                style={{ borderColor: "var(--border-subtle)", color: "var(--text-secondary)" }}
               >
                 <RotateCcw className="w-3.5 h-3.5" />
                 Limpiar filtros ({activeFiltersCount})
@@ -379,9 +435,15 @@ export function CatalogExplorer({
         {/* Right Product Grid Stage - Expands to Full Screen */}
         <main className="flex-1 min-w-0 space-y-4">
           {/* Subheader Toolbar: Sorting & Active Filters */}
-          <div className="flex flex-wrap items-center justify-between gap-3 bg-[#0a0f1d]/50 p-3 rounded-xl border border-slate-800/60">
+          <div
+            className="flex flex-wrap items-center justify-between gap-3 p-3 rounded-xl border"
+            style={{
+              backgroundColor: "var(--bg-surface)",
+              borderColor: "var(--border-subtle)",
+            }}
+          >
             <div className="flex flex-wrap items-center gap-2 text-xs">
-              <span className="text-slate-400">Orden:</span>
+              <span style={{ color: "var(--text-muted)" }}>Orden:</span>
               <select
                 aria-label="Ordenar productos"
                 value={sort}
@@ -401,13 +463,15 @@ export function CatalogExplorer({
 
             {activeFiltersCount > 0 && (
               <div className="flex items-center gap-2">
-                <span className="text-xs text-slate-400 font-mono">
+                <span className="text-xs font-mono" style={{ color: "var(--text-muted)" }}>
                   {filtered.length} de {initialProducts.length} mostrados
                 </span>
                 <button
                   type="button"
+                  data-sound="close"
                   onClick={resetAll}
-                  className="text-xs text-cyan-400 hover:underline flex items-center gap-1"
+                  className="text-xs hover:underline flex items-center gap-1 font-semibold"
+                  style={{ color: "var(--accent-cyan)" }}
                 >
                   <RotateCcw className="w-3 h-3" /> Restablecer
                 </button>
@@ -415,23 +479,32 @@ export function CatalogExplorer({
             )}
           </div>
 
-          {/* Product Grid: 4 to 5 columns on wide screens */}
+          {/* Product Grid */}
           {filtered.length === 0 ? (
             <div
               className="rounded-2xl border p-12 text-center space-y-4"
               style={{ backgroundColor: "var(--bg-surface)", borderColor: "var(--border-subtle)" }}
             >
-              <div className="w-16 h-16 mx-auto rounded-full bg-cyan-950/50 border border-cyan-500/30 flex items-center justify-center text-cyan-400">
+              <div
+                className="w-16 h-16 mx-auto rounded-full border flex items-center justify-center"
+                style={{
+                  backgroundColor: "var(--accent-cyan-soft)",
+                  borderColor: "var(--border-strong)",
+                  color: "var(--accent-cyan)",
+                }}
+              >
                 <Filter className="w-8 h-8" />
               </div>
-              <p className="text-lg font-bold text-white">No hay productos con esos filtros exactos.</p>
-              <p className="text-sm max-w-md mx-auto text-slate-400">
-                Limpia los filtros o consulta la compatibilidad de tu equipo con nuestro soporte por WhatsApp al 67605477.
+              <p className="text-lg font-bold" style={{ color: "var(--text-primary)" }}>
+                No hay productos con esos filtros exactos.
+              </p>
+              <p className="text-sm max-w-md mx-auto" style={{ color: "var(--text-secondary)" }}>
+                Limpia los filtros o consulta la compatibilidad de tu equipo por WhatsApp al 67605477.
               </p>
               <button
                 type="button"
                 onClick={resetAll}
-                className="ct-btn h-11 px-6 rounded-xl text-sm font-bold shadow-lg"
+                className="ct-btn ct-btn-primary h-11 px-6 rounded-xl text-sm font-bold"
                 style={{ backgroundColor: "var(--accent-cyan)", color: "var(--accent-cyan-ink)" }}
               >
                 Ver todos los productos ({initialProducts.length})

@@ -87,9 +87,10 @@ export function ProductDetailActions({
 
         <button
           type="button"
+          data-sound="none"
           disabled={!inStock}
           onClick={() => addToCart(product.id, qty)}
-          className="ct-btn flex-1 min-w-[180px] h-12 px-5 rounded-lg font-semibold text-sm flex items-center justify-center gap-2 disabled:opacity-45"
+          className="ct-btn ct-btn-primary flex-1 min-w-[180px] h-12 px-5 rounded-xl font-semibold text-sm flex items-center justify-center gap-2 disabled:opacity-45"
           style={{ backgroundColor: "var(--accent-cyan)", color: "var(--accent-cyan-ink)" }}
         >
           <ShoppingCart className="w-4 h-4" />
@@ -98,6 +99,7 @@ export function ProductDetailActions({
 
         <button
           type="button"
+          data-sound="none"
           onClick={() =>
             toggleCompare({
               id: product.id,
@@ -110,7 +112,7 @@ export function ProductDetailActions({
               priceCents: product.priceCents,
             })
           }
-          className="ct-btn h-12 px-4 rounded-lg border text-sm font-medium flex items-center gap-1.5"
+          className="ct-btn h-12 px-4 rounded-xl border text-sm font-medium flex items-center gap-1.5"
           style={{
             borderColor: inCompare ? "var(--accent-cyan)" : "var(--border-subtle)",
             color: inCompare ? "var(--accent-cyan)" : "var(--text-secondary)",
@@ -122,9 +124,10 @@ export function ProductDetailActions({
 
         <button
           type="button"
+          data-sound="none"
           onClick={() => toggleFavorite(product.id)}
           aria-label="Guardar en favoritos"
-          className="ct-btn h-12 w-12 rounded-lg border flex items-center justify-center"
+          className="ct-btn h-12 w-12 rounded-xl border flex items-center justify-center"
           style={{
             borderColor: isFav ? "var(--accent-purple)" : "var(--border-subtle)",
             color: isFav ? "var(--accent-purple)" : "var(--text-secondary)",

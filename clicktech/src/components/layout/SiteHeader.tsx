@@ -1,8 +1,8 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import {
   Cpu,
   Menu,
@@ -11,6 +11,8 @@ import {
   ShoppingCart,
   Sun,
   User,
+  Volume2,
+  VolumeX,
   Wrench,
   X,
   Building2,
@@ -33,6 +35,8 @@ interface AuthUserSummary {
 
 export function SiteHeader({ initialUser }: { initialUser: AuthUserSummary | null }) {
   const router = useRouter();
+  const pathname = usePathname();
+  const searchInputRef = useRef<HTMLInputElement | null>(null);
   const {
     itemCount,
     setCartOpen,
@@ -45,10 +49,24 @@ export function SiteHeader({ initialUser }: { initialUser: AuthUserSummary | nul
     clearCompare,
     theme,
     toggleTheme,
+    soundEnabled,
+    toggleSound,
   } = useStore();
   const [searchQuery, setSearchQuery] = useState("");
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const user = initialUser;
+
+  useEffect(() => {
+    function handleShortcut(e: KeyboardEvent) {
+      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "k") {
+        e.preventDefault();
+        searchInputRef.current?.focus();
+        searchInputRef.current?.select();
+      }
+    }
+    window.addEventListener("keydown", handleShortcut);
+    return () => window.removeEventListener("keydown", handleShortcut);
+  }, []);
 
   function handleSearch(e: React.FormEvent) {
     e.preventDefault();
@@ -127,22 +145,34 @@ export function SiteHeader({ initialUser }: { initialUser: AuthUserSummary | nul
               Buscar productos, marca, modelo o SKU
             </label>
             <input
+              ref={searchInputRef}
               id="header-search"
               type="search"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="Buscar GPU, Ryzen, laptop o SKU..."
-              className="w-full h-10 pl-3.5 pr-10 rounded-lg border text-sm"
+              className="w-full h-10 pl-3.5 pr-20 rounded-xl border text-sm focus:outline-none"
               style={{
                 backgroundColor: "var(--bg-surface)",
                 borderColor: "var(--border-subtle)",
                 color: "var(--text-primary)",
               }}
             />
+            <kbd
+              aria-hidden="true"
+              className="pointer-events-none hidden xl:inline-flex items-center px-1.5 py-0.5 rounded border text-[10px] font-mono absolute right-10 top-2.5"
+              style={{
+                borderColor: "var(--border-subtle)",
+                backgroundColor: "var(--bg-chassis)",
+                color: "var(--text-muted)",
+              }}
+            >
+              Ctrl K
+            </kbd>
             <button
               type="submit"
               aria-label="Buscar en catálogo"
-              className="ct-btn absolute right-1.5 top-1.5 h-7 w-7 rounded-md flex items-center justify-center"
+              className="ct-btn absolute right-1.5 top-1.5 h-7 w-7 rounded-lg flex items-center justify-center"
               style={{ color: "var(--accent-cyan)" }}
             >
               <Search className="w-4 h-4" />
@@ -153,39 +183,59 @@ export function SiteHeader({ initialUser }: { initialUser: AuthUserSummary | nul
           <nav aria-label="Navegación principal" className="hidden md:flex items-center gap-1 text-sm font-medium">
             <Link
               href="/catalogo"
-              className="px-2.5 py-2 rounded-lg hover:bg-white/5 transition-colors"
-              style={{ color: "var(--text-secondary)" }}
+              className="px-3 py-2 rounded-xl transition-colors hover:opacity-90"
+              style={
+                pathname?.startsWith("/catalogo")
+                  ? { color: "var(--accent-cyan)", backgroundColor: "var(--accent-cyan-soft)", fontWeight: 600 }
+                  : { color: "var(--text-secondary)" }
+              }
             >
               Catálogo
             </Link>
             <Link
               href="/arma-tu-pc"
-              className="px-2.5 py-2 rounded-lg flex items-center gap-1.5 font-semibold"
-              style={{ color: "var(--accent-cyan)", backgroundColor: "var(--accent-cyan-soft)" }}
+              className="px-3 py-2 rounded-xl flex items-center gap-1.5 font-semibold transition-colors"
+              style={
+                pathname?.startsWith("/arma-tu-pc")
+                  ? { color: "var(--accent-cyan-ink)", backgroundColor: "var(--accent-cyan)" }
+                  : { color: "var(--accent-cyan)", backgroundColor: "var(--accent-cyan-soft)" }
+              }
             >
               <Cpu className="w-4 h-4" />
               Arma tu PC
             </Link>
             <Link
               href="/servicios"
-              className="px-2.5 py-2 rounded-lg flex items-center gap-1.5 hover:bg-white/5"
-              style={{ color: "var(--text-secondary)" }}
+              className="px-3 py-2 rounded-xl flex items-center gap-1.5 transition-colors hover:opacity-90"
+              style={
+                pathname?.startsWith("/servicios")
+                  ? { color: "var(--accent-cyan)", backgroundColor: "var(--accent-cyan-soft)", fontWeight: 600 }
+                  : { color: "var(--text-secondary)" }
+              }
             >
               <Wrench className="w-4 h-4" />
               Servicios
             </Link>
             <Link
               href="/seguimiento"
-              className="px-2.5 py-2 rounded-lg flex items-center gap-1.5 hover:bg-white/5"
-              style={{ color: "var(--text-secondary)" }}
+              className="px-3 py-2 rounded-xl flex items-center gap-1.5 transition-colors hover:opacity-90"
+              style={
+                pathname?.startsWith("/seguimiento")
+                  ? { color: "var(--accent-cyan)", backgroundColor: "var(--accent-cyan-soft)", fontWeight: 600 }
+                  : { color: "var(--text-secondary)" }
+              }
             >
               <ClipboardList className="w-4 h-4" />
               Seguimiento
             </Link>
             <Link
               href="/empresas"
-              className="px-2.5 py-2 rounded-lg hidden xl:flex items-center gap-1.5 hover:bg-white/5"
-              style={{ color: "var(--text-secondary)" }}
+              className="px-3 py-2 rounded-xl hidden xl:flex items-center gap-1.5 transition-colors hover:opacity-90"
+              style={
+                pathname?.startsWith("/empresas")
+                  ? { color: "var(--accent-cyan)", backgroundColor: "var(--accent-cyan-soft)", fontWeight: 600 }
+                  : { color: "var(--text-secondary)" }
+              }
             >
               <Building2 className="w-4 h-4" />
               Empresas
@@ -199,7 +249,7 @@ export function SiteHeader({ initialUser }: { initialUser: AuthUserSummary | nul
               target="_blank"
               rel="noopener noreferrer"
               aria-label="Contactar por WhatsApp al 67605477"
-              className="ct-btn hidden lg:flex items-center gap-1.5 h-10 px-3.5 rounded-lg border text-xs font-semibold hover:shadow-[0_0_16px_rgba(37,211,102,0.35)] transition-all"
+              className="ct-btn hidden lg:flex items-center gap-1.5 h-10 px-3.5 rounded-xl border text-xs font-semibold"
               style={{
                 borderColor: "#25D366",
                 color: "#25D366",
@@ -212,9 +262,38 @@ export function SiteHeader({ initialUser }: { initialUser: AuthUserSummary | nul
 
             <button
               type="button"
+              data-sound="none"
+              onClick={toggleSound}
+              aria-label={soundEnabled ? "Silenciar sonidos de botones" : "Activar sonidos de botones"}
+              aria-pressed={soundEnabled}
+              title={soundEnabled ? "Sonidos táctiles activos (clic para silenciar)" : "Sonidos silenciados (clic para activar)"}
+              className="ct-btn h-10 px-2.5 rounded-xl border flex items-center justify-center gap-1.5"
+              style={{
+                borderColor: soundEnabled ? "var(--border-strong)" : "var(--border-subtle)",
+                backgroundColor: soundEnabled ? "var(--accent-cyan-soft)" : "var(--bg-surface)",
+                color: soundEnabled ? "var(--accent-cyan)" : "var(--text-muted)",
+              }}
+            >
+              {soundEnabled ? (
+                <>
+                  <Volume2 className="w-4 h-4" />
+                  <span aria-hidden="true" className="hidden sm:flex items-end gap-0.5 h-3">
+                    <span className="ct-sound-bar w-0.5 h-2 rounded-full" style={{ backgroundColor: "var(--accent-cyan)" }} />
+                    <span className="ct-sound-bar w-0.5 h-3 rounded-full" style={{ backgroundColor: "var(--accent-cyan)" }} />
+                    <span className="ct-sound-bar w-0.5 h-1.5 rounded-full" style={{ backgroundColor: "var(--accent-cyan)" }} />
+                  </span>
+                </>
+              ) : (
+                <VolumeX className="w-4 h-4" />
+              )}
+            </button>
+
+            <button
+              type="button"
+              data-sound="none"
               onClick={toggleTheme}
               aria-label={theme === "dark" ? "Cambiar a tema claro" : "Cambiar a tema oscuro"}
-              className="ct-btn h-10 w-10 rounded-lg border flex items-center justify-center"
+              className="ct-btn h-10 w-10 rounded-xl border flex items-center justify-center"
               style={{
                 borderColor: "var(--border-subtle)",
                 backgroundColor: "var(--bg-surface)",
@@ -227,7 +306,7 @@ export function SiteHeader({ initialUser }: { initialUser: AuthUserSummary | nul
             {user && (user.role === "ADMIN" || user.role === "SALES" || user.role === "TECH") && (
               <Link
                 href="/admin"
-                className="ct-btn hidden sm:flex items-center gap-1.5 h-10 px-3 rounded-lg border text-xs font-semibold"
+                className="ct-btn hidden sm:flex items-center gap-1.5 h-10 px-3 rounded-xl border text-xs font-semibold"
                 style={{
                   borderColor: "var(--accent-purple)",
                   backgroundColor: "var(--accent-purple-soft)",
@@ -242,7 +321,7 @@ export function SiteHeader({ initialUser }: { initialUser: AuthUserSummary | nul
             <Link
               href={user ? "/cuenta" : "/login"}
               aria-label={user ? "Mi cuenta" : "Iniciar sesión"}
-              className="ct-btn h-10 px-3 rounded-lg border flex items-center gap-2 text-sm font-medium"
+              className="ct-btn h-10 px-3 rounded-xl border flex items-center gap-2 text-sm font-medium"
               style={{
                 borderColor: "var(--border-subtle)",
                 backgroundColor: "var(--bg-surface)",
@@ -257,9 +336,10 @@ export function SiteHeader({ initialUser }: { initialUser: AuthUserSummary | nul
 
             <button
               type="button"
+              data-sound="none"
               onClick={() => setCartOpen(true)}
               aria-label={`Abrir carrito (${itemCount} productos)`}
-              className="ct-btn relative h-10 px-3 rounded-lg flex items-center gap-2 text-sm font-semibold"
+              className="ct-btn ct-btn-primary relative h-10 px-3.5 rounded-xl flex items-center gap-2 text-sm font-semibold"
               style={{
                 backgroundColor: "var(--accent-cyan)",
                 color: "var(--accent-cyan-ink)",

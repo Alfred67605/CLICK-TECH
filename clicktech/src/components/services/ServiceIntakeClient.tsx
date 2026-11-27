@@ -102,40 +102,53 @@ export function ServiceIntakeClient({
             <button
               key={s.id}
               type="button"
+              data-sound="toggleOn"
               onClick={() => setServiceCatalogId(s.id)}
-              className={`ct-card text-left rounded-2xl border p-4 flex flex-col gap-3 transition-all cursor-pointer ${
-                isSelected
-                  ? "border-cyan-400 shadow-[0_0_24px_rgba(0,229,255,0.2)] bg-cyan-950/20"
-                  : "border-slate-800/80 hover:border-slate-700 bg-slate-900/60"
-              }`}
+              className="ct-card text-left rounded-2xl border p-4 flex flex-col gap-3 cursor-pointer"
+              style={{
+                backgroundColor: isSelected ? "var(--accent-cyan-soft)" : "var(--bg-surface)",
+                borderColor: isSelected ? "var(--accent-cyan)" : "var(--border-subtle)",
+              }}
             >
               {s.imageUrl && (
-                <div className="aspect-[16/9] w-full rounded-xl overflow-hidden relative group">
+                <div className="aspect-[16/9] w-full rounded-xl overflow-hidden relative group" style={{ backgroundColor: "var(--bg-card-media)" }}>
                   <img
                     src={s.imageUrl}
                     alt={s.name}
-                    className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+                    className="ct-zoom-media w-full h-full object-cover"
                   />
-                  <div className="absolute top-2.5 right-2.5 px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider bg-black/75 text-cyan-300 border border-cyan-500/30 backdrop-blur-md">
+                  <div
+                    className="absolute top-2.5 right-2.5 px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider border backdrop-blur-md"
+                    style={{
+                      backgroundColor: "color-mix(in srgb, var(--bg-chassis) 84%, transparent)",
+                      borderColor: "var(--border-strong)",
+                      color: "var(--accent-cyan)",
+                    }}
+                  >
                     ~{s.estimatedDurationHours} h
                   </div>
                 </div>
               )}
               <div className="flex items-center justify-between w-full text-xs">
-                <span className="font-heading font-black text-sm text-white">
+                <span className="font-heading font-black text-sm" style={{ color: "var(--text-primary)" }}>
                   {s.pricingType === "FIXED" && s.basePriceCents
                     ? formatBsCompact(s.basePriceCents)
                     : "Sujeto a diagnóstico"}
                 </span>
-                <span className="text-[11px] font-mono text-cyan-400">
-                  {isSelected ? "● Seleccionado" : "Click para elegir"}
+                <span className="text-[11px] font-mono" style={{ color: "var(--accent-cyan)" }}>
+                  {isSelected ? "● Seleccionado" : "Clic para elegir"}
                 </span>
               </div>
-              <h2 className="font-heading font-bold text-base text-white line-clamp-1">{s.name}</h2>
-              <p className="text-xs leading-relaxed text-slate-300 line-clamp-2">
+              <h2 className="font-heading font-bold text-base line-clamp-1" style={{ color: "var(--text-primary)" }}>
+                {s.name}
+              </h2>
+              <p className="text-xs leading-relaxed line-clamp-2" style={{ color: "var(--text-secondary)" }}>
                 {s.description}
               </p>
-              <p className="text-[11px] mt-auto pt-2 border-t w-full border-slate-800 text-slate-400 line-clamp-1">
+              <p
+                className="text-[11px] mt-auto pt-2 border-t w-full line-clamp-1"
+                style={{ borderColor: "var(--border-subtle)", color: "var(--text-muted)" }}
+              >
                 {s.conditions}
               </p>
             </button>

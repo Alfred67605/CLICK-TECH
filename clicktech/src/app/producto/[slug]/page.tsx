@@ -24,6 +24,7 @@ import { getPublicBusinessSettings } from "@/lib/domain/business-config";
 import { getAvailableStock } from "@/lib/domain/inventory-orders";
 import { formatBsCompact } from "@/lib/domain/money";
 import { EmberParticlesCanvas } from "@/components/ui/EmberParticlesCanvas";
+import { getSpecComponentImage } from "@/lib/ui/spec-component-image";
 import { ProductDetailActions } from "@/components/catalog/ProductDetailActions";
 import { ProductCard } from "@/components/catalog/ProductCard";
 
@@ -459,21 +460,38 @@ export default async function ProductoDetallePage({
         <dl className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 text-xs">
           {Object.entries(specs).map(([k, v]) => {
             const { Icon, accent, bg, border } = getSpecCardMeta(k);
+            const compImg = getSpecComponentImage(k, String(v));
             return (
               <div
                 key={k}
-                className="rounded-xl border p-3 flex items-start gap-3"
+                className="rounded-xl border p-3 flex items-center gap-3"
                 style={{
                   backgroundColor: "var(--bg-chassis)",
                   borderColor: "var(--border-subtle)",
                 }}
               >
-                <div
-                  className="w-8 h-8 rounded-lg border flex items-center justify-center shrink-0 mt-0.5"
-                  style={{ backgroundColor: bg, borderColor: border, color: accent }}
-                >
-                  <Icon className="w-4 h-4" />
-                </div>
+                {compImg ? (
+                  <div
+                    className="w-14 h-14 rounded-xl border p-1.5 flex items-center justify-center shrink-0"
+                    style={{
+                      background: "linear-gradient(135deg, #FFFFFF 0%, #E2E8F0 100%)",
+                      borderColor: border,
+                    }}
+                  >
+                    <img
+                      src={compImg}
+                      alt={`${k}: ${v}`}
+                      className="w-full h-full object-contain"
+                    />
+                  </div>
+                ) : (
+                  <div
+                    className="w-9 h-9 rounded-lg border flex items-center justify-center shrink-0"
+                    style={{ backgroundColor: bg, borderColor: border, color: accent }}
+                  >
+                    <Icon className="w-4 h-4" />
+                  </div>
+                )}
                 <div className="min-w-0 flex-1">
                   <dt className="text-[11px] font-semibold uppercase tracking-wide" style={{ color: "var(--text-muted)" }}>
                     {k}

@@ -2,7 +2,7 @@
 
 import React from "react";
 import Link from "next/link";
-import { Check, ChevronRight, Flame, Scale, ShoppingCart, Sparkles } from "lucide-react";
+import { Check, ChevronRight, Flame, Scale, ShieldCheck, ShoppingCart, Sparkles, Zap } from "lucide-react";
 import { useStore } from "@/components/providers/StoreProvider";
 import { formatBsCompact } from "@/lib/domain/money";
 
@@ -28,6 +28,71 @@ export interface ProductCardData {
   shortSpecsJson?: Record<string, string> | null;
 }
 
+function getPerformanceBadge(product: ProductCardData): {
+  label: string;
+  bg: string;
+  border: string;
+  color: string;
+  isHigh: boolean;
+} {
+  const hay = `${product.name} ${product.model} ${product.ramGeneration ?? ""} ${product.socket ?? ""}`.toLowerCase();
+  if (
+    hay.includes("ryzen 7") ||
+    hay.includes("7600") ||
+    hay.includes("am5") ||
+    hay.includes("13400") ||
+    hay.includes("i7") ||
+    hay.includes("4070") ||
+    hay.includes("7700 xt") ||
+    hay.includes("ddr5") ||
+    hay.includes("pcie 4.0") ||
+    hay.includes("sn850") ||
+    hay.includes("240hz") ||
+    hay.includes("180hz") ||
+    hay.includes("streaming pro") ||
+    hay.includes("workstation")
+  ) {
+    return {
+      label: "ALTO RENDIMIENTO",
+      bg: "rgba(245, 158, 11, 0.22)",
+      border: "rgba(251, 191, 36, 0.72)",
+      color: "#FDE68A",
+      isHigh: true,
+    };
+  }
+
+  if (
+    hay.includes("5600") ||
+    hay.includes("12400") ||
+    hay.includes("4060") ||
+    hay.includes("7600") ||
+    hay.includes("nitro") ||
+    hay.includes("victus") ||
+    hay.includes("tuf") ||
+    hay.includes("32 gb") ||
+    hay.includes("32gb") ||
+    hay.includes("equilibrada") ||
+    hay.includes("gamer") ||
+    product.categorySlug === "perifericos"
+  ) {
+    return {
+      label: "GAMING PRO",
+      bg: "rgba(6, 182, 212, 0.22)",
+      border: "rgba(56, 189, 248, 0.68)",
+      color: "#BAE6FD",
+      isHigh: false,
+    };
+  }
+
+  return {
+    label: "CONFIABLE",
+    bg: "rgba(16, 185, 129, 0.2)",
+    border: "rgba(52, 211, 153, 0.65)",
+    color: "#A7F3D0",
+    isHigh: false,
+  };
+}
+
 export function ProductCard({ product }: { product: ProductCardData }) {
   const { addToCart, compareItems, toggleCompare } = useStore();
   const [justAdded, setJustAdded] = React.useState(false);
@@ -42,6 +107,7 @@ export function ProductCard({ product }: { product: ProductCardData }) {
   const lowStock = inStock && product.stockAvailable <= 3;
 
   const specs = (product.shortSpecsJson ?? {}) as Record<string, string>;
+  const specEntries = Object.entries(specs).slice(0, 2);
   let highlightSpec = "";
   if (product.isPrebuiltPc) {
     highlightSpec = [specs.CPU, specs.GPU, specs.RAM].filter(Boolean).join(" · ");
@@ -54,6 +120,8 @@ export function ProductCard({ product }: { product: ProductCardData }) {
   } else {
     highlightSpec = product.model;
   }
+
+  const perf = getPerformanceBadge(product);
 
   // Bold vivid theme palettes: Fire Obsidian for Black Friday / Royal Cobalt Blue for regular catalog
   const cardBackground = isPromo
@@ -107,8 +175,6 @@ export function ProductCard({ product }: { product: ProductCardData }) {
             <rect x="115" y="370" width="3" height="14" rx="1" transform="rotate(-8 115 370)" fill="#FDE047" />
             <rect x="195" y="325" width="2.2" height="11" rx="1" transform="rotate(18 195 325)" fill="#F97316" />
             <rect x="248" y="352" width="2.5" height="13" rx="1" transform="rotate(-16 248 352)" fill="#FEF08A" />
-            <rect x="44" y="210" width="1.8" height="8" rx="1" transform="rotate(9 44 210)" fill="#FB923C" />
-            <rect x="268" y="235" width="2" height="9" rx="1" transform="rotate(-12 268 235)" fill="#FDE047" />
             <circle cx="88" cy="248" r="1.7" fill="#FEF08A" />
             <circle cx="222" cy="272" r="1.5" fill="#FB923C" />
             <circle cx="152" cy="395" r="2" fill="#FDE047" />
@@ -121,7 +187,6 @@ export function ProductCard({ product }: { product: ProductCardData }) {
             <rect x="255" y="362" width="2" height="10" rx="1" transform="rotate(-16 255 362)" fill="#E0F2FE" />
             <circle cx="52" cy="225" r="1.5" fill="#7DD3FC" />
             <circle cx="262" cy="240" r="1.6" fill="#E0F2FE" />
-            <circle cx="145" cy="390" r="1.8" fill="#38BDF8" />
           </g>
         )}
       </svg>
@@ -202,26 +267,38 @@ export function ProductCard({ product }: { product: ProductCardData }) {
           </Link>
         </div>
 
-        {/* Short Accent Divider + Specs */}
-        <div className="w-full min-w-0 flex flex-col items-center gap-1">
+        {/* Short Accent Divider + Performance Tier Badge + Key Highlight */}
+        <div className="w-full min-w-0 flex flex-col items-center gap-1.5">
           <div className="flex items-center gap-1.5">
             <span className="block w-8 h-1 rounded-full" style={{ backgroundColor: accentColor }} />
             <span className="block w-12 h-[1px] bg-white/30" />
           </div>
+
+          <span
+            className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full border text-[10px] font-extrabold tracking-wide max-w-full truncate"
+            style={{
+              backgroundColor: perf.bg,
+              borderColor: perf.border,
+              color: perf.color,
+            }}
+          >
+            {perf.isHigh ? <Zap className="w-3 h-3 shrink-0" /> : <ShieldCheck className="w-3 h-3 shrink-0" />}
+            <span className="truncate">{perf.label}</span>
+          </span>
+
           {highlightSpec && (
-            <p className="text-[11px] font-medium text-slate-300 truncate w-full px-1">
+            <p className="text-[11px] font-medium text-slate-200 truncate w-full px-1">
               {highlightSpec}
             </p>
           )}
         </div>
       </div>
 
-      {/* Center Showcase: Illuminated Studio Spotlight + Pedestal so Black Hardware Pops */}
+      {/* Center Showcase: Illuminated Studio Spotlight + Pedestal */}
       <Link
         href={`/producto/${product.slug}`}
-        className="relative z-10 my-1.5 h-48 sm:h-52 w-full flex items-center justify-center"
+        className="relative z-10 my-1 h-44 sm:h-48 w-full flex items-center justify-center"
       >
-        {/* Bright Radial Backlight Halo behind Product */}
         <div
           aria-hidden="true"
           className="absolute inset-0 pointer-events-none"
@@ -231,11 +308,9 @@ export function ProductCard({ product }: { product: ProductCardData }) {
               : "radial-gradient(circle at 50% 46%, rgba(255,255,255,0.94) 0%, rgba(224,242,254,0.52) 38%, rgba(56,189,248,0.15) 60%, transparent 74%)",
           }}
         />
-
-        {/* Circular Luminous Ring */}
         <div
           aria-hidden="true"
-          className="absolute top-2 w-40 h-40 rounded-full pointer-events-none"
+          className="absolute top-1.5 w-38 h-38 rounded-full pointer-events-none"
           style={{
             border: "2px solid rgba(255, 255, 255, 0.85)",
             boxShadow: isPromo
@@ -243,21 +318,19 @@ export function ProductCard({ product }: { product: ProductCardData }) {
               : "0 0 24px rgba(255,255,255,0.45), 0 0 20px rgba(56, 189, 248, 0.25)",
           }}
         />
-
-        {/* 3D Elliptical Silver Pedestal */}
         <div
           aria-hidden="true"
-          className="absolute bottom-1.5 left-1/2 -translate-x-1/2 w-[84%] max-w-[235px] h-10 pointer-events-none"
+          className="absolute bottom-1 left-1/2 -translate-x-1/2 w-[84%] max-w-[235px] h-9 pointer-events-none"
         >
           <div
-            className="absolute bottom-0 inset-x-0 h-7 rounded-[50%]"
+            className="absolute bottom-0 inset-x-0 h-6 rounded-[50%]"
             style={{
               background: "linear-gradient(90deg, #94A3B8 0%, #E2E8F0 35%, #FFFFFF 52%, #CBD5E1 75%, #94A3B8 100%)",
               boxShadow: "0 10px 20px -4px rgba(0, 0, 0, 0.55), 0 0 12px rgba(255,255,255,0.5)",
             }}
           />
           <div
-            className="absolute top-0 inset-x-0 h-7 rounded-[50%] border border-white"
+            className="absolute top-0 inset-x-0 h-6 rounded-[50%] border border-white"
             style={{
               background: "linear-gradient(180deg, #FFFFFF 0%, #E2E8F0 70%, #CBD5E1 100%)",
             }}
@@ -269,7 +342,7 @@ export function ProductCard({ product }: { product: ProductCardData }) {
             src={product.imageUrl}
             alt={product.imageAlt}
             loading="lazy"
-            className="relative z-10 w-[90%] h-[90%] -translate-y-2 object-contain transition-transform duration-300 ease-out group-hover:-translate-y-3 group-hover:scale-105"
+            className="relative z-10 w-[88%] h-[88%] -translate-y-1.5 object-contain transition-transform duration-300 ease-out group-hover:-translate-y-2.5 group-hover:scale-105"
             style={{ filter: "drop-shadow(0 14px 18px rgba(0, 0, 0, 0.4))" }}
           />
         ) : (
@@ -279,9 +352,29 @@ export function ProductCard({ product }: { product: ProductCardData }) {
         )}
       </Link>
 
+      {/* Mini Technical Spec Chips from Ficha Técnica */}
+      {specEntries.length > 0 && (
+        <div className="relative z-10 grid grid-cols-2 gap-1.5 mb-2 min-w-0">
+          {specEntries.map(([k, v]) => (
+            <div
+              key={k}
+              className="min-w-0 rounded-lg border px-2 py-1 text-[10px] leading-tight"
+              style={{
+                backgroundColor: "rgba(255, 255, 255, 0.08)",
+                borderColor: "rgba(255, 255, 255, 0.16)",
+              }}
+            >
+              <span className="block uppercase text-[9px] font-semibold text-slate-300 truncate">{k}</span>
+              <span className="block font-bold text-white truncate" title={String(v)}>
+                {String(v)}
+              </span>
+            </div>
+          ))}
+        </div>
+      )}
+
       {/* Bottom Pricing Pill + Actions + Stock Footer */}
       <div className="relative z-10 mt-auto pt-1 min-w-0 space-y-2">
-        {/* Dynamic Price Block */}
         <div className="flex flex-col items-center gap-1 min-w-0">
           {hasDiscount ? (
             <>

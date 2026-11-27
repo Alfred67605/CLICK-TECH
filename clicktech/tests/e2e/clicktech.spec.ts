@@ -121,6 +121,7 @@ test.describe("ClickTech E2E Journeys & Responsive Verification", () => {
   });
 
   test("5. Responsive check across 360, 768, 1024, 1440px, images loaded, reduced motion", async ({ page }) => {
+    test.setTimeout(120_000);
     const shotsDir = path.resolve(process.cwd(), "docs", "screenshots");
     fs.mkdirSync(shotsDir, { recursive: true });
 

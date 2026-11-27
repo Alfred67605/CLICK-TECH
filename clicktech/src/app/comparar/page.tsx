@@ -203,9 +203,9 @@ export default async function CompararPage({
                     <th key={p.id} className="p-5 min-w-[250px] align-top border-l" style={{ borderColor: "var(--border-subtle)" }}>
                       <div className="space-y-3">
                         <div
-                          className="relative aspect-[16/10] w-full rounded-xl overflow-hidden border flex items-center justify-center"
+                          className="relative aspect-[16/10] w-full rounded-xl overflow-hidden border p-3 flex items-center justify-center"
                           style={{
-                            backgroundColor: "var(--bg-card-media)",
+                            background: "linear-gradient(180deg, #FFFFFF 0%, #F1F5F9 100%)",
                             borderColor: isBestPrice ? "var(--border-strong)" : "var(--border-subtle)",
                           }}
                         >
@@ -213,10 +213,10 @@ export default async function CompararPage({
                             <img
                               src={p.images[0].url}
                               alt={p.name}
-                              className="w-full h-full object-cover"
+                              className="w-full h-full object-contain mix-blend-multiply"
                             />
                           ) : (
-                            <span className="text-xs" style={{ color: "var(--text-muted)" }}>
+                            <span className="text-xs" style={{ color: "#475569" }}>
                               Sin imagen
                             </span>
                           )}

@@ -10,7 +10,6 @@ import {
   Play,
   ShoppingCart,
   Sparkles,
-  Tag,
 } from "lucide-react";
 import { useStore } from "@/components/providers/StoreProvider";
 import { useUISound } from "@/hooks/useUISound";
@@ -57,7 +56,8 @@ export function CatalogCarousel({ products }: { products: ProductCardData[] }) {
     return ordered.length > 0 ? ordered : products.slice(0, 12);
   }, [products, blackFridaySlides]);
 
-  const slides = campaignTab === "black-friday" && blackFridaySlides.length > 0 ? blackFridaySlides : allSlides;
+  const slides =
+    campaignTab === "black-friday" && blackFridaySlides.length > 0 ? blackFridaySlides : allSlides;
   const safeIndex = slides.length > 0 ? activeIndex % slides.length : 0;
   const active = slides[safeIndex];
 
@@ -77,12 +77,20 @@ export function CatalogCarousel({ products }: { products: ProductCardData[] }) {
 
   const effectivePrice = active.promoPriceCents ?? active.priceCents;
   const hasDiscount = active.promoPriceCents !== null && active.promoPriceCents < active.priceCents;
-  const isBlackFriday = Boolean(active.promoLabel?.toUpperCase().includes("BLACK FRIDAY")) || hasDiscount;
+  const isPromoHero = Boolean(active.promoLabel?.toUpperCase().includes("BLACK FRIDAY")) || hasDiscount;
   const discountPct = hasDiscount
     ? Math.max(1, Math.round(((active.priceCents - effectivePrice) / active.priceCents) * 100))
     : 0;
   const savingsCents = hasDiscount ? active.priceCents - effectivePrice : 0;
   const specsList = Object.entries((active.shortSpecsJson ?? {}) as Record<string, string>).slice(0, 3);
+
+  const primaryRibbonGradient = isPromoHero
+    ? "linear-gradient(90deg, #DC2626 0%, #991B1B 100%)"
+    : "linear-gradient(90deg, #0284C7 0%, #0369A1 100%)";
+  const accentColor = isPromoHero ? "#C8102E" : "#0284C7";
+  const ctaGradient = isPromoHero
+    ? "linear-gradient(90deg, #E11D48 0%, #B91C1C 60%, #7F1D1D 100%)"
+    : "linear-gradient(90deg, #0EA5E9 0%, #0284C7 60%, #0369A1 100%)";
 
   function goPrev() {
     playClick();
@@ -99,21 +107,22 @@ export function CatalogCarousel({ products }: { products: ProductCardData[] }) {
       aria-label="Vitrina Hero ClickTech y Ofertas Black Friday"
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
-      className="relative rounded-3xl border overflow-hidden transition-colors duration-300"
+      className="relative rounded-3xl overflow-hidden transition-all duration-300"
       style={{
-        backgroundColor: isBlackFriday ? "#090B12" : "var(--bg-surface)",
-        borderColor: isBlackFriday ? "rgba(244, 63, 94, 0.55)" : "var(--border-strong)",
-        boxShadow: isBlackFriday
-          ? "0 20px 50px -16px rgba(244, 63, 94, 0.28)"
-          : "var(--shadow-card)",
+        background: "linear-gradient(135deg, #FFFFFF 0%, #EEF2F7 52%, #E2E8F0 100%)",
+        border: isPromoHero ? "2px solid rgba(220, 38, 38, 0.42)" : "2px solid rgba(14, 165, 233, 0.35)",
+        boxShadow: isPromoHero
+          ? "0 22px 48px -18px rgba(200, 16, 46, 0.32)"
+          : "0 22px 48px -18px rgba(2, 132, 199, 0.25)",
       }}
     >
       {/* Top Bar: Campaign Tabs & Live Counter */}
       <div
-        className="px-4 sm:px-6 py-3 border-b flex flex-wrap items-center justify-between gap-3"
+        className="relative z-20 px-4 sm:px-6 py-2.5 border-b flex flex-wrap items-center justify-between gap-3"
         style={{
-          borderColor: isBlackFriday ? "rgba(255,255,255,0.1)" : "var(--border-subtle)",
-          backgroundColor: isBlackFriday ? "rgba(2, 4, 10, 0.72)" : "var(--bg-chassis)",
+          borderColor: "rgba(148, 163, 184, 0.3)",
+          backgroundColor: "rgba(255, 255, 255, 0.88)",
+          backdropFilter: "blur(8px)",
         }}
       >
         <div className="flex flex-wrap items-center gap-2">
@@ -125,18 +134,18 @@ export function CatalogCarousel({ products }: { products: ProductCardData[] }) {
               setCampaignTab("all");
               setActiveIndex(0);
             }}
-            className="ct-btn h-8 px-3.5 rounded-full text-xs font-bold inline-flex items-center gap-1.5 border"
+            className="ct-btn h-8 px-3.5 rounded-full text-xs font-extrabold inline-flex items-center gap-1.5 border transition-colors"
             style={
               campaignTab === "all"
                 ? {
-                    backgroundColor: "var(--accent-cyan)",
-                    borderColor: "var(--accent-cyan)",
-                    color: "var(--accent-cyan-ink)",
+                    backgroundColor: "#0F172A",
+                    borderColor: "#0F172A",
+                    color: "#FFFFFF",
                   }
                 : {
-                    backgroundColor: "transparent",
-                    borderColor: isBlackFriday ? "rgba(255,255,255,0.16)" : "var(--border-subtle)",
-                    color: isBlackFriday ? "#CBD5E1" : "var(--text-secondary)",
+                    backgroundColor: "#FFFFFF",
+                    borderColor: "#CBD5E1",
+                    color: "#334155",
                   }
             }
           >
@@ -153,18 +162,18 @@ export function CatalogCarousel({ products }: { products: ProductCardData[] }) {
                 setCampaignTab("black-friday");
                 setActiveIndex(0);
               }}
-              className="ct-btn h-8 px-3.5 rounded-full text-xs font-bold inline-flex items-center gap-1.5 border"
+              className="ct-btn h-8 px-3.5 rounded-full text-xs font-extrabold inline-flex items-center gap-1.5 border transition-colors"
               style={
                 campaignTab === "black-friday"
                   ? {
-                      backgroundColor: "#E11D48",
-                      borderColor: "#FB7185",
+                      background: "linear-gradient(90deg, #DC2626 0%, #991B1B 100%)",
+                      borderColor: "#991B1B",
                       color: "#FFFFFF",
                     }
                   : {
-                      backgroundColor: "rgba(225, 29, 72, 0.14)",
-                      borderColor: "rgba(244, 63, 94, 0.45)",
-                      color: "#FB7185",
+                      backgroundColor: "#FEF2F2",
+                      borderColor: "#FECACA",
+                      color: "#B91C1C",
                     }
               }
             >
@@ -176,10 +185,11 @@ export function CatalogCarousel({ products }: { products: ProductCardData[] }) {
 
         <div className="flex items-center gap-2.5 text-[11px] font-mono">
           <span
-            className="px-2 py-0.5 rounded-full border"
+            className="px-2.5 py-0.5 rounded-full border font-semibold"
             style={{
-              borderColor: isBlackFriday ? "rgba(255,255,255,0.15)" : "var(--border-subtle)",
-              color: isBlackFriday ? "#CBD5E1" : "var(--text-muted)",
+              borderColor: "#CBD5E1",
+              backgroundColor: "#FFFFFF",
+              color: "#334155",
             }}
           >
             {safeIndex + 1} / {slides.length} · Auto 3s
@@ -192,11 +202,11 @@ export function CatalogCarousel({ products }: { products: ProductCardData[] }) {
               setIsPaused((p) => !p);
             }}
             aria-label={isPaused ? "Reanudar carrusel automático" : "Pausar carrusel automático"}
-            className="ct-btn h-8 px-2.5 rounded-full border inline-flex items-center gap-1 font-sans font-semibold"
+            className="ct-btn h-8 px-3 rounded-full border inline-flex items-center gap-1 font-sans font-bold shadow-sm"
             style={{
-              borderColor: isBlackFriday ? "rgba(255,255,255,0.18)" : "var(--border-subtle)",
-              backgroundColor: isBlackFriday ? "rgba(255,255,255,0.06)" : "var(--bg-surface)",
-              color: isBlackFriday ? "#F8FAFC" : "var(--text-primary)",
+              borderColor: "#CBD5E1",
+              backgroundColor: "#FFFFFF",
+              color: "#0F172A",
             }}
           >
             {isPaused ? <Play className="w-3 h-3" /> : <Pause className="w-3 h-3" />}
@@ -205,30 +215,45 @@ export function CatalogCarousel({ products }: { products: ProductCardData[] }) {
         </div>
       </div>
 
-      {/* Main 1-Product Hero Slide Stage (Amazon / eBay Banner Style) */}
-      <div className="relative px-10 sm:px-14 py-6 sm:py-8">
-        {/* Background Glow Accent */}
-        <div
-          aria-hidden="true"
-          className="absolute inset-0 pointer-events-none"
-          style={{
-            background: isBlackFriday
-              ? "radial-gradient(circle at 75% 45%, rgba(225, 29, 72, 0.24) 0%, rgba(245, 158, 11, 0.08) 38%, transparent 70%)"
-              : "radial-gradient(circle at 75% 45%, rgba(0, 229, 255, 0.14) 0%, transparent 65%)",
-          }}
-        />
+      {/* Main Commercial Studio Banner Stage (Image 1 Layout) */}
+      <div className="relative px-10 sm:px-14 py-6 sm:py-8 overflow-hidden">
+        {/* Diagonal Graphic Corner Bars (Top-Right & Bottom-Left) */}
+        <div aria-hidden="true" className="pointer-events-none absolute top-4 right-5 z-0 flex items-center gap-2 opacity-90">
+          <span
+            className="block w-8 sm:w-10 h-16 sm:h-20 -skew-x-[22deg]"
+            style={{
+              background: isPromoHero
+                ? "linear-gradient(180deg, #DC2626 0%, rgba(220,38,38,0.08) 100%)"
+                : "linear-gradient(180deg, #0284C7 0%, rgba(2,132,199,0.08) 100%)",
+            }}
+          />
+          <span
+            className="block w-5 sm:w-6 h-12 sm:h-16 -skew-x-[22deg] translate-y-4"
+            style={{ background: "linear-gradient(180deg, #94A3B8 0%, rgba(148,163,184,0.1) 100%)" }}
+          />
+        </div>
+        <div aria-hidden="true" className="pointer-events-none absolute bottom-0 left-12 z-0 flex items-end gap-2 opacity-85">
+          <span
+            className="block w-24 sm:w-32 h-10 sm:h-12 skew-x-[32deg] translate-y-2"
+            style={{ background: "linear-gradient(90deg, #CBD5E1 0%, rgba(203,213,225,0.35) 100%)" }}
+          />
+          <span
+            className="block w-6 sm:w-8 h-10 sm:h-12 skew-x-[32deg] translate-y-2"
+            style={{ background: primaryRibbonGradient }}
+          />
+        </div>
 
-        {/* Large Left / Right Side Arrows (Amazon style) */}
+        {/* Left / Right Navigation Arrows */}
         <button
           type="button"
           data-sound="none"
           onClick={goPrev}
           aria-label="Producto anterior del carrusel"
-          className="ct-btn absolute left-2 sm:left-3 top-1/2 -translate-y-1/2 z-20 h-11 w-9 sm:h-14 sm:w-11 rounded-xl border flex items-center justify-center backdrop-blur-md"
+          className="ct-btn absolute left-2 sm:left-3 top-1/2 -translate-y-1/2 z-30 h-11 w-9 sm:h-14 sm:w-11 rounded-xl border flex items-center justify-center shadow-md"
           style={{
-            backgroundColor: isBlackFriday ? "rgba(15, 23, 42, 0.78)" : "color-mix(in srgb, var(--bg-surface) 88%, transparent)",
-            borderColor: isBlackFriday ? "rgba(255,255,255,0.18)" : "var(--border-strong)",
-            color: isBlackFriday ? "#FFFFFF" : "var(--text-primary)",
+            backgroundColor: "rgba(255, 255, 255, 0.92)",
+            borderColor: "#CBD5E1",
+            color: "#0F172A",
           }}
         >
           <ChevronLeft className="w-6 h-6" />
@@ -239,11 +264,11 @@ export function CatalogCarousel({ products }: { products: ProductCardData[] }) {
           data-sound="none"
           onClick={goNext}
           aria-label="Siguiente producto del carrusel"
-          className="ct-btn absolute right-2 sm:right-3 top-1/2 -translate-y-1/2 z-20 h-11 w-9 sm:h-14 sm:w-11 rounded-xl border flex items-center justify-center backdrop-blur-md"
+          className="ct-btn absolute right-2 sm:right-3 top-1/2 -translate-y-1/2 z-30 h-11 w-9 sm:h-14 sm:w-11 rounded-xl border flex items-center justify-center shadow-md"
           style={{
-            backgroundColor: isBlackFriday ? "rgba(15, 23, 42, 0.78)" : "color-mix(in srgb, var(--bg-surface) 88%, transparent)",
-            borderColor: isBlackFriday ? "rgba(255,255,255,0.18)" : "var(--border-strong)",
-            color: isBlackFriday ? "#FFFFFF" : "var(--text-primary)",
+            backgroundColor: "rgba(255, 255, 255, 0.92)",
+            borderColor: "#CBD5E1",
+            color: "#0F172A",
           }}
         >
           <ChevronRight className="w-6 h-6" />
@@ -254,157 +279,190 @@ export function CatalogCarousel({ products }: { products: ProductCardData[] }) {
           key={active.id}
           className="relative z-10 grid grid-cols-1 lg:grid-cols-12 gap-6 items-center"
         >
-          {/* Left Copy & Price Spotlight */}
-          <div className="lg:col-span-7 space-y-4">
-            <div className="flex flex-wrap items-center gap-2">
-              {isBlackFriday ? (
-                <span
-                  className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-extrabold uppercase tracking-wider shadow-md"
-                  style={{
-                    background: "linear-gradient(90deg, #E11D48 0%, #F59E0B 100%)",
-                    color: "#FFFFFF",
-                  }}
-                >
-                  <Flame className="w-3.5 h-3.5 fill-white" />
-                  BLACK FRIDAY · -{discountPct}% OFF
-                </span>
-              ) : (
-                <span
-                  className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full border text-xs font-bold uppercase tracking-wider"
-                  style={{
-                    backgroundColor: "var(--accent-cyan-soft)",
-                    borderColor: "var(--border-strong)",
-                    color: "var(--accent-cyan)",
-                  }}
-                >
-                  <Tag className="w-3.5 h-3.5" />
-                  Destacado ClickTech
-                </span>
-              )}
-
+          {/* Left Copy, Dynamic Ribbon, Price Pill & CTA */}
+          <div className="lg:col-span-6 space-y-3.5">
+            {/* Slanted Commercial Ribbon + // bars */}
+            <div className="flex items-center gap-1.5">
               <span
-                className="text-xs font-bold uppercase tracking-wider"
-                style={{ color: isBlackFriday ? "#FDE047" : "var(--accent-cyan)" }}
+                className="inline-flex items-center gap-1.5 px-4 py-1 -skew-x-12 text-xs sm:text-sm font-black uppercase tracking-wider text-white shadow-md"
+                style={{ background: primaryRibbonGradient }}
               >
-                {active.brandName} · {active.categoryName}
+                <span className="skew-x-12 inline-flex items-center gap-1.5">
+                  {isPromoHero ? <Flame className="w-3.5 h-3.5 fill-white" /> : <Sparkles className="w-3.5 h-3.5" />}
+                  {isPromoHero
+                    ? `BLACK FRIDAY · -${discountPct}% OFF`
+                    : `HERO OFFER · ${active.categoryName}`}
+                </span>
               </span>
+              <span
+                aria-hidden="true"
+                className="inline-block w-1.5 h-6 -skew-x-12 opacity-60"
+                style={{ backgroundColor: accentColor }}
+              />
+              <span
+                aria-hidden="true"
+                className="inline-block w-1.5 h-6 -skew-x-12 opacity-30"
+                style={{ backgroundColor: accentColor }}
+              />
             </div>
 
-            <Link
-              href={`/producto/${active.slug}`}
-              className="block group"
-            >
-              <h2
-                className="font-display text-2xl sm:text-3xl lg:text-4xl font-black tracking-tight leading-tight group-hover:underline"
-                style={{ color: isBlackFriday ? "#FFFFFF" : "var(--text-primary)" }}
-              >
+            {/* Bold Brand & Product Title */}
+            <Link href={`/producto/${active.slug}`} className="block group space-y-1">
+              <div className="font-display text-2xl sm:text-4xl font-black uppercase tracking-tight leading-none text-slate-950">
+                {active.brandName}
+              </div>
+              <h2 className="font-heading text-lg sm:text-2xl font-extrabold tracking-tight leading-snug text-slate-800 group-hover:underline">
                 {active.name}
               </h2>
             </Link>
 
+            {/* Accent Bar */}
+            <div className="flex items-center gap-2 pt-0.5">
+              <span className="block h-1.5 w-14 rounded-full" style={{ backgroundColor: accentColor }} />
+              <span className="block h-0.5 w-20 rounded-full bg-slate-300" />
+            </div>
+
+            {/* Crisp Specs Chips */}
             {specsList.length > 0 && (
-              <div className="flex flex-wrap gap-2">
+              <div className="flex flex-wrap gap-1.5">
                 {specsList.map(([k, v]) => (
                   <span
                     key={k}
-                    className="px-2.5 py-1 rounded-lg border text-xs font-medium"
-                    style={{
-                      backgroundColor: isBlackFriday ? "rgba(255,255,255,0.06)" : "var(--bg-chassis)",
-                      borderColor: isBlackFriday ? "rgba(255,255,255,0.14)" : "var(--border-subtle)",
-                      color: isBlackFriday ? "#E2E8F0" : "var(--text-secondary)",
-                    }}
+                    className="px-2.5 py-1 rounded-lg border text-xs font-medium bg-white/85 border-slate-300 text-slate-700 shadow-xs"
                   >
-                    <strong style={{ color: isBlackFriday ? "#38BDF8" : "var(--accent-cyan)" }}>{k}:</strong> {v}
+                    <strong className="font-bold text-slate-900">{k}:</strong> {v}
                   </span>
                 ))}
               </div>
             )}
 
-            {/* Price & CTA */}
-            <div className="pt-2 flex flex-wrap items-end justify-between gap-4">
-              <div>
-                <div className="flex items-baseline gap-3">
+            {/* Dynamic White-Pill Price Display */}
+            <div className="pt-1 space-y-2">
+              {hasDiscount && (
+                <div className="flex flex-wrap items-center gap-2.5 text-sm">
+                  <span className="font-medium text-slate-600">Antes</span>
                   <span
-                    className="font-display text-3xl sm:text-4xl font-black tabular-nums tracking-tight"
-                    style={{ color: isBlackFriday ? "#FDE047" : "var(--accent-cyan)" }}
+                    className="relative inline-block font-extrabold text-slate-700 tabular-nums"
+                    style={{
+                      textDecoration: "line-through",
+                      textDecorationColor: "#DC2626",
+                      textDecorationThickness: "2px",
+                    }}
+                  >
+                    {formatBsCompact(active.priceCents)}
+                  </span>
+                  <span className="text-xs font-bold text-emerald-700 bg-emerald-50 border border-emerald-200 px-2 py-0.5 rounded-full">
+                    Ahorras {formatBsCompact(savingsCents)}
+                  </span>
+                </div>
+              )}
+
+              <div className="flex flex-wrap items-center gap-3">
+                <div
+                  className="inline-flex items-center gap-2.5 px-5 py-2 rounded-2xl bg-white shadow-sm"
+                  style={{ border: `2px solid ${accentColor}` }}
+                >
+                  {hasDiscount && (
+                    <span
+                      className="px-2.5 py-0.5 -skew-x-12 text-xs font-extrabold uppercase text-white"
+                      style={{ backgroundColor: accentColor }}
+                    >
+                      <span className="inline-block skew-x-12">Ahora</span>
+                    </span>
+                  )}
+                  <span
+                    className="font-display text-2xl sm:text-4xl font-black tabular-nums tracking-tight"
+                    style={{ color: isPromoHero ? "#C8102E" : "#0F172A" }}
                   >
                     {formatBsCompact(effectivePrice)}
                   </span>
-                  {hasDiscount && (
-                    <span
-                      className="text-base sm:text-lg line-through tabular-nums"
-                      style={{ color: isBlackFriday ? "#94A3B8" : "var(--text-muted)" }}
-                    >
-                      {formatBsCompact(active.priceCents)}
-                    </span>
-                  )}
                 </div>
-                {savingsCents > 0 && (
-                  <p className="text-xs font-bold mt-0.5" style={{ color: "#34D399" }}>
-                    Ahorras {formatBsCompact(savingsCents)} hoy · Stock disponible: {active.stockAvailable}
-                  </p>
-                )}
               </div>
+            </div>
 
-              <div className="flex flex-wrap items-center gap-2.5">
-                <Link
-                  href={`/producto/${active.slug}`}
-                  className="ct-btn h-11 px-5 rounded-xl border text-xs sm:text-sm font-bold inline-flex items-center justify-center"
-                  style={{
-                    backgroundColor: isBlackFriday ? "rgba(255,255,255,0.08)" : "var(--bg-chassis)",
-                    borderColor: isBlackFriday ? "rgba(255,255,255,0.2)" : "var(--border-subtle)",
-                    color: isBlackFriday ? "#FFFFFF" : "var(--text-primary)",
-                  }}
-                >
-                  Ver ficha completa
-                </Link>
-                <button
-                  type="button"
-                  data-sound="none"
-                  onPointerEnter={() => playHover()}
-                  disabled={active.stockAvailable <= 0}
-                  onClick={() => addToCart(active.id, 1)}
-                  aria-label={`Agregar ${active.name} al carrito`}
-                  className="ct-btn ct-btn-primary h-11 px-5 rounded-xl text-xs sm:text-sm font-extrabold inline-flex items-center justify-center gap-2 disabled:opacity-45"
-                  style={{
-                    backgroundColor: isBlackFriday ? "#F59E0B" : "var(--accent-cyan)",
-                    color: "#02040A",
-                  }}
-                >
-                  <ShoppingCart className="w-4 h-4" />
-                  Al carrito
-                </button>
-              </div>
+            {/* Pill Gradient CTA + Secondary Link (Zero "Añadir" word so E2E targets ProductCard cleanly) */}
+            <div className="pt-1 flex flex-wrap items-center gap-3">
+              <button
+                type="button"
+                data-sound="none"
+                onPointerEnter={() => playHover()}
+                disabled={active.stockAvailable <= 0}
+                onClick={() => addToCart(active.id, 1)}
+                aria-label={`Agregar ${active.name} al carrito`}
+                className="ct-btn h-12 px-6 rounded-full text-xs sm:text-sm font-black uppercase tracking-wider text-white inline-flex items-center gap-2.5 shadow-lg transition-transform hover:scale-[1.02] disabled:opacity-45"
+                style={{ background: ctaGradient }}
+              >
+                <ShoppingCart className="w-4 h-4" />
+                <span className="border-l border-white/35 pl-2.5">COMPRAR AHORA</span>
+                <ChevronRight className="w-4 h-4" />
+              </button>
+
+              <Link
+                href={`/producto/${active.slug}`}
+                className="ct-btn h-11 px-4 rounded-full border border-slate-300 bg-white/90 text-xs sm:text-sm font-bold text-slate-800 hover:bg-white inline-flex items-center justify-center shadow-xs"
+              >
+                Ver ficha
+              </Link>
             </div>
           </div>
 
-          {/* Right Large Product Image Showcase */}
-          <div className="lg:col-span-5">
+          {/* Right Product Showcase over Luminous Ring & 3D Silver Pedestal */}
+          <div className="lg:col-span-6">
             <Link
               href={`/producto/${active.slug}`}
-              className="block relative rounded-2xl border p-4 sm:p-6 h-56 sm:h-72 lg:h-80 flex items-center justify-center overflow-hidden group"
-              style={{
-                backgroundColor: isBlackFriday ? "#0F172A" : "var(--bg-card-media)",
-                borderColor: isBlackFriday ? "rgba(251, 113, 133, 0.35)" : "var(--border-subtle)",
-              }}
+              className="block relative h-64 sm:h-72 lg:h-80 flex items-center justify-center group"
             >
+              {/* Glowing Circular Ring Halo behind product */}
+              <div
+                aria-hidden="true"
+                className="absolute top-2 w-52 h-52 sm:w-64 sm:h-64 rounded-full pointer-events-none"
+                style={{
+                  border: "3px solid rgba(255, 255, 255, 0.95)",
+                  boxShadow: "0 0 36px rgba(255, 255, 255, 0.95), inset 0 0 24px rgba(255, 255, 255, 0.7)",
+                  background: "radial-gradient(circle, rgba(255,255,255,0.65) 0%, rgba(255,255,255,0) 72%)",
+                }}
+              />
+
+              {/* 3D Cylindrical Silver Pedestal */}
+              <div
+                aria-hidden="true"
+                className="absolute bottom-3 left-1/2 -translate-x-1/2 w-[82%] max-w-[360px] h-16 pointer-events-none"
+              >
+                {/* Pedestal base cylinder wall */}
+                <div
+                  className="absolute bottom-0 inset-x-0 h-11 rounded-[50%]"
+                  style={{
+                    background: "linear-gradient(90deg, #94A3B8 0%, #E2E8F0 35%, #FFFFFF 52%, #CBD5E1 75%, #94A3B8 100%)",
+                    boxShadow: "0 12px 24px -6px rgba(15, 23, 42, 0.24), 0 0 18px rgba(255,255,255,0.8)",
+                  }}
+                />
+                {/* Pedestal top metallic disc */}
+                <div
+                  className="absolute top-0 inset-x-0 h-11 rounded-[50%] border border-white"
+                  style={{
+                    background: "linear-gradient(180deg, #FFFFFF 0%, #E2E8F0 70%, #CBD5E1 100%)",
+                  }}
+                />
+              </div>
+
+              {/* Isolated Product Image on Pure White blended seamlessly via mix-blend-multiply */}
               {active.imageUrl ? (
                 <img
                   src={active.imageUrl}
                   alt={active.name}
-                  className="w-full h-full object-contain transition-transform duration-500 group-hover:scale-105"
+                  className="relative z-10 w-[82%] h-[84%] -translate-y-3 object-contain mix-blend-multiply transition-transform duration-500 group-hover:scale-105"
                 />
               ) : (
-                <span className="text-xs" style={{ color: "var(--text-muted)" }}>
-                  Sin imagen
-                </span>
+                <span className="relative z-10 text-xs text-slate-500">Sin imagen</span>
               )}
+
+              {/* Subtle Stock Badge */}
               <span
-                className="absolute bottom-3 right-3 px-2.5 py-1 rounded-full text-[11px] font-bold backdrop-blur-md"
+                className="absolute bottom-1 right-2 z-20 px-2.5 py-1 rounded-full text-[11px] font-bold shadow-sm border"
                 style={{
-                  backgroundColor: "rgba(2, 4, 10, 0.78)",
+                  backgroundColor: "rgba(15, 23, 42, 0.88)",
                   color: "#34D399",
-                  border: "1px solid rgba(52, 211, 153, 0.35)",
+                  borderColor: "rgba(52, 211, 153, 0.4)",
                 }}
               >
                 Stock: {active.stockAvailable} en Calle Oruro
@@ -414,12 +472,12 @@ export function CatalogCarousel({ products }: { products: ProductCardData[] }) {
         </div>
       </div>
 
-      {/* Bottom Interactive Slide Thumbnails / Dots + 3s Indicator */}
+      {/* Bottom Interactive Slide Dots + 3s Indicator */}
       <div
-        className="px-4 sm:px-6 py-2.5 border-t flex items-center justify-between gap-3 overflow-x-auto"
+        className="relative z-20 px-4 sm:px-6 py-2.5 border-t flex items-center justify-between gap-3 overflow-x-auto"
         style={{
-          borderColor: isBlackFriday ? "rgba(255,255,255,0.1)" : "var(--border-subtle)",
-          backgroundColor: isBlackFriday ? "rgba(2, 4, 10, 0.65)" : "var(--bg-chassis)",
+          borderColor: "rgba(148, 163, 184, 0.3)",
+          backgroundColor: "rgba(255, 255, 255, 0.88)",
         }}
       >
         <div className="flex items-center gap-1.5">
@@ -441,21 +499,16 @@ export function CatalogCarousel({ products }: { products: ProductCardData[] }) {
                   width: isCurr ? "28px" : "10px",
                   backgroundColor: isCurr
                     ? slideBf
-                      ? "#F59E0B"
-                      : "var(--accent-cyan)"
-                    : isBlackFriday
-                    ? "rgba(255,255,255,0.22)"
-                    : "var(--border-subtle)",
+                      ? "#DC2626"
+                      : "#0284C7"
+                    : "#CBD5E1",
                 }}
               />
             );
           })}
         </div>
 
-        <span
-          className="text-[11px] truncate hidden sm:inline"
-          style={{ color: isBlackFriday ? "#CBD5E1" : "var(--text-muted)" }}
-        >
+        <span className="text-[11px] font-medium text-slate-600 truncate hidden sm:inline">
           {isPaused
             ? "Auto-avance pausado"
             : isHovered

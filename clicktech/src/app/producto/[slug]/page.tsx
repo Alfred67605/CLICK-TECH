@@ -242,25 +242,42 @@ export default async function ProductoDetallePage({
         <div className="lg:col-span-6 space-y-3">
           <div
             className="rounded-2xl border aspect-[4/3] flex items-center justify-center p-6 relative"
-            style={{ backgroundColor: "var(--bg-card-media)", borderColor: "var(--border-subtle)" }}
+            style={{
+              background: "linear-gradient(135deg, #FFFFFF 0%, #F1F5F9 55%, #E2E8F0 100%)",
+              borderColor: "var(--border-subtle)",
+            }}
           >
+            {/* Subtle 3D Studio Silver Pedestal */}
+            <div
+              aria-hidden="true"
+              className="absolute bottom-4 left-1/2 -translate-x-1/2 w-[72%] max-w-[300px] h-10 pointer-events-none"
+            >
+              <div
+                className="w-full h-full rounded-[50%] border border-white"
+                style={{
+                  background: "linear-gradient(180deg, #FFFFFF 0%, #E2E8F0 65%, #CBD5E1 100%)",
+                  boxShadow: "0 10px 24px -6px rgba(15, 23, 42, 0.2)",
+                }}
+              />
+            </div>
+
             {primaryImg ? (
               <img
                 src={primaryImg.url}
                 alt={primaryImg.altText}
-                className="w-full h-full object-contain"
+                className="relative z-10 w-full h-full object-contain mix-blend-multiply"
               />
             ) : (
-              <span className="text-sm" style={{ color: "var(--text-muted)" }}>
+              <span className="text-sm relative z-10" style={{ color: "#475569" }}>
                 Sin imagen disponible
               </span>
             )}
             <span
-              className="absolute top-3 left-3 px-2.5 py-1 rounded text-xs font-medium border"
+              className="absolute top-3 left-3 z-20 px-2.5 py-1 rounded-md text-xs font-semibold border"
               style={{
-                backgroundColor: "color-mix(in srgb, var(--bg-chassis) 88%, transparent)",
-                borderColor: "var(--border-subtle)",
-                color: "var(--text-secondary)",
+                backgroundColor: "rgba(15, 23, 42, 0.85)",
+                borderColor: "rgba(255, 255, 255, 0.16)",
+                color: "#F8FAFC",
               }}
             >
               {primaryImg?.isIllustrative !== false

@@ -2,7 +2,7 @@
 
 import React from "react";
 import Link from "next/link";
-import { Check, Scale, ShoppingCart, Sparkles } from "lucide-react";
+import { Check, Flame, Scale, ShoppingCart, Sparkles } from "lucide-react";
 import { useStore } from "@/components/providers/StoreProvider";
 import { formatBsCompact } from "@/lib/domain/money";
 
@@ -33,6 +33,11 @@ export function ProductCard({ product }: { product: ProductCardData }) {
   const [justAdded, setJustAdded] = React.useState(false);
   const inCompare = compareItems.some((c) => c.id === product.id);
   const activePrice = product.promoPriceCents ?? product.priceCents;
+  const hasDiscount = product.promoPriceCents !== null && product.promoPriceCents < product.priceCents;
+  const isBlackFriday = Boolean(product.promoLabel?.toUpperCase().includes("BLACK FRIDAY")) || hasDiscount;
+  const discountPct = hasDiscount
+    ? Math.max(1, Math.round(((product.priceCents - activePrice) / product.priceCents) * 100))
+    : 0;
   const inStock = product.stockAvailable > 0;
 
   const specs = (product.shortSpecsJson ?? {}) as Record<string, string>;
@@ -54,7 +59,7 @@ export function ProductCard({ product }: { product: ProductCardData }) {
       className="ct-card group relative rounded-2xl border flex flex-col overflow-hidden"
       style={{
         backgroundColor: "var(--bg-surface)",
-        borderColor: "var(--border-subtle)",
+        borderColor: isBlackFriday ? "rgba(244, 63, 94, 0.5)" : "var(--border-subtle)",
       }}
     >
       {/* Top Media Showcase */}
@@ -63,7 +68,14 @@ export function ProductCard({ product }: { product: ProductCardData }) {
         className="relative aspect-[4/3] w-full flex items-center justify-center p-6 overflow-hidden"
         style={{ backgroundColor: "var(--bg-card-media)" }}
       >
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(0,229,255,0.06)_0%,transparent_75%)] pointer-events-none" />
+        <div
+          className="absolute inset-0 pointer-events-none"
+          style={{
+            background: isBlackFriday
+              ? "radial-gradient(circle at center, rgba(225, 29, 72, 0.14) 0%, transparent 75%)"
+              : "radial-gradient(circle at center, rgba(0, 229, 255, 0.06) 0%, transparent 75%)",
+          }}
+        />
 
         {product.imageUrl ? (
           <img
@@ -78,7 +90,7 @@ export function ProductCard({ product }: { product: ProductCardData }) {
           </span>
         )}
 
-        {/* Top Badges */}
+        {/* Top Left Badge */}
         <div className="absolute top-3 left-3 z-20">
           {product.isPrebuiltPc ? (
             <span
@@ -105,6 +117,7 @@ export function ProductCard({ product }: { product: ProductCardData }) {
           )}
         </div>
 
+        {/* Top Right Stock Badge */}
         <div className="absolute top-3 right-3 z-20">
           <span
             className="px-2 py-0.5 rounded-full text-[10px] font-bold tracking-wide border backdrop-blur-md flex items-center gap-1.5"
@@ -123,9 +136,25 @@ export function ProductCard({ product }: { product: ProductCardData }) {
             {inStock ? `Stock: ${product.stockAvailable}` : "Agotado"}
           </span>
         </div>
+
+        {/* Bottom Left Black Friday Ribbon */}
+        {isBlackFriday && (
+          <div className="absolute bottom-2.5 left-3 z-20">
+            <span
+              className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-extrabold uppercase tracking-wider shadow-md"
+              style={{
+                background: "linear-gradient(90deg, #E11D48 0%, #F59E0B 100%)",
+                color: "#FFFFFF",
+              }}
+            >
+              <Flame className="w-3 h-3 fill-white" />
+              BLACK FRIDAY -{discountPct}%
+            </span>
+          </div>
+        )}
       </Link>
 
-      {/* Content Body - Clean & Spacious */}
+      {/* Content Body */}
       <div className="p-4 sm:p-5 flex-1 flex flex-col justify-between gap-3">
         <div className="space-y-1.5">
           <div className="text-[11px] font-bold tracking-wider uppercase truncate" style={{ color: "var(--accent-cyan)" }}>
@@ -149,17 +178,22 @@ export function ProductCard({ product }: { product: ProductCardData }) {
 
         {/* Price & Action */}
         <div className="pt-3 border-t space-y-3" style={{ borderColor: "var(--border-subtle)" }}>
-          <div className="flex items-baseline justify-between gap-2">
+          <div className="flex flex-wrap items-baseline justify-between gap-2">
             <div>
               <span
                 className="font-heading text-xl sm:text-2xl font-black tabular-nums tracking-tight"
-                style={{ color: "var(--text-primary)" }}
+                style={{ color: isBlackFriday ? "#F43F5E" : "var(--text-primary)" }}
               >
                 {formatBsCompact(activePrice)}
               </span>
-              {product.promoPriceCents && product.promoPriceCents < product.priceCents && (
+              {hasDiscount && (
                 <span className="ml-2 text-xs line-through tabular-nums" style={{ color: "var(--text-muted)" }}>
                   {formatBsCompact(product.priceCents)}
+                </span>
+              )}
+              {hasDiscount && (
+                <span className="block text-[11px] font-bold mt-0.5" style={{ color: "var(--status-ok)" }}>
+                  Ahorras {formatBsCompact(product.priceCents - activePrice)}
                 </span>
               )}
             </div>
@@ -191,8 +225,12 @@ export function ProductCard({ product }: { product: ProductCardData }) {
               }}
               className="ct-btn ct-btn-primary flex-1 h-10 px-4 rounded-xl text-xs sm:text-sm font-bold flex items-center justify-center gap-2 disabled:opacity-40 disabled:cursor-not-allowed"
               style={{
-                backgroundColor: justAdded ? "var(--status-ok)" : "var(--accent-cyan)",
-                color: justAdded ? "#ffffff" : "var(--accent-cyan-ink)",
+                backgroundColor: justAdded
+                  ? "var(--status-ok)"
+                  : isBlackFriday
+                  ? "#F59E0B"
+                  : "var(--accent-cyan)",
+                color: justAdded ? "#ffffff" : isBlackFriday ? "#02040A" : "var(--accent-cyan-ink)",
               }}
             >
               {justAdded ? (

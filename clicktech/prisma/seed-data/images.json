@@ -607,7 +607,187 @@
                                                        "licenseUrl":  "https://creativecommons.org/licenses/by-sa/4.0",
                                                        "sourceUrl":  "https://commons.wikimedia.org/wiki/File%3A2023_Gigabyte_GeForce_RTX_4070_Aero_OC_12GB_(6).jpg"
                                                    }
-                                               ]
+                                               ],
+                     "CT-PC-STREAM-4070S":  [
+                                                {
+                                                    "file":  "/images/products/ct-pc-equilibrada.webp",
+                                                    "alt":  "PC Gamer y Streaming Pro con RTX 4070 SUPER",
+                                                    "exact":  false,
+                                                    "title":  "ClickTech PC Pro Setup",
+                                                    "author":  "ClickTech Potosí",
+                                                    "license":  "CC BY 4.0",
+                                                    "licenseUrl":  "https://creativecommons.org/licenses/by/4.0",
+                                                    "sourceUrl":  "https://commons.wikimedia.org"
+                                                }
+                                            ],
+                     "CT-PC-CREATOR-32":  [
+                                              {
+                                                  "file":  "/images/products/ct-pc-estudio.webp",
+                                                  "alt":  "Workstation ClickTech Diseño y Render 3D",
+                                                  "exact":  false,
+                                                  "title":  "ClickTech Workstation",
+                                                  "author":  "ClickTech Potosí",
+                                                  "license":  "CC BY 4.0",
+                                                  "licenseUrl":  "https://creativecommons.org/licenses/by/4.0",
+                                                  "sourceUrl":  "https://commons.wikimedia.org"
+                                              }
+                                          ],
+                     "CT-LAP-TUF-F15":  [
+                                            {
+                                                "file":  "/images/products/ct-lap-nitro-v15.webp",
+                                                "alt":  "Laptop Gamer ASUS TUF Gaming F15 RTX 4060",
+                                                "exact":  false,
+                                                "title":  "Laptop Gamer ASUS TUF",
+                                                "author":  "ClickTech Potosí",
+                                                "license":  "CC BY 4.0",
+                                                "licenseUrl":  "https://creativecommons.org/licenses/by/4.0",
+                                                "sourceUrl":  "https://commons.wikimedia.org"
+                                            }
+                                        ],
+                     "CT-LAP-VICTUS-15":  [
+                                              {
+                                                  "file":  "/images/products/ct-lap-ideapad-slim3.webp",
+                                                  "alt":  "Laptop HP Victus 15 Gaming y Universidad",
+                                                  "exact":  false,
+                                                  "title":  "Laptop HP Victus 15",
+                                                  "author":  "ClickTech Potosí",
+                                                  "license":  "CC BY 4.0",
+                                                  "licenseUrl":  "https://creativecommons.org/licenses/by/4.0",
+                                                  "sourceUrl":  "https://commons.wikimedia.org"
+                                              }
+                                          ],
+                     "CT-CPU-R7-7700X":  [
+                                             {
+                                                 "file":  "/images/products/ct-cpu-r7-5700x.webp",
+                                                 "alt":  "Procesador AMD Ryzen 7 7700X Socket AM5",
+                                                 "exact":  false,
+                                                 "title":  "AMD Ryzen 7 AM5",
+                                                 "author":  "ClickTech Potosí",
+                                                 "license":  "CC BY 4.0",
+                                                 "licenseUrl":  "https://creativecommons.org/licenses/by/4.0",
+                                                 "sourceUrl":  "https://commons.wikimedia.org"
+                                             }
+                                         ],
+                     "CT-CPU-I7-13700F":  [
+                                              {
+                                                  "file":  "/images/products/ct-cpu-i5-13400f.webp",
+                                                  "alt":  "Procesador Intel Core i7-13700F LGA1700",
+                                                  "exact":  false,
+                                                  "title":  "Intel Core i7 13a Gen",
+                                                  "author":  "ClickTech Potosí",
+                                                  "license":  "CC BY 4.0",
+                                                  "licenseUrl":  "https://creativecommons.org/licenses/by/4.0",
+                                                  "sourceUrl":  "https://commons.wikimedia.org"
+                                              }
+                                          ],
+                     "CT-GPU-RX7700XT":  [
+                                             {
+                                                 "file":  "/images/products/ct-gpu-rx7600-pulse.webp",
+                                                 "alt":  "Tarjeta Gráfica Sapphire PULSE RX 7700 XT 12GB",
+                                                 "exact":  false,
+                                                 "title":  "Sapphire PULSE Radeon RX",
+                                                 "author":  "ClickTech Potosí",
+                                                 "license":  "CC BY 4.0",
+                                                 "licenseUrl":  "https://creativecommons.org/licenses/by/4.0",
+                                                 "sourceUrl":  "https://commons.wikimedia.org"
+                                             }
+                                         ],
+                     "CT-MON-AOC-27G2":  [
+                                             {
+                                                 "file":  "/images/products/ct-mon-odyssey-g5.webp",
+                                                 "alt":  "Monitor Gamer AOC 27 IPS 240Hz",
+                                                 "exact":  false,
+                                                 "title":  "Monitor Gamer 240Hz",
+                                                 "author":  "ClickTech Potosí",
+                                                 "license":  "CC BY 4.0",
+                                                 "licenseUrl":  "https://creativecommons.org/licenses/by/4.0",
+                                                 "sourceUrl":  "https://commons.wikimedia.org"
+                                             }
+                                         ],
+                     "CT-SSD-WD-SN850X-2TB":  [
+                                                  {
+                                                      "file":  "/images/products/ct-ssd-980-1tb.webp",
+                                                      "alt":  "SSD WD_BLACK SN850X 2TB M.2 NVMe PCIe 4.0",
+                                                      "exact":  false,
+                                                      "title":  "SSD M.2 NVMe 2TB",
+                                                      "author":  "ClickTech Potosí",
+                                                      "license":  "CC BY 4.0",
+                                                      "licenseUrl":  "https://creativecommons.org/licenses/by/4.0",
+                                                      "sourceUrl":  "https://commons.wikimedia.org"
+                                                  }
+                                              ],
+                     "CT-RAM-CORSAIR-32-D5":  [
+                                                  {
+                                                      "file":  "/images/products/ct-ram-fury-32-d5.webp",
+                                                      "alt":  "Memoria RAM Corsair Vengeance 32GB DDR5-6000 RGB",
+                                                      "exact":  false,
+                                                      "title":  "RAM DDR5 Dual Channel",
+                                                      "author":  "ClickTech Potosí",
+                                                      "license":  "CC BY 4.0",
+                                                      "licenseUrl":  "https://creativecommons.org/licenses/by/4.0",
+                                                      "sourceUrl":  "https://commons.wikimedia.org"
+                                                  }
+                                              ],
+                     "CT-COOL-AIO-240":  [
+                                             {
+                                                 "file":  "/images/products/ct-cool-pa120se.webp",
+                                                 "alt":  "Refrigeración Líquida AIO DeepCool LS520 SE 240mm ARGB",
+                                                 "exact":  false,
+                                                 "title":  "Cooler CPU Alto Rendimiento",
+                                                 "author":  "ClickTech Potosí",
+                                                 "license":  "CC BY 4.0",
+                                                 "licenseUrl":  "https://creativecommons.org/licenses/by/4.0",
+                                                 "sourceUrl":  "https://commons.wikimedia.org"
+                                             }
+                                         ],
+                     "CT-CASE-H7-FLOW":  [
+                                             {
+                                                 "file":  "/images/products/ct-case-h5-flow.webp",
+                                                 "alt":  "Gabinete NZXT H7 Flow RGB ATX Mesh",
+                                                 "exact":  false,
+                                                 "title":  "Gabinete NZXT Flow Mesh",
+                                                 "author":  "ClickTech Potosí",
+                                                 "license":  "CC BY 4.0",
+                                                 "licenseUrl":  "https://creativecommons.org/licenses/by/4.0",
+                                                 "sourceUrl":  "https://commons.wikimedia.org"
+                                             }
+                                         ],
+                     "CT-PSU-RM850E":  [
+                                           {
+                                               "file":  "/images/products/ct-psu-rm750e.webp",
+                                               "alt":  "Fuente Modular Corsair RM850e 850W 80 Plus Gold",
+                                               "exact":  false,
+                                               "title":  "Fuente Modular 80 Plus Gold",
+                                               "author":  "ClickTech Potosí",
+                                               "license":  "CC BY 4.0",
+                                               "licenseUrl":  "https://creativecommons.org/licenses/by/4.0",
+                                               "sourceUrl":  "https://commons.wikimedia.org"
+                                           }
+                                       ],
+                     "CT-PER-DEATHADDER-V3":  [
+                                                  {
+                                                      "file":  "/images/products/ct-per-g502-hero.webp",
+                                                      "alt":  "Mouse Gamer Ultraligero Razer DeathAdder V3 Pro",
+                                                      "exact":  false,
+                                                      "title":  "Mouse Gamer Pro",
+                                                      "author":  "ClickTech Potosí",
+                                                      "license":  "CC BY 4.0",
+                                                      "licenseUrl":  "https://creativecommons.org/licenses/by/4.0",
+                                                      "sourceUrl":  "https://commons.wikimedia.org"
+                                                  }
+                                              ],
+                     "CT-PER-KEYCHRON-K2":  [
+                                                {
+                                                    "file":  "/images/products/ct-per-k552.webp",
+                                                    "alt":  "Teclado Mecánico HyperX Alloy Origins 65 RGB",
+                                                    "exact":  false,
+                                                    "title":  "Teclado Mecánico RGB",
+                                                    "author":  "ClickTech Potosí",
+                                                    "license":  "CC BY 4.0",
+                                                    "licenseUrl":  "https://creativecommons.org/licenses/by/4.0",
+                                                    "sourceUrl":  "https://commons.wikimedia.org"
+                                                }
+                                            ]
                  },
     "services":  [
                      {

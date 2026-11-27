@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import {
   Cpu,
   Filter,
+  Flame,
   HardDrive,
   Headphones,
   Laptop,
@@ -46,6 +47,7 @@ export function CatalogExplorer({
   const [socket, setSocket] = useState("");
   const [ramGen, setRamGen] = useState("");
   const [inStockOnly, setInStockOnly] = useState(false);
+  const [blackFridayOnly, setBlackFridayOnly] = useState(false);
   const [maxBs, setMaxBs] = useState("");
   const [sort, setSort] = useState("featured");
   const [mobileFilterOpen, setMobileFilterOpen] = useState(false);
@@ -76,6 +78,7 @@ export function CatalogExplorer({
       if (socket && p.socket !== socket) return false;
       if (ramGen && p.ramGeneration !== ramGen) return false;
       if (inStockOnly && p.stockAvailable <= 0) return false;
+      if (blackFridayOnly && !(p.promoPriceCents !== null && p.promoPriceCents < p.priceCents)) return false;
       const effectivePrice = p.promoPriceCents ?? p.priceCents;
       if (maxCents !== null && Number.isFinite(maxCents) && effectivePrice > maxCents) return false;
       if (query) {
@@ -96,7 +99,14 @@ export function CatalogExplorer({
       );
     }
     return list;
-  }, [initialProducts, q, category, brand, socket, ramGen, inStockOnly, maxBs, sort]);
+  }, [initialProducts, q, category, brand, socket, ramGen, inStockOnly, blackFridayOnly, maxBs, sort]);
+
+  const blackFridayCount = useMemo(
+    () =>
+      initialProducts.filter((p) => p.promoPriceCents !== null && p.promoPriceCents < p.priceCents)
+        .length,
+    [initialProducts]
+  );
 
   function resetAll() {
     setQ("");
@@ -105,6 +115,7 @@ export function CatalogExplorer({
     setSocket("");
     setRamGen("");
     setInStockOnly(false);
+    setBlackFridayOnly(false);
     setMaxBs("");
     setSort("featured");
     router.replace("/catalogo");
@@ -116,6 +127,7 @@ export function CatalogExplorer({
     (socket ? 1 : 0) +
     (ramGen ? 1 : 0) +
     (inStockOnly ? 1 : 0) +
+    (blackFridayOnly ? 1 : 0) +
     (maxBs ? 1 : 0);
 
   return (
@@ -192,8 +204,8 @@ export function CatalogExplorer({
         </div>
       </div>
 
-      {/* Full-Catalog Quick Showcase Carousel */}
-      {!category && !q && <CatalogCarousel products={initialProducts} />}
+      {/* Hero 3-second Spotlight Carousel (Amazon / eBay style) */}
+      {!category && !q && !blackFridayOnly && <CatalogCarousel products={initialProducts} />}
 
       {/* Main Full-Width Split Layout */}
       <div className="flex flex-col lg:flex-row gap-7 items-start">
@@ -463,6 +475,31 @@ export function CatalogExplorer({
                 <option value="price-asc">Precio: menor a mayor</option>
                 <option value="price-desc">Precio: mayor a menor</option>
               </select>
+
+              {blackFridayCount > 0 && (
+                <button
+                  type="button"
+                  data-sound={blackFridayOnly ? "toggleOff" : "toggleOn"}
+                  onClick={() => setBlackFridayOnly((v) => !v)}
+                  className="ct-btn h-8 px-3 rounded-full border text-xs font-bold inline-flex items-center gap-1.5"
+                  style={
+                    blackFridayOnly
+                      ? {
+                          backgroundColor: "#E11D48",
+                          borderColor: "#FB7185",
+                          color: "#FFFFFF",
+                        }
+                      : {
+                          backgroundColor: "rgba(225, 29, 72, 0.12)",
+                          borderColor: "rgba(244, 63, 94, 0.45)",
+                          color: "#F43F5E",
+                        }
+                  }
+                >
+                  <Flame className="w-3.5 h-3.5" />
+                  Black Friday ({blackFridayCount})
+                </button>
+              )}
             </div>
 
             {activeFiltersCount > 0 && (
